@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/CacheConnectionDialog">
+        <file>img/windowicon.png</file>
+        <file>img/CacheConnectionDialogLogo.png</file>
+    </qresource>
+</RCC>

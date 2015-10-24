@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="Qt.CacheTool">
+<Super>%RegisteredObject</Super>
+<TimeCreated>63850,61720.151703</TimeCreated>
+
+<Method name="ListObjects">
+<FormalSpec>filter:%String</FormalSpec>
+<ReturnType>%Library.List</ReturnType>
+<Implementation><![CDATA[
+	S LS=$LB()
+	Q LS
+]]></Implementation>
+</Method>
+
+<Method name="ImportXML">
+<FormalSpec>xml:%String</FormalSpec>
+<ReturnType>%Boolean</ReturnType>
+<Implementation><![CDATA[	Q 0
+]]></Implementation>
+</Method>
+
+<Method name="ExportXML">
+<FormalSpec>object:%String</FormalSpec>
+<ReturnType>%Library.BinaryStream</ReturnType>
+<Implementation><![CDATA[
+	S STREAM = ##class(%Library.BinaryStream).%New()
+
+	D STREAM.Write("Hello World")
+	D STREAM.Rewind()	
+	
+	Q STREAM
+]]></Implementation>
+</Method>
+
+<Method name="Execute">
+<FormalSpec>code:%String</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	S SC=$$$OK
+	
+	TRY{
+		X code
+	}CATCH EX{
+		#dim ex as %Exception.AbstractException
+		S SC=EX.AsStatus()
+	}
+	
+	Q SC
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Project name="QtCache" LastModified="2015-10-25 17:19:47.17313">
+  <Items>
+    <ProjectItem name="Qt.CacheTool" type="CLS"></ProjectItem>
+  </Items>
+</Project>
+</Export>
