@@ -27,16 +27,27 @@
 class QtCachePrivate
 {
 public:
+    QString uci = "%SYS";
+    QString cn = "";
+
     QtCachePrivate()
     {}
 
     virtual ~QtCachePrivate()
-    {        
+    {
         delete qt_cachetool;
+    }
+
+    Qt_CacheTool* connect()
+    {
+        return connect(cn, uci);
     }
 
     Qt_CacheTool* connect(const QString& cn, const QString& uci, bool forceNew = false)
     {
+        forceNew = this->cn != cn || forceNew;
+        this->cn = cn;
+        this->uci = uci;
         if (forceNew && NULL != qt_cachetool){
             delete qt_cachetool;
         }
@@ -80,8 +91,30 @@ QtCache* QtCache::instance()
     return i;
 }
 
+const QString& QtCache::uci() const
+{
+    return d->uci;
+}
+
+void QtCache::setUci(const QString& uci)
+{
+    d->uci = uci;
+}
+
 int QtCache::connect(const QString& connectionString, const QString& uci, bool forceNew)
-{    
+{
     Qt_CacheTool* qct = d->connect(connectionString, uci, forceNew);
+    return qct == NULL ? -1 : 0;
+}
+
+int QtCache::execute(const QString& code)
+{
+    Qt_CacheTool* qct = d->connect();
+
+    d_status sc = qct->Execute(
+                d_string(d->uci.toStdString()),
+                d_string(code.toStdString())
+                );
+
     return 0;
 }

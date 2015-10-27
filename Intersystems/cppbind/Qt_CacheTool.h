@@ -56,13 +56,13 @@ public:
 
    static d_int _IsA(Database* __db, const d_string& isclass);
 
-   virtual d_status Execute(const d_string& code);
+   virtual d_status Execute(const d_string& uci, const d_string& code);
 
-   virtual d_ref<d_bin_stream> ExportXML(const d_string& object);
+   virtual d_ref<d_bin_stream> ExportXML(const d_string& uci, const d_string& object);
 
-   virtual d_bool ImportXML(const d_string& xml);
+   virtual d_bool ImportXML(const d_string& uci, const d_string& xml);
 
-   virtual d_list ListObjects(const d_string& filter);
+   virtual d_list ListObjects(const d_string& uci, const d_string& filter);
 
    // Queries
 };

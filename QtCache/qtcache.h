@@ -20,13 +20,18 @@
 
 class QtCachePrivate;
 
-class QTCACHESHARED_EXPORT QtCache       
+class QTCACHESHARED_EXPORT QtCache
 {
-public:    
+public:
     static QtCache* instance();
     virtual ~QtCache();
 
+    const QString& uci() const;
+    void setUci(const QString& uci);
+
     int connect(const QString&, const QString&, bool forceNew = false);
+
+    int execute(const QString&);
 
 protected:
     QtCache();

@@ -5,54 +5,54 @@
 <TimeCreated>63850,61720.151703</TimeCreated>
 
 <Method name="ListObjects">
-<FormalSpec>filter:%String</FormalSpec>
+<FormalSpec>uci:%String,filter:%String</FormalSpec>
 <ReturnType>%Library.List</ReturnType>
 <Implementation><![CDATA[
-	S LS=$LB()
-	Q LS
+    S LS=$LB()
+    Q LS
 ]]></Implementation>
 </Method>
 
 <Method name="ImportXML">
-<FormalSpec>xml:%String</FormalSpec>
+<FormalSpec>uci:%String,xml:%String</FormalSpec>
 <ReturnType>%Boolean</ReturnType>
-<Implementation><![CDATA[	Q 0
+<Implementation><![CDATA[    Q 0
 ]]></Implementation>
 </Method>
 
 <Method name="ExportXML">
-<FormalSpec>object:%String</FormalSpec>
+<FormalSpec>uci:%String,object:%String</FormalSpec>
 <ReturnType>%Library.BinaryStream</ReturnType>
 <Implementation><![CDATA[
-	S STREAM = ##class(%Library.BinaryStream).%New()
+    S STREAM = ##class(%Library.BinaryStream).%New()
 
-	D STREAM.Write("Hello World")
-	D STREAM.Rewind()	
-	
-	Q STREAM
+    D STREAM.Write("Hello World")
+    D STREAM.Rewind()   
+    
+    Q STREAM
 ]]></Implementation>
 </Method>
 
 <Method name="Execute">
-<FormalSpec>code:%String</FormalSpec>
+<FormalSpec>uci:%String,code:%String</FormalSpec>
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
-	S SC=$$$OK
-	
-	TRY{
-		X code
-	}CATCH EX{
-		#dim ex as %Exception.AbstractException
-		S SC=EX.AsStatus()
-	}
-	
-	Q SC
+    S SC=$$$OK
+    
+    TRY{
+        X code
+    }CATCH EX{
+        #dim ex as %Exception.AbstractException
+        S SC=EX.AsStatus()
+    }
+    
+    Q SC
 ]]></Implementation>
 </Method>
 </Class>
 
 
-<Project name="QtCache" LastModified="2015-10-25 17:19:47.17313">
+<Project name="QtCache">
   <Items>
     <ProjectItem name="Qt.CacheTool" type="CLS"></ProjectItem>
   </Items>

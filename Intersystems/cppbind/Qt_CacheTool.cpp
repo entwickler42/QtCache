@@ -38,11 +38,12 @@ d_int Qt_CacheTool::_IsA(Database* __db, const d_string& isclass)
    return __res;
 }
 
-d_status Qt_CacheTool::Execute(const d_string& code)
+d_status Qt_CacheTool::Execute(const d_string& uci, const d_string& code)
 {
    GEN_DECLARE_ARGS_AND_DB();
    wchar_t __mtd_name[] = L"Execute";
 
+   __args_mgr.set_next(&uci);
    __args_mgr.set_next(&code);
 
    d_status __res;
@@ -53,11 +54,12 @@ d_status Qt_CacheTool::Execute(const d_string& code)
    return __res;
 }
 
-d_ref<d_bin_stream> Qt_CacheTool::ExportXML(const d_string& object)
+d_ref<d_bin_stream> Qt_CacheTool::ExportXML(const d_string& uci, const d_string& object)
 {
    GEN_DECLARE_ARGS_AND_DB();
    wchar_t __mtd_name[] = L"ExportXML";
 
+   __args_mgr.set_next(&uci);
    __args_mgr.set_next(&object);
 
    d_ref<d_bin_stream> __res;
@@ -68,11 +70,12 @@ d_ref<d_bin_stream> Qt_CacheTool::ExportXML(const d_string& object)
    return __res;
 }
 
-d_bool Qt_CacheTool::ImportXML(const d_string& xml)
+d_bool Qt_CacheTool::ImportXML(const d_string& uci, const d_string& xml)
 {
    GEN_DECLARE_ARGS_AND_DB();
    wchar_t __mtd_name[] = L"ImportXML";
 
+   __args_mgr.set_next(&uci);
    __args_mgr.set_next(&xml);
 
    d_bool __res;
@@ -83,11 +86,12 @@ d_bool Qt_CacheTool::ImportXML(const d_string& xml)
    return __res;
 }
 
-d_list Qt_CacheTool::ListObjects(const d_string& filter)
+d_list Qt_CacheTool::ListObjects(const d_string& uci, const d_string& filter)
 {
    GEN_DECLARE_ARGS_AND_DB();
    wchar_t __mtd_name[] = L"ListObjects";
 
+   __args_mgr.set_next(&uci);
    __args_mgr.set_next(&filter);
 
    d_list __res;
