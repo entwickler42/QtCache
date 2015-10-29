@@ -1,7 +1,10 @@
 INCLUDEPATH += $$PWD
 
+OTHER_FILES += $$PWD/QtCache.xml
+
 cppbind{
-    LIBS += "-Lc:/InterSystems/TryCache/dev/cpp/lib/" -lcppbind_msvc120
+    debug:LIBS += "-Lc:/InterSystems/TryCache/dev/cpp/lib/" -lcppbind_msvc120d
+    release:LIBS += "-Lc:/InterSystems/TryCache/dev/cpp/lib/" -lcppbind_msvc120
     INCLUDEPATH *= "c:/InterSystems/TryCache/dev/cpp/include/"
     INCLUDEPATH += $$PWD/cppbind/
     DEFINES += CACHECPPBIND
@@ -15,7 +18,7 @@ cbind{
     DEFINES += CACHECBIND
 }
 
-vismocx{        
+vismocx{
     QT += axcontainer
     DEFINES += VISM_EXPORT=__declspec(dllexport)
     DEFINES += CACHEVISM

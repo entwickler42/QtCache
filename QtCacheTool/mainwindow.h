@@ -22,6 +22,8 @@ namespace Ui {
     class MainWindow;
 }
 class CacheConnectionDialog;
+class QtCache;
+
 
 class MainWindow : public QMainWindow
 {
@@ -34,6 +36,11 @@ public:
 protected:
     virtual void showEvent(QShowEvent*);
 
+    QtCache* cache() const
+    {
+        return m_QtCache;
+    }
+
 private slots:
     void on_selectServer_pressed();
     void on_importFiles_pressed();
@@ -41,6 +48,7 @@ private slots:
 private:
     Ui::MainWindow *ui;
     CacheConnectionDialog* dlg;
+    QtCache* m_QtCache = NULL;
 };
 
 #endif // MAINWINDOW_H

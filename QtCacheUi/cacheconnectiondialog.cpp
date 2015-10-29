@@ -29,6 +29,16 @@ CacheConnectionDialog::~CacheConnectionDialog()
     delete ui;
 }
 
+bool CacheConnectionDialog::unsafe() const
+{
+    return m_unsafe;
+}
+
+void CacheConnectionDialog::setUnsafe(bool mode)
+{
+    m_unsafe = mode;
+}
+
 QString CacheConnectionDialog::server() const
 {
     return ui->address->text();
@@ -96,7 +106,7 @@ QString CacheConnectionDialog::connectionString() const
         cn.append(QString(":\"%1\"").arg(ui->uci->currentText()));
     }
     */
-    if (ui->username->text() != ""){
+    if (unsafe() && ui->username->text() != ""){
         cn.append(QString(":%1").arg(ui->username->text()));
         cn.append(QString(":@%1").arg(ui->password->text()));
     }

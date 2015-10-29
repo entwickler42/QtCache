@@ -19,6 +19,7 @@
 #include <cacheconnectiondialog.h>
 #include <QMessageBox>
 
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -28,12 +29,14 @@ MainWindow::MainWindow(QWidget *parent) :
     dlg = new CacheConnectionDialog(this);
     dlg->setUci(QStringList() << "%SYS");
     dlg->setUciEnabled(false);
+
+    m_QtCache = QtCache::instance();
 }
 
 MainWindow::~MainWindow()
 {
     delete dlg;
-    delete ui;    
+    delete ui;
 }
 
 void MainWindow::showEvent(QShowEvent*)
@@ -42,16 +45,23 @@ void MainWindow::showEvent(QShowEvent*)
 }
 
 void MainWindow::on_selectServer_pressed()
-{    
+{
     if (dlg->exec() == QDialog::Accepted){
         ui->connectionString->setText(dlg->connectionString());
         ui->uci->clear();
         ui->uci->addItem(dlg->uci());
     }
+    bool connected = cache()->connect(
+                dlg->connectionString(),
+                dlg->username(),
+                dlg->password()
+                );
+    if (!connected){
+        QMessageBox::warning(this, tr("Connection Error"), tr("Failed to establish connection to caché!"));
+    }
 }
 
 void MainWindow::on_importFiles_pressed()
 {
-    QtCache* cache = QtCache::instance();
-    cache->connect(ui->connectionString->text(), dlg->uci());
+    cache()->execute("S ^ySBR(0)=1");
 }

@@ -13,6 +13,7 @@
 */
 
 #include "qtcache.h"
+#include <exception>
 
 #ifdef CACHECPPBIND
 #include <Qt_CacheTool.h>
@@ -23,41 +24,33 @@
 #endif
 
 /* QtCachePrivate Implementation */
+typedef d_ref<Qt_CacheTool> QtCacheToolType;
 
 class QtCachePrivate
 {
 public:
-    QString uci = "%SYS";
     QString cn = "";
+    QString uci = "%SYS";
+    QString user = "";
+    QString passwd = "";
 
     QtCachePrivate()
     {}
 
     virtual ~QtCachePrivate()
-    {
-        delete qt_cachetool;
-    }
+    {}
 
-    Qt_CacheTool* connect()
+    QtCacheToolType tool()
     {
-        return connect(cn, uci);
-    }
-
-    Qt_CacheTool* connect(const QString& cn, const QString& uci, bool forceNew = false)
-    {
-        forceNew = this->cn != cn || forceNew;
-        this->cn = cn;
-        this->uci = uci;
-        if (forceNew && NULL != qt_cachetool){
-            delete qt_cachetool;
+        if (connect(cn, uci, user, passwd)){
+            if (m_QtCacheTool.is_null()) {
+                Database db(m_Conn);
+                m_QtCacheTool = Qt_CacheTool::create_new(&db);
+            }
         }
-        if (NULL == qt_cachetool){
-            installCacheBackend();
-        }
-        return qt_cachetool;
+        return m_QtCacheTool;
     }
 
-private:
     void installCacheBackend()
     {
         #ifdef CACHEVISM
@@ -66,7 +59,48 @@ private:
         #endif
     }
 
-    Qt_CacheTool* qt_cachetool = NULL;
+    bool connect(const QString& cn, const QString& uci, const QString& user, const QString& passwd, bool forceNew = false)
+    {
+        forceNew = (
+            cn != this->cn ||
+            uci != this->uci ||
+            user != this->user ||
+            passwd != this->passwd
+        );
+        if (forceNew || !m_Conn->is_connected()) {
+            this->cn = cn;
+            this->uci = uci;
+            this->user = user;
+            this->passwd = passwd;
+
+            Db_err conn_err;
+
+            try{
+                m_Conn = tcp_conn::connect(
+                            "localhost[1972]:Samples",
+                            "_SYSTEM", "SYS", 0, &conn_err
+                            );
+            }catch(...){
+                return false;
+            }
+        }
+
+        return m_Conn->is_connected();
+    }
+
+    void disconnect()
+    {
+        m_QtCacheTool = QtCacheToolType();
+        m_Conn = d_connection();
+    }
+
+    bool isConnected() const
+    {
+        return m_Conn->is_connected() && !m_QtCacheTool.is_null();
+    }
+
+    d_connection m_Conn;
+    QtCacheToolType m_QtCacheTool;
 };
 
 /* QtCache Implementation */
@@ -91,6 +125,21 @@ QtCache* QtCache::instance()
     return i;
 }
 
+bool QtCache::connect(const QString& cn, const QString& user, const QString& passwd)
+{
+    return d->connect(cn, this->uci(), user, passwd);
+}
+
+void QtCache::disconnect()
+{
+    d->disconnect();
+}
+
+bool QtCache::isConnected() const
+{
+    return d->isConnected();
+}
+
 const QString& QtCache::uci() const
 {
     return d->uci;
@@ -101,15 +150,9 @@ void QtCache::setUci(const QString& uci)
     d->uci = uci;
 }
 
-int QtCache::connect(const QString& connectionString, const QString& uci, bool forceNew)
-{
-    Qt_CacheTool* qct = d->connect(connectionString, uci, forceNew);
-    return qct == NULL ? -1 : 0;
-}
-
 int QtCache::execute(const QString& code)
 {
-    Qt_CacheTool* qct = d->connect();
+    QtCacheToolType qct = d->tool();
 
     d_status sc = qct->Execute(
                 d_string(d->uci.toStdString()),

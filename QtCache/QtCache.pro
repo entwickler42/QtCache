@@ -1,6 +1,6 @@
 QT       -= gui
 
-CONFIG += cppbind
+CONFIG += cppbind exceptions
 
 TARGET = QtCache
 TEMPLATE = lib

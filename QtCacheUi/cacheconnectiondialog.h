@@ -31,6 +31,9 @@ public:
     explicit CacheConnectionDialog(QWidget *parent = 0);
     ~CacheConnectionDialog();
 
+    bool unsafe() const;
+    void setUnsafe(bool);
+
     QString connectionString() const;
     QString server() const;
     QString port() const;
@@ -55,6 +58,7 @@ private slots:
 
 private:
     Ui::CacheConnectionDialog *ui;
+    bool m_unsafe = false;
 };
 
 #endif // CACHECONNECTIONDIALOG_H
