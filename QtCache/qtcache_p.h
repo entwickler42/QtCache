@@ -37,15 +37,15 @@ public:
 
     virtual ~QtCachePrivate()
     {
-        delete m_db;
+        delete db;
     }
 
     QtCacheToolType tool()
     {
-        if (m_Conn->is_connected() && m_QtCacheTool.is_null()) {
-            m_QtCacheTool = Qt_CacheTool::create_new(m_db);
+        if (conn->is_connected() && Qt_CacheTool.is_null()) {
+            Qt_CacheTool = Qt_CacheTool::create_new(db);
         }
-        return m_QtCacheTool;
+        return Qt_CacheTool;
     }
 
     void connect(const QString& cn, const QString& user, const QString& passwd, bool forceNew = false)
@@ -57,8 +57,8 @@ public:
                 user != this->user ||
                 passwd != this->passwd
                 );
-        if (forceNew || !m_Conn->is_connected()) {
-            m_Conn = tcp_conn::connect(
+        if (forceNew || !conn->is_connected()) {
+            conn = tcp_conn::connect(
                         cn.toStdString(),
                         user.toStdString(),
                         passwd.toStdString(),
@@ -67,12 +67,13 @@ public:
 
             if (conn_err.get_code()){
                 throw QtCacheException(conn_err);
-            }else if (m_Conn->is_connected()){
+            }else if (conn->is_connected()){
                 this->cn = cn;
                 this->user = user;
                 this->passwd = passwd;
-                delete m_db;
-                m_db = new Database(m_Conn);
+                this->connected = true;
+                delete db;
+                db = new Database(conn);
                 installCacheBackend();
             }
         }
@@ -80,13 +81,14 @@ public:
 
     void disconnect()
     {
-        m_QtCacheTool = QtCacheToolType();
-        m_Conn = d_connection();
+        Qt_CacheTool = QtCacheToolType();
+        conn = d_connection();
+        connected = false;
     }
 
     bool isConnected() const
     {
-        return m_Conn->is_connected() && !m_QtCacheTool.is_null();
+        return connected;
     }
 
     void execute(const QString& code)
@@ -101,9 +103,10 @@ public:
     }
 
 private:
-    Database* m_db = NULL;
-    d_connection m_Conn;
-    QtCacheToolType m_QtCacheTool;
+    bool connected = false;
+    Database* db = NULL;
+    d_connection conn;
+    QtCacheToolType Qt_CacheTool;
 
     void installCacheBackend()
     {
