@@ -1,3 +1,5 @@
+CONFIG += cppbind exceptions rtti
+
 INCLUDEPATH += $$PWD
 
 OTHER_FILES += $$PWD/QtCache.xml

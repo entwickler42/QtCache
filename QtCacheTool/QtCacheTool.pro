@@ -22,3 +22,6 @@ RESOURCES += \
     resources.qrc
 
 RC_FILE = qtcachetool.rc
+
+include(../Intersystems/Intersystems.pri)
+

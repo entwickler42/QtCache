@@ -51,17 +51,36 @@ void MainWindow::on_selectServer_pressed()
         ui->uci->clear();
         ui->uci->addItem(dlg->uci());
     }
-    bool connected = cache()->connect(
-                dlg->connectionString(),
-                dlg->username(),
-                dlg->password()
-                );
-    if (!connected){
-        QMessageBox::warning(this, tr("Connection Error"), tr("Failed to establish connection to caché!"));
+    try{
+
+
+        /*
+        cache()->connect(
+                    dlg->connectionString(),
+                    dlg->username(),
+                    dlg->password());
+        cache()->setUci(ui->uci->currentText());
+        */
+    }catch(std::exception& ex){
+        QMessageBox::critical(this, tr("Exception"), ex.what());
+    }catch(...){
+        QMessageBox::critical(this, tr("Exception"), tr("Unknown exception occured!"));
     }
 }
 
 void MainWindow::on_importFiles_pressed()
 {
-    cache()->execute("S ^ySBR(0)=1");
+    try{
+
+        cache()->connect(
+                    "localhost[1972]",
+                    "sbr",
+                    "Logis#2015!!!");
+
+        cache()->execute("K ^ySBR");
+    }catch(std::exception &ex){
+        QMessageBox::critical(this, tr("Exception"), ex.what());
+    }catch(...){
+        QMessageBox::critical(this, tr("Exception"), tr("Unknown exception occured!"));
+    }
 }

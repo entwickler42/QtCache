@@ -26,14 +26,14 @@ public:
     static QtCache* instance();
     virtual ~QtCache();
 
-    bool connect(const QString& cn, const QString& user, const QString& passwd);
+    void connect(const QString& cn, const QString& user, const QString& passwd);
     void disconnect();
     bool isConnected() const;
 
     const QString& uci() const;
     void setUci(const QString& uci);
 
-    int execute(const QString&);
+    void execute(const QString&);
 
 protected:
     QtCache();

@@ -30,3 +30,6 @@ FORMS += \
 
 RESOURCES += \
     resources.qrc
+
+include(../Intersystems/Intersystems.pri)
+

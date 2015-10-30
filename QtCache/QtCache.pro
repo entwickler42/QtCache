@@ -1,7 +1,5 @@
 QT       -= gui
 
-CONFIG += cppbind exceptions
-
 TARGET = QtCache
 TEMPLATE = lib
 
@@ -12,7 +10,8 @@ DEFINES += QTCACHE_LIBRARY
 SOURCES += qtcache.cpp
 
 HEADERS += qtcache.h \
-           qtcache_global.h
+           qtcache_global.h \
+    qtcache_p.h
 
 unix {
     target.path = /usr/lib
