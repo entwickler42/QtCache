@@ -11,7 +11,8 @@ SOURCES += qtcache.cpp
 
 HEADERS += qtcache.h \
            qtcache_global.h \
-    qtcache_p.h
+    qtcache_p.h \
+    qtcacheexception.h
 
 unix {
     target.path = /usr/lib

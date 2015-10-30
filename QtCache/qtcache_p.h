@@ -15,11 +15,8 @@
 #ifndef QTCACHE_P_H
 #define QTCACHE_P_H
 
-#include <exception>
-
-#ifdef CACHECPPBIND
 #include <Qt_CacheTool.h>
-#endif
+#include "qtcacheexception.h"
 
 #ifdef CACHEVISM
 #include <vismocx.h>
@@ -45,8 +42,7 @@ public:
 
     QtCacheToolType tool()
     {
-        connect(cn, user, passwd);
-        if (m_QtCacheTool.is_null()) {
+        if (m_Conn->is_connected() && m_QtCacheTool.is_null()) {
             m_QtCacheTool = Qt_CacheTool::create_new(m_db);
         }
         return m_QtCacheTool;
@@ -70,8 +66,7 @@ public:
                         &conn_err);
 
             if (conn_err.get_code()){
-                d_string msg = conn_err.get_msg();
-                throw std::exception(msg.value().c_str());
+                throw QtCacheException(conn_err);
             }else if (m_Conn->is_connected()){
                 this->cn = cn;
                 this->user = user;
@@ -101,8 +96,7 @@ public:
                     d_string(uci.toStdString()),
                     d_string(code.toStdString()));
         if (sc.get_code()){
-            d_string msg = sc.get_msg();
-            throw std::exception(msg.value().c_str());
+            throw QtCacheException(sc);
         }
     }
 

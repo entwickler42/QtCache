@@ -61,13 +61,13 @@ void QtCache::setUci(const QString& uci)
     d->uci = uci;
 }
 
-QString QtCache::lastStatus()
+QString QtCache::lastStatus() const
 {
     d_status sc = d->tool()->getLastStatus();
     return QString::fromStdString(sc.get_msg().value());
 }
 
-QStringList QtCache::listNamespaces()
+QStringList QtCache::listNamespaces() const
 {
     QStringList q_ls;
     d_string s;

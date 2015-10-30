@@ -18,6 +18,7 @@
 #include "qtcache_global.h"
 #include <QObject>
 
+
 class QtCachePrivate;
 
 class QTCACHESHARED_EXPORT QtCache
@@ -33,9 +34,9 @@ public:
     const QString& uci() const;
     void setUci(const QString& uci);
 
-    QString lastStatus();
+    QString lastStatus() const;
 
-    QStringList listNamespaces();
+    QStringList listNamespaces() const;
     void execute(const QString&);
 
 protected:
