@@ -28,7 +28,18 @@
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout">
          <item>
-          <widget class="QLineEdit" name="connectionString"/>
+          <widget class="QLineEdit" name="connectionString">
+           <property name="readOnly">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="labelTarget">
+           <property name="text">
+            <string>Target UCI</string>
+           </property>
+          </widget>
          </item>
          <item>
           <widget class="QComboBox" name="uci"/>
@@ -86,6 +97,32 @@
              </size>
             </property>
            </spacer>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="Compile">
+            <property name="text">
+             <string>&amp;Compile</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="compileFlags">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>cukf</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
           </item>
           <item>
            <widget class="QPushButton" name="importFiles">
@@ -328,12 +365,12 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>608</x>
-     <y>154</y>
+     <x>565</x>
+     <y>282</y>
     </hint>
     <hint type="destinationlabel">
-     <x>562</x>
-     <y>157</y>
+     <x>546</x>
+     <y>286</y>
     </hint>
    </hints>
   </connection>
@@ -344,12 +381,28 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>607</x>
-     <y>208</y>
+     <x>565</x>
+     <y>233</y>
     </hint>
     <hint type="destinationlabel">
-     <x>560</x>
-     <y>205</y>
+     <x>546</x>
+     <y>237</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>Compile</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>compileFlags</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>543</x>
+     <y>274</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>563</x>
+     <y>306</y>
     </hint>
    </hints>
   </connection>

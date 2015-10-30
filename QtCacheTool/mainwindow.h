@@ -16,13 +16,14 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <qtcache.h>
 
 
 namespace Ui {
     class MainWindow;
 }
 class CacheConnectionDialog;
-class QtCache;
+class QSettings;
 
 
 class MainWindow : public QMainWindow
@@ -38,7 +39,7 @@ protected:
 
     QtCache* cache() const
     {
-        return m_QtCache;
+        return QtCache::instance();
     }
 
 private slots:
@@ -47,8 +48,8 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
-    CacheConnectionDialog* dlg;
-    QtCache* m_QtCache = NULL;
+    QSettings* conf;
+    CacheConnectionDialog* dlg;  
 };
 
 #endif // MAINWINDOW_H

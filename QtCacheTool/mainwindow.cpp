@@ -20,24 +20,20 @@
 #include <QMessageBox>
 #include <QFileDialog>
 
+#include <QSettings>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow)
+    ui(new Ui::MainWindow),
+    conf(new QSettings("QtCacheTool.ini", QSettings::IniFormat)),
+    dlg(new CacheConnectionDialog(this))
 {
     ui->setupUi(this);
 
-    dlg = new CacheConnectionDialog(this);
     dlg->setUci(QStringList() << "%SYS");
     dlg->setUciEnabled(false);
     dlg->setFormat(CN_FORMAT_NAMESPACE);
-
-    dlg->setUsername("sbr");
-    dlg->setPassword("Logis#2015!!!");
-    dlg->setServer("150.10.1.112");
-    dlg->setPort("56773");
-
-    m_QtCache = QtCache::instance();
+    dlg->load(conf);
 }
 
 MainWindow::~MainWindow()
@@ -58,11 +54,12 @@ void MainWindow::on_selectServer_pressed()
         ui->uci->clear();
         ui->uci->addItem(dlg->uci());
     }
-    try{
+    try{                
         cache()->connect(
                     dlg->connectionString(),
                     dlg->username(),
                     dlg->password());
+        dlg->save(conf);
         QStringList ls = cache()->listNamespaces();
         if (ls.count()){
             ui->uci->clear();

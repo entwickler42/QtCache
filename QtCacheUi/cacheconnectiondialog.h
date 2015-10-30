@@ -22,6 +22,8 @@ namespace Ui {
     class CacheConnectionDialog;
 }
 
+class QSettings;
+
 #define CN_FORMAT_CONTYPE       0x01
 #define CN_FORMAT_CREDENTIALS   0x02
 #define CN_FORMAT_NAMESPACE     0x04
@@ -54,12 +56,14 @@ public:
     void setFormat(int format);
     int format() const;
 
+    void save(QSettings*);
+    void load(QSettings*);
+
 protected:
     virtual void showEvent(QShowEvent* ev);
 
 private slots:
-    void on_showPassword_toggled(bool);
-    void on_test_pressed();
+    void on_showPassword_toggled(bool);    
 
 private:
     Ui::CacheConnectionDialog *ui;

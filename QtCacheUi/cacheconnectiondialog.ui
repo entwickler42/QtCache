@@ -214,13 +214,6 @@
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_3">
         <item>
-         <widget class="QPushButton" name="test">
-          <property name="text">
-           <string>&amp;Test</string>
-          </property>
-         </widget>
-        </item>
-        <item>
          <widget class="QPushButton" name="ok">
           <property name="text">
            <string>&amp;Ok</string>
