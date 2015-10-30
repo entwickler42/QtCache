@@ -42,8 +42,13 @@ protected:
         return QtCache::instance();
     }
 
+    void disableUI();
+    void enableUI();
+
 private slots:
     void on_selectServer_pressed();
+    void on_addFiles_pressed();
+    void on_removeFiles_pressed();
     void on_importFiles_pressed();
 
 private:

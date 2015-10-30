@@ -19,8 +19,9 @@
 #include <cacheconnectiondialog.h>
 #include <QMessageBox>
 #include <QFileDialog>
-
+#include <QThread>
 #include <QSettings>
+
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -54,7 +55,7 @@ void MainWindow::on_selectServer_pressed()
         ui->uci->clear();
         ui->uci->addItem(dlg->uci());
     }
-    try{                
+    try{
         cache()->connect(
                     dlg->connectionString(),
                     dlg->username(),
@@ -80,7 +81,7 @@ void MainWindow::on_selectServer_pressed()
                     );
 }
 
-void MainWindow::on_importFiles_pressed()
+void MainWindow::on_addFiles_pressed()
 {
     try{
         QFileDialog dlg;
@@ -93,4 +94,58 @@ void MainWindow::on_importFiles_pressed()
     }catch(...){
         QMessageBox::critical(this, tr("Exception"), tr("Unknown exception occured!"));
     }
+}
+
+void MainWindow::on_removeFiles_pressed()
+{
+    if (ui->listWidget->selectedItems().count() == 0){
+        QMessageBox::information(this, tr("Information"), tr("No items selected!"));
+    }else{
+        foreach(QListWidgetItem* i, ui->listWidget->selectedItems()){
+            delete i;
+        }
+    }
+}
+
+void MainWindow::on_importFiles_pressed()
+{
+    if (!cache()->isConnected()){
+        QMessageBox::information(this, tr("Information"), tr("Cachè connection has not been established yet!"));
+        return;
+    }
+    if(ui->listWidget->count() == 0) {
+        QMessageBox::information(this, tr("Information"), tr("List of files is empty!"));
+        return;
+    }
+    disableUI();
+    try{
+        foreach(QListWidgetItem* i, ui->listWidget->selectedItems()){
+            qDebug(qPrintable(i->text()));
+            //QThread::msleep(500);
+            repaint();
+        }
+    }catch(std::exception& ex){
+        QMessageBox::critical(this, tr("Exception"), ex.what());
+    }
+    enableUI();
+}
+
+void MainWindow::disableUI()
+{
+    ui->uci->setEnabled(false);
+    ui->addFiles->setEnabled(false);
+    ui->removeFiles->setEnabled(false);
+    ui->selectServer->setEnabled(false);
+    ui->tabExport->setEnabled(false);
+    ui->tabImport->setEnabled(false);
+}
+
+void MainWindow::enableUI()
+{
+    ui->uci->setEnabled(true);
+    ui->addFiles->setEnabled(true);
+    ui->removeFiles->setEnabled(true);
+    ui->selectServer->setEnabled(true);
+    ui->tabExport->setEnabled(true);
+    ui->tabImport->setEnabled(true);
 }
