@@ -52,14 +52,6 @@ public:
         return m_QtCacheTool;
     }
 
-    void installCacheBackend()
-    {
-#ifdef CACHEVISM
-        VISM::_DVisM vism;
-        vism.setControl("{88f75483-0574-11d0-8085-0000c0bd354b}");
-#endif
-    }
-
     void connect(const QString& cn, const QString& user, const QString& passwd, bool forceNew = false)
     {
         Db_err conn_err;
@@ -105,9 +97,30 @@ public:
         return m_Conn->is_connected() && !m_QtCacheTool.is_null();
     }
 
+    void execute(const QString& code)
+    {
+        QtCacheToolType qct = tool();
+        d_status sc = qct->Execute(
+                    d_string(uci.toStdString()),
+                    d_string(code.toStdString()));
+        if (sc.get_code()){
+            d_string msg = sc.get_msg();
+            throw std::exception(msg.value().c_str());
+        }
+    }
+
+private:
     Database* m_db = NULL;
     d_connection m_Conn;
     QtCacheToolType m_QtCacheTool;
+
+    void installCacheBackend()
+    {
+#ifdef CACHEVISM
+        VISM::_DVisM vism;
+        vism.setControl("{88f75483-0574-11d0-8085-0000c0bd354b}");
+#endif
+    }
 };
 
 #endif // QTCACHE_P_H

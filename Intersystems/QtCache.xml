@@ -4,32 +4,144 @@
 <Super>%RegisteredObject</Super>
 <TimeCreated>63850,61720.151703</TimeCreated>
 
-<Method name="ListObjects">
-<FormalSpec>uci:%String,filter:%String</FormalSpec>
+<Property name="TempBinaryStream">
+<Type>%FileBinaryStream</Type>
+<Private>1</Private>
+</Property>
+
+<Property name="TempCharacterStream">
+<Type>%FileCharacterStream</Type>
+<Private>1</Private>
+</Property>
+
+<Property name="LastStatus">
+<Type>%Status</Type>
+</Property>
+
+<Method name="%OnNew">
+<FormalSpec>initvalue</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    S ..LastStatus = $$$OK
+    S ..TempBinaryStream = ##class(%FileBinaryStream).%New()
+    S ..TempCharacterStream = ##class(%FileCharacterStream).%New()
+    
+    Q $$$OK
+]]></Implementation>
+</Method>
+
+<Method name="GetLastStatus">
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[    Q ..LastStatus
+]]></Implementation>
+</Method>
+
+<Method name="ListNamespaces">
 <ReturnType>%Library.List</ReturnType>
 <Implementation><![CDATA[
-    S LS=$LB()
+    S LS=""
+    
+    try{    
+        S I="" F  S I=$O(^CONFIG("Namespaces",I)) Q:I=""  S LS=LS_$LB(I)        
+    }catch ex{
+        S ..LastStatus = ex.AsStatus()
+    }
+    
     Q LS
+]]></Implementation>
+</Method>
+
+<Method name="ListObjects">
+<FormalSpec>uci:%String,filter:%String</FormalSpec>
+<ReturnType>%FileCharacterStream</ReturnType>
+<Implementation><![CDATA[
+    ZN uci
+    S STREAM = ""
+    
+    try{                                
+        S STREAM = ##class(%FileCharacterStream).%New()
+        S STREAM.StreamFormatWrite = 0           
+        // Routinen
+        S rs=##class(%ResultSet).%New()
+        S rs.ClassName="%Library.Routine"
+        S rs.QueryName="RoutineList"
+        S sc=rs.Execute("*.int,*.mac")      
+          
+        while rs.%Next() {
+            S NAME=rs.Data("Name")
+            S ROUTINE=##class(%Library.Routine).%OpenId(NAME)               
+            I ROUTINE.Generated=0 D STREAM.WriteLine(NAME)     
+        }
+            
+        // Klassen
+        S LSC=""
+        S QSPECC="/diffexport=1/unicode=1"
+        D $SYSTEM.OBJ.GetClassList(.LSC, QSPECC)
+        S I="" F  S I=$O(LSC(I)) Q:I=""  D STREAM.WriteLine(I_".cls")           
+        
+        // Globals 
+        S rs=##class(%ResultSet).%New()
+        S rs.ClassName="%SYS.GlobalQuery"
+        S rs.QueryName="NameSpaceList"
+        S sc=rs.Execute($SYSTEM.SYS.NameSpace())    
+        
+        while rs.%Next() {
+            S NAME=rs.Data("Name")
+            D STREAM.WriteLine(NAME_".gbl")     
+        }        
+    }catch ex{
+        S ..LastStatus = ex.AsStatus()
+    }
+    
+    ZN "%SYS"
+    Q STREAM
 ]]></Implementation>
 </Method>
 
 <Method name="ImportXML">
 <FormalSpec>uci:%String,xml:%String</FormalSpec>
-<ReturnType>%Boolean</ReturnType>
-<Implementation><![CDATA[    Q 0
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    ZN uci
+    
+    try{
+    
+    }catch ex{
+        S ..LastStatus = ex.AsStatus()        
+    }
+    
+    ZN "%SYS"
+    Q $$$OK
 ]]></Implementation>
 </Method>
 
 <Method name="ExportXML">
 <FormalSpec>uci:%String,object:%String</FormalSpec>
-<ReturnType>%Library.BinaryStream</ReturnType>
+<ReturnType>%FileBinaryStream</ReturnType>
 <Implementation><![CDATA[
-    S STREAM = ##class(%Library.BinaryStream).%New()
-
-    D STREAM.Write("Hello World")
-    D STREAM.Rewind()   
+    ZN uci
     
-    Q STREAM
+    try{
+        S ERRLOG=""
+        S QSPECC="/diffexport=1"
+                
+        D ..TempCharacterStream.Clear()
+        D ..TempCharacterStream.Rewind()
+        D $SYSTEM.OBJ.ExportPatternToStream(object,..TempCharacterStream,QSPECC,.ERRLOG)          
+        
+        D ..TempBinaryStream.Clear()
+        D ..TempBinaryStream.Rewind()
+        
+        WHILE '..TempCharacterStream.AtEnd {    
+            S DAT = ..TempCharacterStream.ReadLine()
+            D ..TempBinaryStream.WriteLine(DAT)
+        }        
+    }catch ex{
+        S ..LastStatus = ex.AsStatus()        
+    }
+    
+    ZN "%SYS"
+    Q ..TempBinaryStream
 ]]></Implementation>
 </Method>
 
@@ -44,6 +156,7 @@
     }CATCH EX{
         #dim ex as %Exception.AbstractException
         S SC=EX.AsStatus()
+        S ..LastStatus = SC
     }
     
     Q SC
@@ -52,7 +165,7 @@
 </Class>
 
 
-<Project name="QtCache">
+<Project name="QtCache" LastModified="2015-10-30 07:44:40.019725">
   <Items>
     <ProjectItem name="Qt.CacheTool" type="CLS"></ProjectItem>
   </Items>

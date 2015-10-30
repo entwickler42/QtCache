@@ -15,6 +15,7 @@
 #include "qtcache.h"
 #include "qtcache_p.h"
 
+
 QtCache::QtCache()
     : d(new QtCachePrivate)
 {}
@@ -60,14 +61,26 @@ void QtCache::setUci(const QString& uci)
     d->uci = uci;
 }
 
+QString QtCache::lastStatus()
+{
+    d_status sc = d->tool()->getLastStatus();
+    return QString::fromStdString(sc.get_msg().value());
+}
+
+QStringList QtCache::listNamespaces()
+{
+    QStringList q_ls;
+    d_list c_ls = d->tool()->ListNamespaces();
+    while (!c_ls.at_end()){
+        d_string s;
+        c_ls.get_elem(s);
+        q_ls << QString::fromStdString(s.value());
+        c_ls.next();
+    }
+    return q_ls;
+}
+
 void QtCache::execute(const QString& code)
 {
-    QtCacheToolType qct = d->tool();
-    d_status sc = qct->Execute(
-                d_string(d->uci.toStdString()),
-                d_string(code.toStdString()));
-    if (sc.get_code()){
-        d_string msg = sc.get_msg();
-        throw std::exception(msg.value().c_str());
-    }
+    d->execute(code);
 }

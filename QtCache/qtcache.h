@@ -33,6 +33,9 @@ public:
     const QString& uci() const;
     void setUci(const QString& uci);
 
+    QString lastStatus();
+
+    QStringList listNamespaces();
     void execute(const QString&);
 
 protected:

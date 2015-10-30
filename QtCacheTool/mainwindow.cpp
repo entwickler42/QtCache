@@ -61,6 +61,7 @@ void MainWindow::on_selectServer_pressed()
                     dlg->password());
         cache()->setUci(ui->uci->currentText());
         */
+
     }catch(std::exception& ex){
         QMessageBox::critical(this, tr("Exception"), ex.what());
     }catch(...){
@@ -77,7 +78,14 @@ void MainWindow::on_importFiles_pressed()
                     "sbr",
                     "Logis#2015!!!");
 
-        cache()->execute("K ^ySBR");
+        QStringList ls = cache()->listNamespaces();
+        if (ls.count()){
+            ui->uci->clear();
+            ui->uci->addItems(ls);
+        }else{
+            throw std::exception(qPrintable(cache()->lastStatus()));
+        }
+
     }catch(std::exception &ex){
         QMessageBox::critical(this, tr("Exception"), ex.what());
     }catch(...){

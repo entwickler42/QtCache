@@ -50,6 +50,9 @@ public:
 
    // Properties
 
+   virtual void setLastStatus(const d_status& prop_val);
+   virtual d_status getLastStatus() const;
+
    // Methods
 
    static d_string _ClassName(Database* __db, const d_bool& fullname);
@@ -58,11 +61,20 @@ public:
 
    virtual d_status Execute(const d_string& uci, const d_string& code);
 
-   virtual d_ref<d_bin_stream> ExportXML(const d_string& uci, const d_string& object);
+   virtual d_ref<d_file_bin_stream> ExportXML(const d_string& uci, const d_string& object);
 
-   virtual d_bool ImportXML(const d_string& uci, const d_string& xml);
+   virtual d_status GetLastStatus();
 
-   virtual d_list ListObjects(const d_string& uci, const d_string& filter);
+   virtual d_status ImportXML(const d_string& uci, const d_string& xml);
+
+   static d_status LastStatusIsValid(Database* __db, const d_string& value);
+
+   static d_string LastStatusLogicalToOdbc(Database* __db);
+   static d_string LastStatusLogicalToOdbc(Database* __db, const d_string& _val);
+
+   virtual d_list ListNamespaces();
+
+   virtual d_ref<d_file_char_stream> ListObjects(const d_string& uci, const d_string& filter);
 
    // Queries
 };
