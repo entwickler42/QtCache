@@ -22,6 +22,11 @@ namespace Ui {
     class CacheConnectionDialog;
 }
 
+#define CN_FORMAT_CONTYPE       0x01
+#define CN_FORMAT_CREDENTIALS   0x02
+#define CN_FORMAT_NAMESPACE     0x04
+#define CN_FORMAT_DEFAULTS      CN_FORMAT_CONTYPE|CN_FORMAT_CREDENTIALS|CN_FORMAT_NAMESPACE
+
 class QTCACHEUISHARED_EXPORT CacheConnectionDialog
         : public QDialog
 {
@@ -30,9 +35,6 @@ class QTCACHEUISHARED_EXPORT CacheConnectionDialog
 public:
     explicit CacheConnectionDialog(QWidget *parent = 0);
     ~CacheConnectionDialog();
-
-    bool unsafe() const;
-    void setUnsafe(bool);
 
     QString connectionString() const;
     QString server() const;
@@ -49,6 +51,9 @@ public:
 
     void setUciEnabled(bool);
 
+    void setFormat(int format);
+    int format() const;
+
 protected:
     virtual void showEvent(QShowEvent* ev);
 
@@ -58,7 +63,7 @@ private slots:
 
 private:
     Ui::CacheConnectionDialog *ui;
-    bool m_unsafe = false;
+    int m_CN_Format = 0;
 };
 
 #endif // CACHECONNECTIONDIALOG_H

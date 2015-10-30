@@ -62,15 +62,8 @@ public:
                 passwd != this->passwd
                 );
         if (forceNew || !m_Conn->is_connected()) {
-            this->cn = cn;
-            this->user = user;
-            this->passwd = passwd;
-            delete m_db;
-            QString _cn = QString("%1:%SYS").arg(cn);
-            _cn.remove("CN_IPTCP:");
-
             m_Conn = tcp_conn::connect(
-                        _cn.toStdString(),
+                        cn.toStdString(),
                         user.toStdString(),
                         passwd.toStdString(),
                         0,
@@ -80,6 +73,10 @@ public:
                 d_string msg = conn_err.get_msg();
                 throw std::exception(msg.value().c_str());
             }else if (m_Conn->is_connected()){
+                this->cn = cn;
+                this->user = user;
+                this->passwd = passwd;
+                delete m_db;
                 m_db = new Database(m_Conn);
                 installCacheBackend();
             }

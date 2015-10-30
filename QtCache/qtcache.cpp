@@ -70,9 +70,9 @@ QString QtCache::lastStatus()
 QStringList QtCache::listNamespaces()
 {
     QStringList q_ls;
+    d_string s;
     d_list c_ls = d->tool()->ListNamespaces();
     while (!c_ls.at_end()){
-        d_string s;
         c_ls.get_elem(s);
         q_ls << QString::fromStdString(s.value());
         c_ls.next();

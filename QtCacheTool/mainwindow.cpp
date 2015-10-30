@@ -18,6 +18,7 @@
 #include <qtcache.h>
 #include <cacheconnectiondialog.h>
 #include <QMessageBox>
+#include <QFileDialog>
 
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -29,6 +30,12 @@ MainWindow::MainWindow(QWidget *parent) :
     dlg = new CacheConnectionDialog(this);
     dlg->setUci(QStringList() << "%SYS");
     dlg->setUciEnabled(false);
+    dlg->setFormat(CN_FORMAT_NAMESPACE);
+
+    dlg->setUsername("sbr");
+    dlg->setPassword("Logis#2015!!!");
+    dlg->setServer("150.10.1.112");
+    dlg->setPort("56773");
 
     m_QtCache = QtCache::instance();
 }
@@ -52,32 +59,10 @@ void MainWindow::on_selectServer_pressed()
         ui->uci->addItem(dlg->uci());
     }
     try{
-
-
-        /*
         cache()->connect(
                     dlg->connectionString(),
                     dlg->username(),
                     dlg->password());
-        cache()->setUci(ui->uci->currentText());
-        */
-
-    }catch(std::exception& ex){
-        QMessageBox::critical(this, tr("Exception"), ex.what());
-    }catch(...){
-        QMessageBox::critical(this, tr("Exception"), tr("Unknown exception occured!"));
-    }
-}
-
-void MainWindow::on_importFiles_pressed()
-{
-    try{
-
-        cache()->connect(
-                    "localhost[1972]",
-                    "sbr",
-                    "Logis#2015!!!");
-
         QStringList ls = cache()->listNamespaces();
         if (ls.count()){
             ui->uci->clear();
@@ -85,7 +70,27 @@ void MainWindow::on_importFiles_pressed()
         }else{
             throw std::exception(qPrintable(cache()->lastStatus()));
         }
+    }catch(std::exception& ex){
+        QMessageBox::critical(this, tr("Exception"), ex.what());
+    }catch(...){
+        QMessageBox::critical(this, tr("Exception"), tr("Unknown exception occured!"));
+    }
 
+    ui->statusBar->showMessage(
+                cache()->isConnected() ?
+                    tr("Sucessfully connected to %1").arg(dlg->server()) :
+                    tr("Failed to connected to %1").arg(dlg->server())
+                    );
+}
+
+void MainWindow::on_importFiles_pressed()
+{
+    try{
+        QFileDialog dlg;
+        dlg.setFileMode(QFileDialog::ExistingFiles);
+        if (dlg.exec() == QFileDialog::Accepted){
+            ui->listWidget->addItems(dlg.selectedFiles());
+        }
     }catch(std::exception &ex){
         QMessageBox::critical(this, tr("Exception"), ex.what());
     }catch(...){

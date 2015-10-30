@@ -17,9 +17,11 @@
 
 #include <QMessageBox>
 
+
 CacheConnectionDialog::CacheConnectionDialog(QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::CacheConnectionDialog)
+    ui(new Ui::CacheConnectionDialog),
+    m_CN_Format(CN_FORMAT_DEFAULTS)
 {
     ui->setupUi(this);
 }
@@ -27,16 +29,6 @@ CacheConnectionDialog::CacheConnectionDialog(QWidget *parent) :
 CacheConnectionDialog::~CacheConnectionDialog()
 {
     delete ui;
-}
-
-bool CacheConnectionDialog::unsafe() const
-{
-    return m_unsafe;
-}
-
-void CacheConnectionDialog::setUnsafe(bool mode)
-{
-    m_unsafe = mode;
 }
 
 QString CacheConnectionDialog::server() const
@@ -80,6 +72,16 @@ void CacheConnectionDialog::setUci(const QStringList& items)
     ui->uci->addItems(items);
 }
 
+void CacheConnectionDialog::setFormat(int format)
+{
+    m_CN_Format = format;
+}
+
+int CacheConnectionDialog::format() const
+{
+    return m_CN_Format;
+}
+
 void CacheConnectionDialog::setUsername(const QString& text)
 {
     ui->username->setText(text);
@@ -97,16 +99,21 @@ void CacheConnectionDialog::setUciEnabled(bool enabled)
 
 QString CacheConnectionDialog::connectionString() const
 {
-    QString cn = QString("CN_IPTCP:%1[%2]").arg(
+    QString cn = (m_CN_Format & CN_FORMAT_CONTYPE) == CN_FORMAT_CONTYPE ? "CN_IPTCP:" : "";
+
+    cn = QString("%1%2[%3]").arg(
+                cn,
                 ui->address->text(),
                 ui->port->text()
                 );
-    /*
-    if (ui->uci->currentText() != "" ){
-        cn.append(QString(":\"%1\"").arg(ui->uci->currentText()));
+
+    if ((m_CN_Format & CN_FORMAT_NAMESPACE) == CN_FORMAT_NAMESPACE &&
+            ui->uci->currentText() != "" ){
+        cn.append(QString(":%1").arg(ui->uci->currentText()));
     }
-    */
-    if (unsafe() && ui->username->text() != ""){
+
+    if ((m_CN_Format & CN_FORMAT_CREDENTIALS) == CN_FORMAT_CREDENTIALS &&
+         ui->username->text() != "") {
         cn.append(QString(":%1").arg(ui->username->text()));
         cn.append(QString(":@%1").arg(ui->password->text()));
     }

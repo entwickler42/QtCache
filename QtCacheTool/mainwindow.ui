@@ -56,7 +56,7 @@
        </attribute>
        <layout class="QHBoxLayout" name="horizontalLayout_2">
         <item>
-         <widget class="QListView" name="listView"/>
+         <widget class="QListWidget" name="listWidget"/>
         </item>
         <item>
          <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -305,7 +305,7 @@
   <tabstop>connectionString</tabstop>
   <tabstop>selectServer</tabstop>
   <tabstop>tabWidget</tabstop>
-  <tabstop>listView</tabstop>
+  <tabstop>listWidget</tabstop>
   <tabstop>addFiles</tabstop>
   <tabstop>removeFiles</tabstop>
   <tabstop>importFiles</tabstop>
