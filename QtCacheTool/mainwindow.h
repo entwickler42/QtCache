@@ -42,19 +42,21 @@ protected:
         return QtCache::instance();
     }
 
-    void disableUI();
-    void enableUI();
+    void setBuisyUI();
+    void setIdleUI();
 
 private slots:
     void on_selectServer_pressed();
     void on_addFiles_pressed();
     void on_removeFiles_pressed();
     void on_importFiles_pressed();
+    void on_abortTask_pressed();
 
 private:
     Ui::MainWindow *ui;
     QSettings* conf;
-    CacheConnectionDialog* dlg;  
+    CacheConnectionDialog* dlg;
+    bool abortImort = false;
 };
 
 #endif // MAINWINDOW_H

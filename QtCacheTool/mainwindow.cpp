@@ -33,7 +33,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     dlg->setUci(QStringList() << "%SYS");
     dlg->setUciEnabled(false);
-    dlg->setFormat(CN_FORMAT_NAMESPACE);
+    dlg->setFormat(CacheConnectionDialog::NAMESPACE_FLAG);
     dlg->load(conf);
 }
 
@@ -85,9 +85,14 @@ void MainWindow::on_addFiles_pressed()
 {
     try{
         QFileDialog dlg;
+        dlg.setDirectory(conf->value("DefaultImportDirectory", QDir::currentPath()).toString());
+        dlg.setNameFilters(QStringList()
+                           << "Caché Export (*.xml *.mac *.int *.cls)"
+                           << "Any Files (*)");
         dlg.setFileMode(QFileDialog::ExistingFiles);
         if (dlg.exec() == QFileDialog::Accepted){
             ui->listWidget->addItems(dlg.selectedFiles());
+            conf->setValue("DefaultImportDirectory", dlg.directory().absolutePath());
         }
     }catch(std::exception &ex){
         QMessageBox::critical(this, tr("Exception"), ex.what());
@@ -117,20 +122,35 @@ void MainWindow::on_importFiles_pressed()
         QMessageBox::information(this, tr("Information"), tr("List of files is empty!"));
         return;
     }
-    disableUI();
+    setBuisyUI();
     try{
-        foreach(QListWidgetItem* i, ui->listWidget->selectedItems()){
-            qDebug(qPrintable(i->text()));
-            //QThread::msleep(500);
-            repaint();
+        abortImort = false;
+        ui->progressBar->setMaximum(ui->listWidget->count());
+        for(int i=0; !abortImort && i<ui->listWidget->count(); i++){
+            QListWidgetItem* item = ui->listWidget->item(i);
+            ui->statusBar->showMessage(tr("Importing %1").arg(item->text()));
+            ui->progressBar->setValue(i+1);
+            QCoreApplication::processEvents();
+            QThread::msleep(500);
+        }
+        if (abortImort){
+            ui->statusBar->showMessage(tr("Import aborted!"));
+            ui->progressBar->setValue(0);
+        }else{
+            ui->statusBar->showMessage(tr("Import finished!"));
         }
     }catch(std::exception& ex){
         QMessageBox::critical(this, tr("Exception"), ex.what());
     }
-    enableUI();
+    setIdleUI();
 }
 
-void MainWindow::disableUI()
+void MainWindow::on_abortTask_pressed()
+{
+    abortImort = true;
+}
+
+void MainWindow::setBuisyUI()
 {
     ui->uci->setEnabled(false);
     ui->addFiles->setEnabled(false);
@@ -138,9 +158,10 @@ void MainWindow::disableUI()
     ui->selectServer->setEnabled(false);
     ui->tabExport->setEnabled(false);
     ui->tabImport->setEnabled(false);
+    ui->abortTask->setEnabled(true);
 }
 
-void MainWindow::enableUI()
+void MainWindow::setIdleUI()
 {
     ui->uci->setEnabled(true);
     ui->addFiles->setEnabled(true);
@@ -148,4 +169,5 @@ void MainWindow::enableUI()
     ui->selectServer->setEnabled(true);
     ui->tabExport->setEnabled(true);
     ui->tabImport->setEnabled(true);
+    ui->abortTask->setEnabled(false);
 }
