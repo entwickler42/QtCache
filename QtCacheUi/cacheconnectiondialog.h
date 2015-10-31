@@ -24,17 +24,19 @@ namespace Ui {
 
 class QSettings;
 
-#define CN_FORMAT_CONTYPE       0x01
-#define CN_FORMAT_CREDENTIALS   0x02
-#define CN_FORMAT_NAMESPACE     0x04
-#define CN_FORMAT_DEFAULTS      CN_FORMAT_CONTYPE|CN_FORMAT_CREDENTIALS|CN_FORMAT_NAMESPACE
-
 class QTCACHEUISHARED_EXPORT CacheConnectionDialog
         : public QDialog
 {
     Q_OBJECT
 
 public:
+    enum ConnectionStringFormat
+    {
+        PROTOCOL_FLAG    = 0x01,
+        CREDENTIALS_FLAG = 0x02,
+        NAMESPACE_FLAG   = 0x04,
+    };
+
     explicit CacheConnectionDialog(QWidget *parent = 0);
     ~CacheConnectionDialog();
 
@@ -63,7 +65,7 @@ protected:
     virtual void showEvent(QShowEvent* ev);
 
 private slots:
-    void on_showPassword_toggled(bool);    
+    void on_showPassword_toggled(bool);
 
 private:
     Ui::CacheConnectionDialog *ui;
