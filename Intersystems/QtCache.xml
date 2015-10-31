@@ -5,17 +5,21 @@
 <TimeCreated>63850,61720.151703</TimeCreated>
 
 <Property name="TempBinaryStream">
-<Type>%FileBinaryStream</Type>
+<Type>%Stream.GlobalCharacter</Type>
 <Private>1</Private>
 </Property>
 
 <Property name="TempCharacterStream">
-<Type>%FileCharacterStream</Type>
+<Type>%Stream.GlobalCharacter</Type>
 <Private>1</Private>
 </Property>
 
 <Property name="LastStatus">
 <Type>%Status</Type>
+</Property>
+
+<Property name="ErrorLog">
+<Type>%String</Type>
 </Property>
 
 <Method name="%OnNew">
@@ -30,9 +34,31 @@
 ]]></Implementation>
 </Method>
 
+<Method name="LastStatusSet">
+<FormalSpec>status:%Status</FormalSpec>
+<Private>1</Private>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	S i%LastStatus = status
+	I $$$ISERR(..LastStatus) {
+		S i%ErrorLog = $SYSTEM.Status.GetOneErrorText(..LastStatus)
+	}ELSE{
+		S i%ErrorLog = ""
+	}
+	
+	Q $$$OK
+]]></Implementation>
+</Method>
+
 <Method name="GetLastStatus">
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[    Q ..LastStatus
+]]></Implementation>
+</Method>
+
+<Method name="GetErrorLog">
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[	Q ..ErrorLog
 ]]></Implementation>
 </Method>
 
@@ -53,7 +79,7 @@
 
 <Method name="ListObjects">
 <FormalSpec>uci:%String,filter:%String</FormalSpec>
-<ReturnType>%FileCharacterStream</ReturnType>
+<ReturnType>%Stream.GlobalCharacter</ReturnType>
 <Implementation><![CDATA[
     ZN uci
     S STREAM = ""
@@ -99,25 +125,25 @@
 </Method>
 
 <Method name="ImportXML">
-<FormalSpec>uci:%String,xml:%String</FormalSpec>
+<FormalSpec>uci:%String,xml:%Stream.GlobalCharacter,qspec:%String</FormalSpec>
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
-    ZN uci
-    
-    try{
-    
+	try{
+	    ZN uci	    	    		
+    	S ..LastStatus = $SYSTEM.OBJ.LoadStream(xml, qspec)    	        	
     }catch ex{
         S ..LastStatus = ex.AsStatus()        
     }
-    
+        
     ZN "%SYS"
-    Q $$$OK
+        
+    Q ..LastStatus
 ]]></Implementation>
 </Method>
 
 <Method name="ExportXML">
 <FormalSpec>uci:%String,object:%String</FormalSpec>
-<ReturnType>%FileBinaryStream</ReturnType>
+<ReturnType>%Stream.GlobalCharacter</ReturnType>
 <Implementation><![CDATA[
     ZN uci
     
@@ -165,7 +191,7 @@
 </Class>
 
 
-<Project name="QtCache" LastModified="2015-10-30 07:44:40.019725">
+<Project name="QtCache" LastModified="2015-10-31 22:06:39.263082">
   <Items>
     <ProjectItem name="Qt.CacheTool" type="CLS"></ProjectItem>
   </Items>

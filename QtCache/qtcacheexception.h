@@ -33,15 +33,15 @@ public:
     {}
 
     QtCacheException(const d_string& msg)
-        : std::exception(msg.value().c_str())
+        : QtCacheException(msg.value())
     {}
 
     QtCacheException(const d_status& sc)
-        : std::exception(sc.get_msg().value().c_str())
+        : QtCacheException(sc.get_msg())
     {}
 
     QtCacheException(const Db_err& err)
-        : std::exception(err.get_msg().c_str())
+        : QtCacheException(err.get_msg())
     {}
 };
 

@@ -106,14 +106,14 @@
            </spacer>
           </item>
           <item>
-           <widget class="QCheckBox" name="Compile">
+           <widget class="QCheckBox" name="compile">
             <property name="text">
              <string>&amp;Compile</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QLineEdit" name="compileFlags">
+           <widget class="QLineEdit" name="qspec">
             <property name="enabled">
              <bool>false</bool>
             </property>
@@ -412,9 +412,9 @@
    </hints>
   </connection>
   <connection>
-   <sender>Compile</sender>
+   <sender>compile</sender>
    <signal>toggled(bool)</signal>
-   <receiver>compileFlags</receiver>
+   <receiver>qspec</receiver>
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">

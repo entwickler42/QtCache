@@ -69,7 +69,7 @@ private slots:
 
 private:
     Ui::CacheConnectionDialog *ui;
-    int m_CN_Format = 0;
+    int constrformat = 0;
 };
 
 #endif // CACHECONNECTIONDIALOG_H

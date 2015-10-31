@@ -15,8 +15,10 @@
 #ifndef QTCACHE_P_H
 #define QTCACHE_P_H
 
+#include <QFile>
 #include <Qt_CacheTool.h>
 #include "qtcacheexception.h"
+
 
 #ifdef CACHEVISM
 #include <vismocx.h>
@@ -25,6 +27,7 @@
 typedef d_ref<Qt_CacheTool> QtCacheToolType;
 
 class QtCachePrivate
+        : QObject
 {
 public:
     QString cn = "";
@@ -97,6 +100,31 @@ public:
         d_status sc = qct->Execute(
                     d_string(uci.toStdString()),
                     d_string(code.toStdString()));
+        if (sc.get_code()){
+            throw QtCacheException(sc);
+        }
+    }
+
+    void importFile(const QString& uci, const QString& filepath, const QString& qspec)
+    {
+        QFile f(filepath);
+
+        if (!f.exists()){
+            throw QtCacheException(tr("Input file does not exists:\n%1").arg(filepath));
+        }
+        if(!f.open(QFile::ReadOnly)){
+            throw QtCacheException(tr("Could not open file for reading:\n%1").arg(filepath));
+        }
+
+        QByteArray data = f.readAll();
+        f.close();
+
+        d_string _data(data.constData());
+        d_string _uci(uci.toStdString());
+        d_string _qspec(qspec.toStdString());
+        d_ref<d_char_stream> fstream = d_char_stream::create_new(db);
+        fstream->write(_data);
+        d_status sc = tool()->ImportXML(_uci, fstream, _qspec);
         if (sc.get_code()){
             throw QtCacheException(sc);
         }

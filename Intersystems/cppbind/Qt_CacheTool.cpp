@@ -6,6 +6,28 @@ wchar_t Qt_CacheTool::__srv_cl_name[] = L"Qt.CacheTool";
 
 // Properties
 
+void Qt_CacheTool::setErrorLog(const d_string& prop_val)
+{
+   GEN_DECLARE_ARGS_AND_DB();
+   wchar_t __prop_name[] = L"ErrorLog";
+
+   __args_mgr.set_next(&prop_val);
+   Critical_section cs(__db->get_cs_handle());
+   __db->set_property(this, get_cl_name(), __prop_name, __args_mgr);
+}
+
+d_string Qt_CacheTool::getErrorLog() const
+{
+   GEN_DECLARE_ARGS_AND_DB();
+   wchar_t __prop_name[] = L"ErrorLog";
+
+   d_string __res;
+   __args_mgr.set_next_as_res(&__res);
+   Critical_section cs(__db->get_cs_handle());
+   __db->get_property(this, get_cl_name(), __prop_name, __args_mgr);
+   return __res;
+}
+
 void Qt_CacheTool::setLastStatus(const d_status& prop_val)
 {
    GEN_DECLARE_ARGS_AND_DB();
@@ -60,6 +82,51 @@ d_int Qt_CacheTool::_IsA(Database* __db, const d_string& isclass)
    return __res;
 }
 
+d_string Qt_CacheTool::ErrorLogDisplayToLogical(Database* __db, const d_string& _val)
+{
+   GEN_DECLARE_ARGS();
+   wchar_t __mtd_name[] = L"ErrorLogDisplayToLogical";
+
+   __args_mgr.set_next(&_val);
+
+   d_string __res;
+   __args_mgr.set_next_as_res(&__res);
+
+   Critical_section cs(__db->get_cs_handle());
+   __db->run_method(-1, __srv_cl_name, __mtd_name, __args_mgr);
+   return __res;
+}
+
+d_status Qt_CacheTool::ErrorLogIsValid(Database* __db, const d_string& _val)
+{
+   GEN_DECLARE_ARGS();
+   wchar_t __mtd_name[] = L"ErrorLogIsValid";
+
+   __args_mgr.set_next(&_val);
+
+   d_status __res;
+   __args_mgr.set_next_as_res(&__res);
+
+   Critical_section cs(__db->get_cs_handle());
+   __db->run_method(-1, __srv_cl_name, __mtd_name, __args_mgr);
+   return __res;
+}
+
+d_string Qt_CacheTool::ErrorLogLogicalToDisplay(Database* __db, const d_string& _val)
+{
+   GEN_DECLARE_ARGS();
+   wchar_t __mtd_name[] = L"ErrorLogLogicalToDisplay";
+
+   __args_mgr.set_next(&_val);
+
+   d_string __res;
+   __args_mgr.set_next_as_res(&__res);
+
+   Critical_section cs(__db->get_cs_handle());
+   __db->run_method(-1, __srv_cl_name, __mtd_name, __args_mgr);
+   return __res;
+}
+
 d_status Qt_CacheTool::Execute(const d_string& uci, const d_string& code)
 {
    GEN_DECLARE_ARGS_AND_DB();
@@ -76,7 +143,7 @@ d_status Qt_CacheTool::Execute(const d_string& uci, const d_string& code)
    return __res;
 }
 
-d_ref<d_file_bin_stream> Qt_CacheTool::ExportXML(const d_string& uci, const d_string& object)
+d_ref<d_char_stream> Qt_CacheTool::ExportXML(const d_string& uci, const d_string& object)
 {
    GEN_DECLARE_ARGS_AND_DB();
    wchar_t __mtd_name[] = L"ExportXML";
@@ -84,7 +151,20 @@ d_ref<d_file_bin_stream> Qt_CacheTool::ExportXML(const d_string& uci, const d_st
    __args_mgr.set_next(&uci);
    __args_mgr.set_next(&object);
 
-   d_ref<d_file_bin_stream> __res;
+   d_ref<d_char_stream> __res;
+   __args_mgr.set_next_as_res(&__res);
+
+   Critical_section cs(__db->get_cs_handle());
+   __db->run_method(get_ref(), __srv_cl_name, __mtd_name, __args_mgr);
+   return __res;
+}
+
+d_string Qt_CacheTool::GetErrorLog()
+{
+   GEN_DECLARE_ARGS_AND_DB();
+   wchar_t __mtd_name[] = L"GetErrorLog";
+
+   d_string __res;
    __args_mgr.set_next_as_res(&__res);
 
    Critical_section cs(__db->get_cs_handle());
@@ -105,13 +185,14 @@ d_status Qt_CacheTool::GetLastStatus()
    return __res;
 }
 
-d_status Qt_CacheTool::ImportXML(const d_string& uci, const d_string& xml)
+d_status Qt_CacheTool::ImportXML(const d_string& uci, const d_ref<d_char_stream>& xml, const d_string& qspec)
 {
    GEN_DECLARE_ARGS_AND_DB();
    wchar_t __mtd_name[] = L"ImportXML";
 
    __args_mgr.set_next(&uci);
    __args_mgr.set_next(&xml);
+   __args_mgr.set_next(&qspec);
 
    d_status __res;
    __args_mgr.set_next_as_res(&__res);
@@ -177,7 +258,7 @@ d_list Qt_CacheTool::ListNamespaces()
    return __res;
 }
 
-d_ref<d_file_char_stream> Qt_CacheTool::ListObjects(const d_string& uci, const d_string& filter)
+d_ref<d_char_stream> Qt_CacheTool::ListObjects(const d_string& uci, const d_string& filter)
 {
    GEN_DECLARE_ARGS_AND_DB();
    wchar_t __mtd_name[] = L"ListObjects";
@@ -185,7 +266,7 @@ d_ref<d_file_char_stream> Qt_CacheTool::ListObjects(const d_string& uci, const d
    __args_mgr.set_next(&uci);
    __args_mgr.set_next(&filter);
 
-   d_ref<d_file_char_stream> __res;
+   d_ref<d_char_stream> __res;
    __args_mgr.set_next_as_res(&__res);
 
    Critical_section cs(__db->get_cs_handle());

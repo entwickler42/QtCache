@@ -50,6 +50,9 @@ public:
 
    // Properties
 
+   virtual void setErrorLog(const d_string& prop_val);
+   virtual d_string getErrorLog() const;
+
    virtual void setLastStatus(const d_status& prop_val);
    virtual d_status getLastStatus() const;
 
@@ -59,13 +62,21 @@ public:
 
    static d_int _IsA(Database* __db, const d_string& isclass);
 
+   static d_string ErrorLogDisplayToLogical(Database* __db, const d_string& _val);
+
+   static d_status ErrorLogIsValid(Database* __db, const d_string& _val);
+
+   static d_string ErrorLogLogicalToDisplay(Database* __db, const d_string& _val);
+
    virtual d_status Execute(const d_string& uci, const d_string& code);
 
-   virtual d_ref<d_file_bin_stream> ExportXML(const d_string& uci, const d_string& object);
+   virtual d_ref<d_char_stream> ExportXML(const d_string& uci, const d_string& object);
+
+   virtual d_string GetErrorLog();
 
    virtual d_status GetLastStatus();
 
-   virtual d_status ImportXML(const d_string& uci, const d_string& xml);
+   virtual d_status ImportXML(const d_string& uci, const d_ref<d_char_stream>& xml, const d_string& qspec);
 
    static d_status LastStatusIsValid(Database* __db, const d_string& value);
 
@@ -74,7 +85,7 @@ public:
 
    virtual d_list ListNamespaces();
 
-   virtual d_ref<d_file_char_stream> ListObjects(const d_string& uci, const d_string& filter);
+   virtual d_ref<d_char_stream> ListObjects(const d_string& uci, const d_string& filter);
 
    // Queries
 };

@@ -21,7 +21,7 @@
 CacheConnectionDialog::CacheConnectionDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::CacheConnectionDialog),
-    m_CN_Format(PROTOCOL_FLAG|CREDENTIALS_FLAG|NAMESPACE_FLAG)
+    constrformat(PROTOCOL_FLAG|CREDENTIALS_FLAG|NAMESPACE_FLAG)
 {
     ui->setupUi(this);
 }
@@ -74,12 +74,12 @@ void CacheConnectionDialog::setUci(const QStringList& items)
 
 void CacheConnectionDialog::setFormat(int format)
 {
-    m_CN_Format = format;
+    constrformat = format;
 }
 
 int CacheConnectionDialog::format() const
 {
-    return m_CN_Format;
+    return constrformat;
 }
 
 void CacheConnectionDialog::setUsername(const QString& text)
@@ -99,7 +99,7 @@ void CacheConnectionDialog::setUciEnabled(bool enabled)
 
 QString CacheConnectionDialog::connectionString() const
 {
-    QString cn = (m_CN_Format & PROTOCOL_FLAG) == PROTOCOL_FLAG ? "CN_IPTCP:" : "";
+    QString cn = (constrformat & PROTOCOL_FLAG) == PROTOCOL_FLAG ? "CN_IPTCP:" : "";
 
     cn = QString("%1%2[%3]").arg(
                 cn,
@@ -107,12 +107,12 @@ QString CacheConnectionDialog::connectionString() const
                 ui->port->text()
                 );
 
-    if ((m_CN_Format & NAMESPACE_FLAG) == NAMESPACE_FLAG &&
+    if ((constrformat & NAMESPACE_FLAG) == NAMESPACE_FLAG &&
             ui->uci->currentText() != "" ){
         cn.append(QString(":%1").arg(ui->uci->currentText()));
     }
 
-    if ((m_CN_Format & CREDENTIALS_FLAG) == CREDENTIALS_FLAG &&
+    if ((constrformat & CREDENTIALS_FLAG) == CREDENTIALS_FLAG &&
          ui->username->text() != "") {
         cn.append(QString(":%1").arg(ui->username->text()));
         cn.append(QString(":@%1").arg(ui->password->text()));

@@ -35,9 +35,12 @@ public:
     void setUci(const QString& uci);
 
     QString lastStatus() const;
+    QString errorLog() const;
 
     QStringList listNamespaces() const;
     void execute(const QString&);
+
+    void importFile(const QString& uci, const QString& filepath, const QString& qspec);
 
 protected:
     QtCache();

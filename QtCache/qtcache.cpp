@@ -67,15 +67,23 @@ QString QtCache::lastStatus() const
     return QString::fromStdString(sc.get_msg().value());
 }
 
+QString QtCache::errorLog() const
+{
+    d_string err = d->tool()->getErrorLog();
+    return QString::fromStdString(err.value());
+}
+
 QStringList QtCache::listNamespaces() const
 {
     QStringList q_ls;
-    d_string s;
-    d_list c_ls = d->tool()->ListNamespaces();
-    while (!c_ls.at_end()){
-        c_ls.get_elem(s);
-        q_ls << QString::fromStdString(s.value());
-        c_ls.next();
+    if (d->isConnected()){
+        d_wstring s;
+        d_list c_ls = d->tool()->ListNamespaces();
+        while (!c_ls.at_end()){
+            c_ls.get_elem(s);
+            q_ls << QString::fromStdWString(s.value());
+            c_ls.next();
+        }
     }
     return q_ls;
 }
@@ -83,4 +91,9 @@ QStringList QtCache::listNamespaces() const
 void QtCache::execute(const QString& code)
 {
     d->execute(code);
+}
+
+void QtCache::importFile(const QString& uci, const QString& filepath, const QString& qspec)
+{
+    d->importFile(uci, filepath, qspec);
 }

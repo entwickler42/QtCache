@@ -16,6 +16,7 @@
 #include "ui_mainwindow.h"
 
 #include <qtcache.h>
+#include <qtcacheexception.h>
 #include <cacheconnectiondialog.h>
 #include <QMessageBox>
 #include <QFileDialog>
@@ -124,14 +125,21 @@ void MainWindow::on_importFiles_pressed()
     }
     setBuisyUI();
     try{
+        QString qspec = ui->compile->isChecked() ? ui->qspec->text() : QString("");
         abortImort = false;
         ui->progressBar->setMaximum(ui->listWidget->count());
         for(int i=0; !abortImort && i<ui->listWidget->count(); i++){
             QListWidgetItem* item = ui->listWidget->item(i);
             ui->statusBar->showMessage(tr("Importing %1").arg(item->text()));
             ui->progressBar->setValue(i+1);
+            try{
+                cache()->importFile(ui->uci->currentText(), item->text(), qspec);
+            }catch(QtCacheException& ex){
+                QMessageBox::critical(this,
+                                      tr("Exception"),
+                                      tr("%1\n%2").arg(ex.what(), cache()->errorLog()));
+            }
             QCoreApplication::processEvents();
-            QThread::msleep(500);
         }
         if (abortImort){
             ui->statusBar->showMessage(tr("Import aborted!"));
