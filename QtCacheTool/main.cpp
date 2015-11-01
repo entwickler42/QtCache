@@ -14,10 +14,16 @@
 
 #include "mainwindow.h"
 #include <QApplication>
+#include <poormanslogger.h>
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
+    a.setApplicationName("Qt Caché Tool");
+    a.setOrganizationName("Entwickler42");
+    a.setApplicationVersion("1.0.0");
+
+    PoorMansLogger logger(QString("%1.log").arg("errors"));
 
     MainWindow w;
     w.show();
