@@ -46,6 +46,7 @@ protected:
     void setIdleUI();
 
 private slots:
+    void on_qspec_editingFinished();
     void on_selectServer_pressed();
     void on_addFiles_pressed();
     void on_removeFiles_pressed();

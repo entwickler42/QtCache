@@ -31,7 +31,7 @@ MainWindow::MainWindow(QWidget *parent) :
     dlg(new CacheConnectionDialog(this))
 {
     ui->setupUi(this);
-
+    ui->qspec->setText(conf->value("QSPEC", "cfk").toString());
     dlg->setUci(QStringList() << "%SYS");
     dlg->setUciEnabled(false);
     dlg->setFormat(CacheConnectionDialog::NAMESPACE_FLAG);
@@ -49,37 +49,43 @@ void MainWindow::showEvent(QShowEvent*)
     ui->statusBar->showMessage("Welcome to the Qt Caché Tool");
 }
 
+void MainWindow::on_qspec_editingFinished()
+{
+    conf->setValue("QSPEC", ui->qspec->text());
+}
+
 void MainWindow::on_selectServer_pressed()
 {
     if (dlg->exec() == QDialog::Accepted){
         ui->connectionString->setText(dlg->connectionString());
         ui->uci->clear();
         ui->uci->addItem(dlg->uci());
-    }
-    try{
-        cache()->connect(
-                    dlg->connectionString(),
-                    dlg->username(),
-                    dlg->password());
-        dlg->save(conf);
-        QStringList ls = cache()->listNamespaces();
-        if (ls.count()){
-            ui->uci->clear();
-            ui->uci->addItems(ls);
-        }else{
-            throw std::exception(qPrintable(cache()->lastStatus()));
-        }
-    }catch(std::exception& ex){
-        QMessageBox::critical(this, tr("Exception"), ex.what());
-    }catch(...){
-        QMessageBox::critical(this, tr("Exception"), tr("Unknown exception occured!"));
-    }
 
-    ui->statusBar->showMessage(
-                cache()->isConnected() ?
-                    tr("Sucessfully connected to %1").arg(dlg->server()) :
-                    tr("Failed to connected to %1").arg(dlg->server())
-                    );
+        try{
+            cache()->connect(
+                        dlg->connectionString(),
+                        dlg->username(),
+                        dlg->password());
+            dlg->save(conf);
+            QStringList ls = cache()->listNamespaces();
+            if (ls.count()){
+                ui->uci->clear();
+                ui->uci->addItems(ls);
+            }else{
+                throw std::exception(qPrintable(cache()->lastStatus()));
+            }
+        }catch(std::exception& ex){
+            QMessageBox::critical(this, tr("Exception"), ex.what());
+        }catch(...){
+            QMessageBox::critical(this, tr("Exception"), tr("Unknown exception occured!"));
+        }
+
+        ui->statusBar->showMessage(
+                    cache()->isConnected() ?
+                        tr("Sucessfully connected to %1").arg(dlg->server()) :
+                        tr("Failed to connected to %1").arg(dlg->server())
+                        );
+    }
 }
 
 void MainWindow::on_addFiles_pressed()
@@ -92,7 +98,11 @@ void MainWindow::on_addFiles_pressed()
                            << "Any Files (*)");
         dlg.setFileMode(QFileDialog::ExistingFiles);
         if (dlg.exec() == QFileDialog::Accepted){
-            ui->listWidget->addItems(dlg.selectedFiles());
+            foreach(const QString& s, dlg.selectedFiles()){
+                QListWidgetItem* item = new QListWidgetItem(ui->listWidget);
+                item->setIcon(QIcon(":/QtCacheTool/ImportFile"));
+                item->setText(s);
+            }
             conf->setValue("DefaultImportDirectory", dlg.directory().absolutePath());
         }
     }catch(std::exception &ex){
@@ -134,10 +144,15 @@ void MainWindow::on_importFiles_pressed()
             ui->progressBar->setValue(i+1);
             try{
                 cache()->importFile(ui->uci->currentText(), item->text(), qspec);
-            }catch(QtCacheException& ex){
-                QMessageBox::critical(this,
-                                      tr("Exception"),
-                                      tr("%1\n%2").arg(ex.what(), cache()->errorLog()));
+                item->setIcon(QIcon(":/QtCacheTool/ImportFileOk"));
+            }catch(std::exception& ex){
+                QString err = tr("%1\n%2").arg(ex.what(), cache()->errorLog());
+                item->setToolTip(err);
+                item->setIcon(QIcon(":/QtCacheTool/ImportFileError"));
+                if (!ui->ignoreErrors->isChecked()){
+                    abortImort = true;
+                    QMessageBox::critical(this, tr("Exception"), err);
+                }
             }
             QCoreApplication::processEvents();
         }
