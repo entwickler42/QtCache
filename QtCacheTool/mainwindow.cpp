@@ -17,6 +17,7 @@
 
 #include <qtcache.h>
 #include <qtcacheexception.h>
+#include <qtcacheui.h>
 #include <cacheconnectiondialog.h>
 #include <QMessageBox>
 #include <QFileDialog>
@@ -93,9 +94,7 @@ void MainWindow::on_addFiles_pressed()
     try{
         QFileDialog dlg;
         dlg.setDirectory(conf->value("DefaultImportDirectory", QDir::currentPath()).toString());
-        dlg.setNameFilters(QStringList()
-                           << tr("Caché Export (*.xml *.mac *.int *.cls)")
-                           << tr("Any Files (*)"));
+        dlg.setNameFilters(QtCacheUi::defaultNameFilters());
         dlg.setFileMode(QFileDialog::ExistingFiles);
         if (dlg.exec() == QFileDialog::Accepted){
             foreach(const QString& s, dlg.selectedFiles()){

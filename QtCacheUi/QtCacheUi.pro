@@ -10,11 +10,13 @@ DESTDIR = ../build
 DEFINES += QTCACHEUI_LIBRARY
 
 SOURCES += \
-    cacheconnectiondialog.cpp
+    cacheconnectiondialog.cpp \
+    qtcacheui.cpp
 
 HEADERS +=\
         qtcacheui_global.h \
-    cacheconnectiondialog.h
+    cacheconnectiondialog.h \
+    qtcacheui.h
 
 unix {
     target.path = /usr/lib

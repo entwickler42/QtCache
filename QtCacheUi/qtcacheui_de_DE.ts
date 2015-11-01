@@ -54,4 +54,27 @@
         <translation type="unfinished"></translation>
     </message>
 </context>
+<context>
+    <name>QtCacheUi</name>
+    <message>
+        <location filename="qtcacheui.cpp" line="11"/>
+        <source>Caché (*.xml *.mac *.int *.cls *.gbl)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="qtcacheui.cpp" line="12"/>
+        <source>Caché Sources (*.mac *.int *.cls )</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="qtcacheui.cpp" line="13"/>
+        <source>Caché Globals (*.gbl)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="qtcacheui.cpp" line="14"/>
+        <source>Any Files (*)</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
 </TS>
