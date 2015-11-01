@@ -42,7 +42,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QComboBox" name="uci"/>
+          <widget class="QComboBox" name="targetUCI"/>
          </item>
          <item>
           <widget class="QPushButton" name="selectServer">
@@ -59,7 +59,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tabImport">
        <attribute name="title">
@@ -299,7 +299,7 @@
          </spacer>
         </item>
         <item>
-         <widget class="QPushButton" name="pushButton">
+         <widget class="QPushButton" name="exportFiles">
           <property name="text">
            <string>&amp;Export</string>
           </property>
@@ -392,7 +392,7 @@
   <tabstop>comboBox_2</tabstop>
   <tabstop>checkBox</tabstop>
   <tabstop>comboBox</tabstop>
-  <tabstop>pushButton</tabstop>
+  <tabstop>exportFiles</tabstop>
  </tabstops>
  <resources>
   <include location="resources.qrc"/>

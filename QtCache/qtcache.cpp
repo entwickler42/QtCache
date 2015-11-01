@@ -37,7 +37,6 @@ QtCache* QtCache::instance()
     return i;
 }
 
-
 QTranslator* QtCache::createTranslator(const QString& lang)
 {
     QString filepath = QString(":/i18n/qtcacheui_%1.qm").arg(lang);
@@ -68,12 +67,12 @@ bool QtCache::isConnected() const
     return d->isConnected();
 }
 
-const QString& QtCache::uci() const
+const QString& QtCache::targetUci() const
 {
     return d->uci;
 }
 
-void QtCache::setUci(const QString& uci)
+void QtCache::setTargetUci(const QString& uci)
 {
     d->uci = uci;
 }
@@ -90,24 +89,14 @@ QString QtCache::errorLog() const
     return QString::fromStdString(err.value());
 }
 
+QStringList QtCache::listObjects(const QString& pattern) const
+{
+    return d->listObjects(pattern);
+}
+
 QStringList QtCache::listNamespaces(bool excludePercent) const
 {
-    QStringList q_ls;
-    if (d->isConnected()){
-        d_wstring s;
-        d_list c_ls = d->tool()->ListNamespaces();
-        while (!c_ls.at_end()){
-            c_ls.get_elem(s);
-            QString uci = QString::fromStdWString(s.value());
-            if (uci.startsWith('%') && excludePercent){
-                c_ls.next();
-                continue;
-            }
-            q_ls << uci;
-            c_ls.next();
-        }
-    }
-    return q_ls;
+    return d->listNamespaces(excludePercent);
 }
 
 void QtCache::execute(const QString& code)
@@ -115,7 +104,12 @@ void QtCache::execute(const QString& code)
     d->execute(code);
 }
 
-void QtCache::importFile(const QString& uci, const QString& filepath, const QString& qspec)
+void QtCache::importFile(const QString& filepath, const QString& qspec)
 {
-    d->importFile(uci, filepath, qspec);
+    d->importFile(filepath, qspec);
+}
+
+void QtCache::exportFiles(const QString& directoryPath, const QString& pattern)
+{
+    d->exportFiles(directoryPath, pattern);
 }

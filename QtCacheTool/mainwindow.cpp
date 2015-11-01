@@ -50,6 +50,12 @@ void MainWindow::showEvent(QShowEvent*)
     ui->statusBar->showMessage(tr("Welcome to the Qt Caché Tool"));
 }
 
+void MainWindow::on_targetUCI_currentIndexChanged(const QString& text)
+{
+    cache()->setTargetUci(text);
+    ui->statusBar->showMessage(tr("Selected target UCI: %1").arg(text));
+}
+
 void MainWindow::on_qspec_editingFinished()
 {
     conf->setValue("QSPEC", ui->qspec->text());
@@ -59,8 +65,7 @@ void MainWindow::on_selectServer_pressed()
 {
     if (dlg->exec() == QDialog::Accepted){
         ui->connectionString->setText(dlg->connectionString());
-        ui->uci->clear();
-        ui->uci->addItem(dlg->uci());
+        ui->targetUCI->clear();
 
         try{
             cache()->connect(
@@ -71,8 +76,8 @@ void MainWindow::on_selectServer_pressed()
             QStringList ls = cache()->listNamespaces(
                         conf->value("ExcludePercentUCI", true).toBool());
             if (ls.count()){
-                ui->uci->clear();
-                ui->uci->addItems(ls);
+                ui->targetUCI->clear();
+                ui->targetUCI->addItems(ls);
             }else{
                 throw std::exception(qPrintable(cache()->lastStatus()));
             }
@@ -147,7 +152,7 @@ void MainWindow::on_importFiles_pressed()
             ui->statusBar->showMessage(tr("Importing %1").arg(item->text()));
             ui->progressBar->setValue(i+1);
             try{
-                cache()->importFile(ui->uci->currentText(), item->text(), qspec);
+                cache()->importFile(item->text(), qspec);
                 item->setIcon(QIcon(":/QtCacheTool/ImportFileOk"));
             }catch(std::exception& ex){
                 QString err = tr("%1\n%2").arg(ex.what(), cache()->errorLog());
@@ -179,9 +184,22 @@ void MainWindow::on_abortTask_pressed()
     abortImort = true;
 }
 
+void MainWindow::on_exportFiles_pressed()
+{
+    if (!cache()->isConnected()){
+        QMessageBox::information(this, tr("Information"), tr("Cachè connection has not been established yet!"));
+        return;
+    }
+    try{
+        QStringList foo = cache()->listObjects("");
+    }catch(std::exception& ex){
+        QMessageBox::critical(this, tr("Exception"), ex.what());
+    }
+}
+
 void MainWindow::setBuisyUI()
 {
-    ui->uci->setEnabled(false);
+    ui->targetUCI->setEnabled(false);
     ui->addFiles->setEnabled(false);
     ui->removeFiles->setEnabled(false);
     ui->selectServer->setEnabled(false);
@@ -192,7 +210,7 @@ void MainWindow::setBuisyUI()
 
 void MainWindow::setIdleUI()
 {
-    ui->uci->setEnabled(true);
+    ui->targetUCI->setEnabled(true);
     ui->addFiles->setEnabled(true);
     ui->removeFiles->setEnabled(true);
     ui->selectServer->setEnabled(true);

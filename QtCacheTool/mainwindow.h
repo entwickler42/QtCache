@@ -46,12 +46,14 @@ protected:
     void setIdleUI();
 
 private slots:
+    void on_targetUCI_currentIndexChanged(const QString&);
     void on_qspec_editingFinished();
     void on_selectServer_pressed();
     void on_addFiles_pressed();
     void on_removeFiles_pressed();
     void on_importFiles_pressed();
     void on_abortTask_pressed();
+    void on_exportFiles_pressed();
 
 private:
     Ui::MainWindow *ui;

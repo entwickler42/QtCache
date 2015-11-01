@@ -45,7 +45,10 @@ public:
 
     QtCacheToolType tool()
     {
-        if (conn->is_connected() && Qt_CacheTool.is_null()) {
+        if (!isConnected()){
+            throw QtCacheException(QObject::tr("Cachè connection has not been established yet!"));
+        }
+        if (Qt_CacheTool.is_null()) {
             Qt_CacheTool = Qt_CacheTool::create_new(db);
         }
         return Qt_CacheTool;
@@ -56,7 +59,7 @@ public:
         Db_err conn_err;
 
         forceNew = (
-                cn != this->cn ||
+                    cn != this->cn ||
                 user != this->user ||
                 passwd != this->passwd
                 );
@@ -105,7 +108,27 @@ public:
         }
     }
 
-    void importFile(const QString& uci, const QString& filepath, const QString& qspec)
+    QStringList listNamespaces(bool excludePercent)
+    {
+        QStringList q_ls;
+        if (isConnected()){
+            d_wstring s;
+            d_list c_ls = tool()->ListNamespaces();
+            while (!c_ls.at_end()){
+                c_ls.get_elem(s);
+                QString uci = QString::fromStdWString(s.value());
+                if (uci.startsWith('%') && excludePercent){
+                    c_ls.next();
+                    continue;
+                }
+                q_ls << uci;
+                c_ls.next();
+            }
+        }
+        return q_ls;
+    }
+
+    void importFile(const QString& filepath, const QString& qspec)
     {
         QFile f(filepath);
 
@@ -122,16 +145,41 @@ public:
         d_string _data(data.constData());
         d_string _uci(uci.toStdString());
         d_string _qspec(qspec.toStdString());
-        d_ref<d_bin_stream> fstream = d_bin_stream::create_new(db);
+        d_ref<d_bin_stream> bstream = d_bin_stream::create_new(db);
 
-        d_iostream io(fstream);
+        d_iostream io(bstream);
         io << _data;
         io.rewind();
 
-        d_status sc = tool()->ImportXML(_uci, fstream, _qspec);
+        d_status sc = tool()->ImportXML(_uci, bstream, _qspec);
         if (sc.get_code()){
             throw QtCacheException(sc);
         }
+    }
+
+    QStringList listObjects(const QString& pattern)
+    {
+        d_string _uci(uci.toStdString());
+        d_string _filter = pattern.toStdString();
+        d_ref<d_char_stream> bstream = tool()->ListObjects(_uci, _filter);
+        d_status sc = tool()->GetLastStatus();
+        if (sc.get_code()){
+            throw QtCacheException(sc);
+        }
+        d_iostream io(bstream);
+        QStringList objects;
+        std::string line;
+        io.rewind();
+        while (!io.eof()){
+            io >> line;
+            objects << QString::fromStdString(line);
+        }
+        return objects;
+    }
+
+    void exportFiles(const QString& directoryPath, const QString& pattern)
+    {
+        QStringList ls = listObjects(pattern);
     }
 
 private:

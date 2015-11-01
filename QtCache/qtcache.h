@@ -35,16 +35,18 @@ public:
     void disconnect();
     bool isConnected() const;
 
-    const QString& uci() const;
-    void setUci(const QString& uci);
+    const QString& targetUci() const;
+    void setTargetUci(const QString& targetUci);
 
     QString lastStatus() const;
     QString errorLog() const;
 
+    QStringList listObjects(const QString& pattern) const;
     QStringList listNamespaces(bool excludePercent = false) const;
     void execute(const QString&);
 
-    void importFile(const QString& uci, const QString& filepath, const QString& qspec);
+    void importFile(const QString& filepath, const QString& qspec);
+    void exportFiles(const QString& directoryPath, const QString& pattern);
 
 protected:
     QtCache();
