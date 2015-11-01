@@ -70,7 +70,7 @@ public:
 
    virtual d_status Execute(const d_string& uci, const d_string& code);
 
-   virtual d_ref<d_char_stream> ExportXML(const d_string& uci, const d_string& object);
+   virtual d_ref<d_bin_stream> ExportXML(const d_string& uci, const d_string& object);
 
    virtual d_string GetErrorLog();
 

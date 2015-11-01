@@ -143,7 +143,7 @@ d_status Qt_CacheTool::Execute(const d_string& uci, const d_string& code)
    return __res;
 }
 
-d_ref<d_char_stream> Qt_CacheTool::ExportXML(const d_string& uci, const d_string& object)
+d_ref<d_bin_stream> Qt_CacheTool::ExportXML(const d_string& uci, const d_string& object)
 {
    GEN_DECLARE_ARGS_AND_DB();
    wchar_t __mtd_name[] = L"ExportXML";
@@ -151,7 +151,7 @@ d_ref<d_char_stream> Qt_CacheTool::ExportXML(const d_string& uci, const d_string
    __args_mgr.set_next(&uci);
    __args_mgr.set_next(&object);
 
-   d_ref<d_char_stream> __res;
+   d_ref<d_bin_stream> __res;
    __args_mgr.set_next_as_res(&__res);
 
    Critical_section cs(__db->get_cs_handle());

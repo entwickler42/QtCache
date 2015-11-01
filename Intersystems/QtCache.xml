@@ -81,40 +81,38 @@
 <FormalSpec>uci:%String,filter:%String</FormalSpec>
 <ReturnType>%Stream.GlobalCharacter</ReturnType>
 <Implementation><![CDATA[
-    ZN uci
-    S STREAM = ""
-    
-    try{                                
-        S STREAM = ##class(%FileCharacterStream).%New()
+	try{ 
+    	ZN uci                               
+    	
+        S STREAM = ##class(%Stream.GlobalCharacter).%New()
         S STREAM.StreamFormatWrite = 0           
-        // Routinen
+        
+        // collect routine names
         S rs=##class(%ResultSet).%New()
         S rs.ClassName="%Library.Routine"
         S rs.QueryName="RoutineList"
-        S sc=rs.Execute("*.int,*.mac")      
-          
+        S sc=rs.Execute("*.int,*.mac,*.inc")        
+        I $$$ISERR(sc) throw ##class(%Exception.StatusException).CreateFromStatus(sc)          
         while rs.%Next() {
             S NAME=rs.Data("Name")
             S ROUTINE=##class(%Library.Routine).%OpenId(NAME)               
             I ROUTINE.Generated=0 D STREAM.WriteLine(NAME)     
-        }
-            
-        // Klassen
+        }            
+        // collect class names
         S LSC=""
         S QSPECC="/diffexport=1/unicode=1"
         D $SYSTEM.OBJ.GetClassList(.LSC, QSPECC)
-        S I="" F  S I=$O(LSC(I)) Q:I=""  D STREAM.WriteLine(I_".cls")           
-        
-        // Globals 
+        S I="" F  S I=$O(LSC(I)) Q:I=""  D STREAM.WriteLine(I_".cls")                   
+        // collect global names
         S rs=##class(%ResultSet).%New()
         S rs.ClassName="%SYS.GlobalQuery"
         S rs.QueryName="NameSpaceList"
-        S sc=rs.Execute($SYSTEM.SYS.NameSpace())    
-        
+        S sc=rs.Execute($SYSTEM.SYS.NameSpace())            
+        I $$$ISERR(sc) throw ##class(%Exception.StatusException).CreateFromStatus(sc)        
         while rs.%Next() {
             S NAME=rs.Data("Name")
             D STREAM.WriteLine(NAME_".gbl")     
-        }        
+        }                
     }catch ex{
         S ..LastStatus = ex.AsStatus()
     }
@@ -143,7 +141,7 @@
 
 <Method name="ExportXML">
 <FormalSpec>uci:%String,object:%String</FormalSpec>
-<ReturnType>%Stream.GlobalCharacter</ReturnType>
+<ReturnType>%Stream.GlobalBinary</ReturnType>
 <Implementation><![CDATA[
     ZN uci
     
