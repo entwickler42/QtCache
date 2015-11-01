@@ -94,8 +94,8 @@ void MainWindow::on_addFiles_pressed()
         QFileDialog dlg;
         dlg.setDirectory(conf->value("DefaultImportDirectory", QDir::currentPath()).toString());
         dlg.setNameFilters(QStringList()
-                           << "Caché Export (*.xml *.mac *.int *.cls)"
-                           << "Any Files (*)");
+                           << tr("Caché Export (*.xml *.mac *.int *.cls)")
+                           << tr("Any Files (*)"));
         dlg.setFileMode(QFileDialog::ExistingFiles);
         if (dlg.exec() == QFileDialog::Accepted){
             foreach(const QString& s, dlg.selectedFiles()){
@@ -133,6 +133,10 @@ void MainWindow::on_importFiles_pressed()
         QMessageBox::information(this, tr("Information"), tr("List of files is empty!"));
         return;
     }
+    foreach(QListWidgetItem* i, ui->listWidget->findItems("*", Qt::MatchWildcard)){
+        i->setIcon(QIcon(":/QtCacheTool/ImportFile"));
+        i->setToolTip("");
+    }
     setBuisyUI();
     try{
         QString qspec = ui->compile->isChecked() ? ui->qspec->text() : QString("");
@@ -150,8 +154,10 @@ void MainWindow::on_importFiles_pressed()
                 item->setToolTip(err);
                 item->setIcon(QIcon(":/QtCacheTool/ImportFileError"));
                 if (!ui->ignoreErrors->isChecked()){
-                    abortImort = true;
-                    QMessageBox::critical(this, tr("Exception"), err);
+                    int rval = QMessageBox::warning(this, tr("Exception"), err,
+                                                    QMessageBox::Cancel|QMessageBox::Ignore,
+                                                    QMessageBox::Ignore);
+                    abortImort = rval == QMessageBox::Cancel;
                 }
             }
             QCoreApplication::processEvents();
