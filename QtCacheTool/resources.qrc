@@ -5,4 +5,7 @@
         <file alias="ImportFileOk">img/binary_green.png</file>
         <file alias="ImportFileError">img/binary_red.png</file>
     </qresource>
+    <qresource prefix="/i18n">
+        <file>qtcachetool_de_DE.qm</file>
+    </qresource>
 </RCC>

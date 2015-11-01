@@ -3,4 +3,7 @@
         <file>img/windowicon.png</file>
         <file>img/CacheConnectionDialogLogo.png</file>
     </qresource>
+    <qresource prefix="/i18n">
+        <file>qtcacheui_de_DE.qm</file>
+    </qresource>
 </RCC>
