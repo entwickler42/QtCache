@@ -14,6 +14,7 @@
 
 #include "qtcache.h"
 #include "qtcache_p.h"
+#include <QTranslator>
 
 
 QtCache::QtCache()
@@ -35,6 +36,22 @@ QtCache* QtCache::instance()
 
     return i;
 }
+
+
+QTranslator* QtCache::createTranslator(const QString& lang)
+{
+    QString filepath = QString(":/i18n/qtcacheui_%1.qm").arg(lang);
+    if (QFile::exists(filepath)){
+        QTranslator* t = new QTranslator();
+        if (t->load(filepath)){
+            return t;
+        }else{
+            delete t;
+        }
+    }
+    return NULL;
+}
+
 
 void QtCache::connect(const QString& cn, const QString& user, const QString& passwd)
 {

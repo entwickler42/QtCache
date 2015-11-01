@@ -20,12 +20,16 @@
 
 
 class QtCachePrivate;
+class QTranslator;
+
 
 class QTCACHESHARED_EXPORT QtCache
 {
 public:
     static QtCache* instance();
     virtual ~QtCache();
+
+    QTranslator* createTranslator(const QString& lang);
 
     void connect(const QString& cn, const QString& user, const QString& passwd);
     void disconnect();

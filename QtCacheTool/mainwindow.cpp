@@ -47,7 +47,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::showEvent(QShowEvent*)
 {
-    ui->statusBar->showMessage("Welcome to the Qt Caché Tool");
+    ui->statusBar->showMessage(tr("Welcome to the Qt Caché Tool"));
 }
 
 void MainWindow::on_qspec_editingFinished()

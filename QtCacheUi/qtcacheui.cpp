@@ -1,5 +1,8 @@
 #include "qtcacheui.h"
-#include <QObject>
+
+#include <QFile>
+#include <QTranslator>
+
 
 QtCacheUi::QtCacheUi()
 {}
@@ -13,3 +16,16 @@ QStringList QtCacheUi::defaultNameFilters()
             << QObject::tr("Any Files (*)", "QtCacheUi");
 }
 
+QTranslator* QtCacheUi::createTranslator(const QString& lang)
+{
+    QString filepath = QString(":/i18n/qtcacheui_%1.qm").arg(lang);
+    if (QFile::exists(filepath)){
+        QTranslator* t = new QTranslator();
+        if (t->load(filepath)){
+            return t;
+        }else{
+            delete t;
+        }
+    }
+    return NULL;
+}
