@@ -13,17 +13,42 @@
 */
 
 #include "mainwindow.h"
-#include <QApplication>
 #include <poormanslogger.h>
+#include <QApplication>
+#include <QSettings>
+#include <QTranslator>
+#include <QDir>
+
+
+void i18n(QApplication* application)
+{
+    QSettings conf("QtCacheTool.ini", QSettings::IniFormat);
+    QString name = conf.value("Locale", QLocale::system().name()).toString();
+    QDir i18n(":/i18n");
+    foreach(const QString& s, i18n.entryList(QStringList() << "*.qm")){
+        if (s.contains(name)){
+            QString filename = s;
+            filename.remove(".qm");
+            QString directory = i18n.absolutePath();
+            QTranslator* trn = new QTranslator(application);
+            if (trn->load(filename, directory)){
+                application->installTranslator(trn);
+            }else{
+                delete trn;
+            }
+        }
+    }
+}
 
 int main(int argc, char *argv[])
 {
+    PoorMansLogger(QString("%1.log").arg("errors"));
     QApplication a(argc, argv);
     a.setApplicationName("Qt Caché Tool");
     a.setOrganizationName("Entwickler42");
     a.setApplicationVersion("1.0.0");
 
-    PoorMansLogger logger(QString("%1.log").arg("errors"));
+    i18n(&a);
 
     MainWindow w;
     w.show();

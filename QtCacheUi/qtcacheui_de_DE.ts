@@ -11,7 +11,7 @@
     <message>
         <location filename="cacheconnectiondialog.ui" line="89"/>
         <source>Hostname or IP Address</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Hostname oder IP Adresse</translation>
     </message>
     <message>
         <location filename="cacheconnectiondialog.ui" line="99"/>
@@ -26,56 +26,56 @@
     <message>
         <location filename="cacheconnectiondialog.ui" line="136"/>
         <source>Username</source>
-        <translation type="unfinished"></translation>
+        <translation>Benutzer</translation>
     </message>
     <message>
         <location filename="cacheconnectiondialog.ui" line="153"/>
         <source>Password</source>
-        <translation type="unfinished"></translation>
+        <translation>Passwort</translation>
     </message>
     <message>
         <location filename="cacheconnectiondialog.ui" line="172"/>
         <source>Show</source>
-        <translation type="unfinished"></translation>
+        <translation>Zeigen</translation>
     </message>
     <message>
         <location filename="cacheconnectiondialog.ui" line="185"/>
         <source>Namespace</source>
-        <translation type="unfinished"></translation>
+        <translation>Namensbereich</translation>
     </message>
     <message>
         <location filename="cacheconnectiondialog.ui" line="219"/>
         <source>&amp;Ok</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Ok</translation>
     </message>
     <message>
         <location filename="cacheconnectiondialog.ui" line="226"/>
         <source>&amp;Chancel</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Abbrechen</translation>
     </message>
 </context>
 <context>
     <name>QObject</name>
     <message>
-        <location filename="qtcacheui.cpp" line="13"/>
+        <location filename="qtcacheui.cpp" line="27"/>
         <source>Caché (*.xml *.mac *.int *.cls *.inc *.gbl)</source>
         <comment>QtCacheUi</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="qtcacheui.cpp" line="14"/>
+        <location filename="qtcacheui.cpp" line="28"/>
         <source>Caché Sources (*.mac *.int *.cls *.inc)</source>
         <comment>QtCacheUi</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="qtcacheui.cpp" line="15"/>
+        <location filename="qtcacheui.cpp" line="29"/>
         <source>Caché Globals (*.gbl)</source>
         <comment>QtCacheUi</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="qtcacheui.cpp" line="16"/>
+        <location filename="qtcacheui.cpp" line="30"/>
         <source>Any Files (*)</source>
         <comment>QtCacheUi</comment>
         <translation type="unfinished"></translation>

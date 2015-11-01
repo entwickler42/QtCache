@@ -130,6 +130,7 @@
         <location filename="mainwindow.cpp" line="116"/>
         <location filename="mainwindow.cpp" line="162"/>
         <location filename="mainwindow.cpp" line="177"/>
+        <location filename="mainwindow.cpp" line="196"/>
         <source>Exception</source>
         <translation type="unfinished"></translation>
     </message>
@@ -155,9 +156,15 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="mainwindow.cpp" line="56"/>
+        <source>Selected target UCI: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="mainwindow.cpp" line="123"/>
         <location filename="mainwindow.cpp" line="134"/>
         <location filename="mainwindow.cpp" line="138"/>
+        <location filename="mainwindow.cpp" line="190"/>
         <source>Information</source>
         <translation type="unfinished"></translation>
     </message>
@@ -168,6 +175,7 @@
     </message>
     <message>
         <location filename="mainwindow.cpp" line="134"/>
+        <location filename="mainwindow.cpp" line="190"/>
         <source>Cachè connection has not been established yet!</source>
         <translation type="unfinished"></translation>
     </message>
