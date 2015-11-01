@@ -85,7 +85,7 @@
     	ZN uci                               
     	
         S STREAM = ##class(%Stream.GlobalCharacter).%New()
-        S STREAM.StreamFormatWrite = 0           
+        //S STREAM.StreamFormatWrite = 0           
         
         // collect routine names
         S rs=##class(%ResultSet).%New()
