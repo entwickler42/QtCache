@@ -76,7 +76,7 @@ public:
 
    virtual d_status GetLastStatus();
 
-   virtual d_status ImportXML(const d_string& uci, const d_ref<d_char_stream>& xml, const d_string& qspec);
+   virtual d_status ImportXML(const d_string& uci, const d_ref<d_bin_stream>& xml, const d_string& qspec);
 
    static d_status LastStatusIsValid(Database* __db, const d_string& value);
 

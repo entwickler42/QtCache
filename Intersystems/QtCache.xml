@@ -125,11 +125,11 @@
 </Method>
 
 <Method name="ImportXML">
-<FormalSpec>uci:%String,xml:%Stream.GlobalCharacter,qspec:%String</FormalSpec>
+<FormalSpec>uci:%String,xml:%Stream.GlobalBinary,qspec:%String</FormalSpec>
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
 	try{
-	    ZN uci	    	    		
+	    ZN uci	    	    		           
     	S ..LastStatus = $SYSTEM.OBJ.LoadStream(xml, qspec)    	        	
     }catch ex{
         S ..LastStatus = ex.AsStatus()        
@@ -191,7 +191,7 @@
 </Class>
 
 
-<Project name="QtCache" LastModified="2015-10-31 22:06:39.263082">
+<Project name="QtCache" LastModified="2015-11-01 09:10:14.468656">
   <Items>
     <ProjectItem name="Qt.CacheTool" type="CLS"></ProjectItem>
   </Items>

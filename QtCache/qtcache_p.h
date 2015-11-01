@@ -122,8 +122,12 @@ public:
         d_string _data(data.constData());
         d_string _uci(uci.toStdString());
         d_string _qspec(qspec.toStdString());
-        d_ref<d_char_stream> fstream = d_char_stream::create_new(db);
-        fstream->write(_data);
+        d_ref<d_bin_stream> fstream = d_bin_stream::create_new(db);
+
+        d_iostream io(fstream);
+        io << _data;
+        io.rewind();
+
         d_status sc = tool()->ImportXML(_uci, fstream, _qspec);
         if (sc.get_code()){
             throw QtCacheException(sc);

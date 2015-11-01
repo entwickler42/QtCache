@@ -185,7 +185,7 @@ d_status Qt_CacheTool::GetLastStatus()
    return __res;
 }
 
-d_status Qt_CacheTool::ImportXML(const d_string& uci, const d_ref<d_char_stream>& xml, const d_string& qspec)
+d_status Qt_CacheTool::ImportXML(const d_string& uci, const d_ref<d_bin_stream>& xml, const d_string& qspec)
 {
    GEN_DECLARE_ARGS_AND_DB();
    wchar_t __mtd_name[] = L"ImportXML";
