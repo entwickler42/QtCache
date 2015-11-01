@@ -68,7 +68,8 @@ void MainWindow::on_selectServer_pressed()
                         dlg->username(),
                         dlg->password());
             dlg->save(conf);
-            QStringList ls = cache()->listNamespaces();
+            QStringList ls = cache()->listNamespaces(
+                        conf->value("ExcludePercentUCI", true).toBool());
             if (ls.count()){
                 ui->uci->clear();
                 ui->uci->addItems(ls);

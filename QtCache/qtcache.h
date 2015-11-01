@@ -41,7 +41,7 @@ public:
     QString lastStatus() const;
     QString errorLog() const;
 
-    QStringList listNamespaces() const;
+    QStringList listNamespaces(bool excludePercent = false) const;
     void execute(const QString&);
 
     void importFile(const QString& uci, const QString& filepath, const QString& qspec);

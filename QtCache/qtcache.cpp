@@ -90,7 +90,7 @@ QString QtCache::errorLog() const
     return QString::fromStdString(err.value());
 }
 
-QStringList QtCache::listNamespaces() const
+QStringList QtCache::listNamespaces(bool excludePercent) const
 {
     QStringList q_ls;
     if (d->isConnected()){
@@ -98,7 +98,12 @@ QStringList QtCache::listNamespaces() const
         d_list c_ls = d->tool()->ListNamespaces();
         while (!c_ls.at_end()){
             c_ls.get_elem(s);
-            q_ls << QString::fromStdWString(s.value());
+            QString uci = QString::fromStdWString(s.value());
+            if (uci.startsWith('%') && excludePercent){
+                c_ls.next();
+                continue;
+            }
+            q_ls << uci;
             c_ls.next();
         }
     }
