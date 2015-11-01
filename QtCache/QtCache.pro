@@ -21,4 +21,11 @@ unix {
     INSTALLS += target
 }
 
+system(lupdate QtCache.pro)
+system(lrelease QtCache.pro)
+
+TRANSLATIONS = qtcache_de_DE.ts
+
+OTHER_FILES += qtcache_de_DE.ts
+
 include(../Intersystems/Intersystems.pri)

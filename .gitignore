@@ -32,3 +32,4 @@ build/
 Makefile*
 ui_*.h
 *.*~
+*.qm

@@ -16,6 +16,7 @@
 #define QTCACHE_P_H
 
 #include <QFile>
+#include <QObject>
 #include <Qt_CacheTool.h>
 #include "qtcacheexception.h"
 
@@ -27,7 +28,6 @@
 typedef d_ref<Qt_CacheTool> QtCacheToolType;
 
 class QtCachePrivate
-        : QObject
 {
 public:
     QString cn = "";
@@ -110,10 +110,10 @@ public:
         QFile f(filepath);
 
         if (!f.exists()){
-            throw QtCacheException(tr("Input file does not exists:\n%1").arg(filepath));
+            throw QtCacheException(QObject::tr("Input file does not exists:\n%1").arg(filepath));
         }
         if(!f.open(QFile::ReadOnly)){
-            throw QtCacheException(tr("Could not open file for reading:\n%1").arg(filepath));
+            throw QtCacheException(QObject::tr("Could not open file for reading:\n%1").arg(filepath));
         }
 
         QByteArray data = f.readAll();
@@ -144,6 +144,8 @@ private:
 #endif
     }
 };
+
+
 
 #endif // QTCACHE_P_H
 

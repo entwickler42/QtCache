@@ -31,5 +31,12 @@ FORMS += \
 RESOURCES += \
     resources.qrc
 
+system(lupdate QtCacheUi.pro)
+system(lrelease QtCacheUi.pro)
+
+TRANSLATIONS = qtcacheui_de_DE.ts
+
+OTHER_FILES += qtcacheui_de_DE.ts
+
 include(../Intersystems/Intersystems.pri)
 
