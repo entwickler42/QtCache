@@ -159,7 +159,6 @@ void MainWindow::on_importFiles_pressed()
             try{
                 cache()->importFile(item->text(), qspec);
                 item->setIcon(QIcon(":/QtCacheTool/ImportFileOk"));
-                ui->progressBar->setValue(i+1);
                 QCoreApplication::processEvents();
             }catch(std::exception& ex){
                 QString err = tr("%1\n%2").arg(ex.what(), cache()->errorLog());
@@ -172,6 +171,7 @@ void MainWindow::on_importFiles_pressed()
                     abortTask = rval == QMessageBox::Cancel;
                 }
             }
+            ui->progressBar->setValue(i+1);
         }
         if (abortTask){
             ui->statusBar->showMessage(tr("Import aborted!"));
