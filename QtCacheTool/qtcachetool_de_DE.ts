@@ -128,7 +128,7 @@
         <location filename="mainwindow.cpp" line="87"/>
         <location filename="mainwindow.cpp" line="114"/>
         <location filename="mainwindow.cpp" line="116"/>
-        <location filename="mainwindow.cpp" line="162"/>
+        <location filename="mainwindow.cpp" line="161"/>
         <location filename="mainwindow.cpp" line="177"/>
         <location filename="mainwindow.cpp" line="196"/>
         <source>Exception</source>
@@ -190,7 +190,7 @@
         <translation>Importiere %1</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="158"/>
+        <location filename="mainwindow.cpp" line="157"/>
         <source>%1
 %2</source>
         <translation></translation>

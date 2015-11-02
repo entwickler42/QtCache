@@ -78,7 +78,7 @@
 </Method>
 
 <Method name="ListObjects">
-<FormalSpec>uci:%String,filter:%String</FormalSpec>
+<FormalSpec>uci:%String,include:%String,exclude:%String</FormalSpec>
 <ReturnType>%Stream.GlobalCharacter</ReturnType>
 <Implementation><![CDATA[
 	try{ 

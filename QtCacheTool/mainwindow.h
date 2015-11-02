@@ -53,13 +53,14 @@ private slots:
     void on_removeFiles_pressed();
     void on_importFiles_pressed();
     void on_abortTask_pressed();
+    void on_selectOutputDirectory_pressed();
     void on_exportFiles_pressed();
 
 private:
     Ui::MainWindow *ui;
     QSettings* conf;
     CacheConnectionDialog* dlg;
-    bool abortImort = false;
+    bool abortTask = false;
 };
 
 #endif // MAINWINDOW_H

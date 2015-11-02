@@ -85,7 +85,7 @@ public:
 
    virtual d_list ListNamespaces();
 
-   virtual d_ref<d_char_stream> ListObjects(const d_string& uci, const d_string& filter);
+   virtual d_ref<d_char_stream> ListObjects(const d_string& uci, const d_string& include, const d_string& exclude);
 
    // Queries
 };

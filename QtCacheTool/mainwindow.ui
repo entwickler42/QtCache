@@ -59,7 +59,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tabImport">
        <attribute name="title">
@@ -174,17 +174,17 @@
              <string>Output Directory</string>
             </property>
             <property name="buddy">
-             <cstring>lineEdit</cstring>
+             <cstring>outputDirectory</cstring>
             </property>
            </widget>
           </item>
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout_5">
             <item>
-             <widget class="QLineEdit" name="lineEdit"/>
+             <widget class="QLineEdit" name="outputDirectory"/>
             </item>
             <item>
-             <widget class="QToolButton" name="toolButton">
+             <widget class="QToolButton" name="selectOutputDirectory">
               <property name="text">
                <string>...</string>
               </property>
@@ -208,14 +208,14 @@
                 <string>Include</string>
                </property>
                <property name="buddy">
-                <cstring>comboBox_2</cstring>
+                <cstring>includeFilter</cstring>
                </property>
               </widget>
              </item>
              <item>
               <layout class="QHBoxLayout" name="horizontalLayout_3">
                <item>
-                <widget class="QComboBox" name="comboBox_2">
+                <widget class="QComboBox" name="includeFilter">
                  <property name="enabled">
                   <bool>false</bool>
                  </property>
@@ -231,7 +231,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QCheckBox" name="checkBox_2">
+                <widget class="QCheckBox" name="includeFilterEnabled">
                  <property name="text">
                   <string/>
                  </property>
@@ -249,14 +249,14 @@
                 <string>Exclude</string>
                </property>
                <property name="buddy">
-                <cstring>comboBox</cstring>
+                <cstring>excludeFilter</cstring>
                </property>
               </widget>
              </item>
              <item>
               <layout class="QHBoxLayout" name="horizontalLayout_4">
                <item>
-                <widget class="QComboBox" name="comboBox">
+                <widget class="QComboBox" name="excludeFilter">
                  <property name="enabled">
                   <bool>false</bool>
                  </property>
@@ -272,7 +272,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QCheckBox" name="checkBox">
+                <widget class="QCheckBox" name="excludeFilterEnabled">
                  <property name="text">
                   <string/>
                  </property>
@@ -386,12 +386,12 @@
   <tabstop>addFiles</tabstop>
   <tabstop>removeFiles</tabstop>
   <tabstop>importFiles</tabstop>
-  <tabstop>lineEdit</tabstop>
-  <tabstop>toolButton</tabstop>
-  <tabstop>checkBox_2</tabstop>
-  <tabstop>comboBox_2</tabstop>
-  <tabstop>checkBox</tabstop>
-  <tabstop>comboBox</tabstop>
+  <tabstop>outputDirectory</tabstop>
+  <tabstop>selectOutputDirectory</tabstop>
+  <tabstop>includeFilterEnabled</tabstop>
+  <tabstop>includeFilter</tabstop>
+  <tabstop>excludeFilterEnabled</tabstop>
+  <tabstop>excludeFilter</tabstop>
   <tabstop>exportFiles</tabstop>
  </tabstops>
  <resources>
@@ -399,33 +399,33 @@
  </resources>
  <connections>
   <connection>
-   <sender>checkBox</sender>
+   <sender>excludeFilterEnabled</sender>
    <signal>toggled(bool)</signal>
-   <receiver>comboBox</receiver>
+   <receiver>excludeFilter</receiver>
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>565</x>
+     <x>385</x>
      <y>282</y>
     </hint>
     <hint type="destinationlabel">
-     <x>546</x>
+     <x>366</x>
      <y>286</y>
     </hint>
    </hints>
   </connection>
   <connection>
-   <sender>checkBox_2</sender>
+   <sender>includeFilterEnabled</sender>
    <signal>toggled(bool)</signal>
-   <receiver>comboBox_2</receiver>
+   <receiver>includeFilter</receiver>
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>565</x>
+     <x>385</x>
      <y>233</y>
     </hint>
     <hint type="destinationlabel">
-     <x>546</x>
+     <x>366</x>
      <y>237</y>
     </hint>
    </hints>
@@ -437,12 +437,12 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>543</x>
-     <y>274</y>
+     <x>396</x>
+     <y>290</y>
     </hint>
     <hint type="destinationlabel">
-     <x>563</x>
-     <y>306</y>
+     <x>396</x>
+     <y>316</y>
     </hint>
    </hints>
   </connection>

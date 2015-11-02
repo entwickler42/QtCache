@@ -37,6 +37,12 @@ MainWindow::MainWindow(QWidget *parent) :
     dlg->setUciEnabled(false);
     dlg->setFormat(CacheConnectionDialog::NAMESPACE_FLAG);
     dlg->load(conf);
+
+    QString outputDirectory = conf->value("DefaultExportDirectory", QDir::currentPath()).toString();
+    if (!QDir(outputDirectory).exists()){
+        outputDirectory = QDir::currentPath();
+    }
+    ui->outputDirectory->setText(outputDirectory);
 }
 
 MainWindow::~MainWindow()
@@ -145,15 +151,16 @@ void MainWindow::on_importFiles_pressed()
     setBuisyUI();
     try{
         QString qspec = ui->compile->isChecked() ? ui->qspec->text() : QString("");
-        abortImort = false;
+        abortTask = false;
         ui->progressBar->setMaximum(ui->listWidget->count());
-        for(int i=0; !abortImort && i<ui->listWidget->count(); i++){
+        for(int i=0; !abortTask && i<ui->listWidget->count(); i++){
             QListWidgetItem* item = ui->listWidget->item(i);
             ui->statusBar->showMessage(tr("Importing %1").arg(item->text()));
-            ui->progressBar->setValue(i+1);
             try{
                 cache()->importFile(item->text(), qspec);
                 item->setIcon(QIcon(":/QtCacheTool/ImportFileOk"));
+                ui->progressBar->setValue(i+1);
+                QCoreApplication::processEvents();
             }catch(std::exception& ex){
                 QString err = tr("%1\n%2").arg(ex.what(), cache()->errorLog());
                 item->setToolTip(err);
@@ -162,12 +169,11 @@ void MainWindow::on_importFiles_pressed()
                     int rval = QMessageBox::warning(this, tr("Exception"), err,
                                                     QMessageBox::Cancel|QMessageBox::Ignore,
                                                     QMessageBox::Ignore);
-                    abortImort = rval == QMessageBox::Cancel;
+                    abortTask = rval == QMessageBox::Cancel;
                 }
             }
-            QCoreApplication::processEvents();
         }
-        if (abortImort){
+        if (abortTask){
             ui->statusBar->showMessage(tr("Import aborted!"));
             ui->progressBar->setValue(0);
         }else{
@@ -181,7 +187,19 @@ void MainWindow::on_importFiles_pressed()
 
 void MainWindow::on_abortTask_pressed()
 {
-    abortImort = true;
+    abortTask = true;
+}
+
+void MainWindow::on_selectOutputDirectory_pressed()
+{
+    QFileDialog dlg;
+    dlg.setDirectory(conf->value("DefaultExportDirectory", QDir::currentPath()).toString());
+    dlg.setOption(QFileDialog::ShowDirsOnly);
+    dlg.setFileMode(QFileDialog::Directory);
+    if (dlg.exec() == QDialog::Accepted){
+        ui->outputDirectory->setText(dlg.directory().absolutePath());
+        conf->setValue("DefaultExportDirectory", dlg.directory().absolutePath());
+    }
 }
 
 void MainWindow::on_exportFiles_pressed()
@@ -190,11 +208,38 @@ void MainWindow::on_exportFiles_pressed()
         QMessageBox::information(this, tr("Information"), tr("Cachè connection has not been established yet!"));
         return;
     }
+    setBuisyUI();
     try{
-        QStringList foo = cache()->listObjects("");
+        ui->statusBar->showMessage(tr("Receiving list of cachè objects..."));
+        QString include = ui->includeFilterEnabled->isChecked() ? ui->includeFilter->currentText() : "";
+        QString exclude = ui->excludeFilterEnabled->isChecked() ? ui->includeFilter->currentText() : "";
+        QStringList ls = cache()->listObjects(include, exclude);
+        ui->progressBar->setMaximum(ls.count());
+        for(int i=0; !abortTask && i<ls.count(); i++){
+            const QString& s = ls.at(i);
+            try{
+                cache()->exportFiles(ui->outputDirectory->text(), s);
+                ui->statusBar->showMessage(tr("Exporting %1").arg(s));
+                ui->progressBar->setValue(i+1);
+                QCoreApplication::processEvents();
+            }catch(std::exception& ex){
+                QString err = tr("%1\n%2").arg(ex.what(), cache()->errorLog());
+                int rval = QMessageBox::warning(this, tr("Exception"),err,
+                                                QMessageBox::Cancel|QMessageBox::Ignore,
+                                                QMessageBox::Ignore);
+                abortTask = rval == QMessageBox::Cancel;
+            }
+        }
+        if (abortTask){
+            ui->statusBar->showMessage(tr("Export aborted!"));
+            ui->progressBar->setValue(0);
+        }else{
+            ui->statusBar->showMessage(tr("Export finished!"));
+        }
     }catch(std::exception& ex){
         QMessageBox::critical(this, tr("Exception"), ex.what());
     }
+    setIdleUI();
 }
 
 void MainWindow::setBuisyUI()

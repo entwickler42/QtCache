@@ -74,9 +74,9 @@ QString QtCache::errorLog() const
     return QString::fromStdString(err.value());
 }
 
-QStringList QtCache::listObjects(const QString& pattern) const
+QStringList QtCache::listObjects(const QString& include = "", const QString& exclude = "") const
 {
-    return d->listObjects(pattern);
+    return d->listObjects(include, exclude);
 }
 
 QStringList QtCache::listNamespaces(bool excludePercent) const
@@ -94,7 +94,7 @@ void QtCache::importFile(const QString& filepath, const QString& qspec)
     d->importFile(filepath, qspec);
 }
 
-void QtCache::exportFiles(const QString& directoryPath, const QString& pattern)
+void QtCache::exportFiles(const QString& directoryPath, const QString& objectName)
 {
-    d->exportFiles(directoryPath, pattern);
+    d->exportFiles(directoryPath, objectName);
 }

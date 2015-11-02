@@ -39,12 +39,12 @@ public:
     QString lastStatus() const;
     QString errorLog() const;
 
-    QStringList listObjects(const QString& pattern) const;
+    QStringList listObjects(const QString& include, const QString& exclude) const;
     QStringList listNamespaces(bool excludePercent = false) const;
     void execute(const QString&);
 
     void importFile(const QString& filepath, const QString& qspec);
-    void exportFiles(const QString& directoryPath, const QString& pattern);
+    void exportFiles(const QString& directoryPath, const QString& objectName);
 
 protected:
     QtCache();

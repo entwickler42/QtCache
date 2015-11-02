@@ -15,6 +15,7 @@
 #ifndef QTCACHE_P_H
 #define QTCACHE_P_H
 
+#include <QDir>
 #include <QFile>
 #include <QObject>
 #include <Qt_CacheTool.h>
@@ -46,7 +47,7 @@ public:
     QtCacheToolType tool()
     {
         if (!isConnected()){
-            throw QtCacheException(QObject::tr("Cachè connection has not been established yet!"));
+            throw QtCacheException(QObject::tr("Cachè connection has not been established yet!", "QtCachePrivate"));
         }
         if (Qt_CacheTool.is_null()) {
             Qt_CacheTool = Qt_CacheTool::create_new(db);
@@ -133,10 +134,10 @@ public:
         QFile f(filepath);
 
         if (!f.exists()){
-            throw QtCacheException(QObject::tr("Input file does not exists:\n%1").arg(filepath));
+            throw QtCacheException(QObject::tr("Input file does not exists:\n%1", "QtCachePrivate").arg(filepath));
         }
         if(!f.open(QFile::ReadOnly)){
-            throw QtCacheException(QObject::tr("Could not open file for reading:\n%1").arg(filepath));
+            throw QtCacheException(QObject::tr("Could not open file for reading:\n%1", "QtCachePrivate").arg(filepath));
         }
 
         QByteArray data = f.readAll();
@@ -157,11 +158,12 @@ public:
         }
     }
 
-    QStringList listObjects(const QString& pattern)
+    QStringList listObjects(const QString& include, const QString& exclude)
     {
         d_string _uci(uci.toStdString());
-        d_string _filter = pattern.toStdString();
-        d_ref<d_char_stream> bstream = tool()->ListObjects(_uci, _filter);
+        d_string _include = include.toStdString();
+        d_string _exclude = exclude.toStdString();
+        d_ref<d_char_stream> bstream = tool()->ListObjects(_uci, _include, _exclude);
         d_status sc = tool()->GetLastStatus();
         if (sc.get_code()){
             throw QtCacheException(sc);
@@ -177,9 +179,30 @@ public:
         return objects;
     }
 
-    void exportFiles(const QString& directoryPath, const QString& pattern)
+    void exportFiles(const QString& directoryPath, const QString& objectName)
     {
-        QStringList ls = listObjects(pattern);
+        d_string _objectName = objectName.toStdString();
+        d_string _uci = uci.toStdString();
+        d_ref<d_bin_stream> bstream = tool()->ExportXML(_uci, _objectName);
+        d_status sc = tool()->GetLastStatus();
+        if (sc.get_code()){
+            throw QtCacheException(sc);
+        }
+        QFile f(QDir(directoryPath).absoluteFilePath(objectName));
+
+        if (!f.open(QFile::WriteOnly)){
+            throw QtCacheException(QObject::tr("Can't open output file:\n%1", "QtCachePrivate").arg(objectName));
+        }
+
+        d_iostream io(bstream);
+        std::string buf;
+        io.rewind();
+        while (!io.eof()){
+            io >> buf;
+            f.write(buf.c_str());
+            f.write("\r\n");
+        }
+        f.close();
     }
 
 private:
