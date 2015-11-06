@@ -18,9 +18,11 @@
 #include <QDir>
 #include <QFile>
 #include <QObject>
+#include <QTextStream>
 #include <Qt_CacheTool.h>
 #include "qtcacheexception.h"
 
+#include <ios>
 
 #ifdef CACHEVISM
 #include <vismocx.h>
@@ -188,6 +190,12 @@ public:
         if (sc.get_code()){
             throw QtCacheException(sc);
         }
+
+        QDir out_dir(directoryPath);
+        if(!out_dir.mkpath(".")){
+            throw QtCacheException(QObject::tr("Output directory does not exists!"));
+        }
+
         QFile f(QDir(directoryPath).absoluteFilePath(objectName));
 
         if (!f.open(QFile::WriteOnly)){
@@ -195,14 +203,15 @@ public:
         }
 
         d_iostream io(bstream);
-        std::string buf;
         io.rewind();
-        while (!io.eof()){
-            io >> buf;
-            f.write(buf.c_str());
-            f.write("\r\n");
+
+        std::string buf;
+        QTextStream ofstream(&f);
+        ofstream.setCodec("UTF-8");
+
+        while (std::getline(io,buf)){
+            ofstream << QString::fromStdString(buf) << "\n";
         }
-        f.close();
     }
 
 private:
