@@ -74,9 +74,9 @@ QString QtCache::errorLog() const
     return QString::fromStdString(err.value());
 }
 
-QStringList QtCache::listObjects(const QString& include = "", const QString& exclude = "") const
+QStringList QtCache::listObjects(const QString& filter = "") const
 {
-    return d->listObjects(include, exclude);
+    return d->listObjects(filter);
 }
 
 QStringList QtCache::listNamespaces(bool excludePercent) const

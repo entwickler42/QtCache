@@ -4,16 +4,6 @@
 <Super>%RegisteredObject</Super>
 <TimeCreated>63850,61720.151703</TimeCreated>
 
-<Property name="TempBinaryStream">
-<Type>%Stream.GlobalCharacter</Type>
-<Private>1</Private>
-</Property>
-
-<Property name="TempCharacterStream">
-<Type>%Stream.GlobalCharacter</Type>
-<Private>1</Private>
-</Property>
-
 <Property name="LastStatus">
 <Type>%Status</Type>
 </Property>
@@ -27,9 +17,6 @@
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
     S ..LastStatus = $$$OK
-    S ..TempBinaryStream = ##class(%FileBinaryStream).%New()
-    S ..TempCharacterStream = ##class(%FileCharacterStream).%New()
-    
     Q $$$OK
 ]]></Implementation>
 </Method>
@@ -39,14 +26,33 @@
 <Private>1</Private>
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
-	S i%LastStatus = status
-	I $$$ISERR(..LastStatus) {
-		S i%ErrorLog = $SYSTEM.Status.GetOneErrorText(..LastStatus)
-	}ELSE{
-		S i%ErrorLog = ""
-	}
-	
-	Q $$$OK
+    S i%LastStatus = status
+    I $$$ISERR(..LastStatus) {
+        S i%ErrorLog = $SYSTEM.Status.GetOneErrorText(..LastStatus)
+    }ELSE{
+        S i%ErrorLog = ""
+    }
+    
+    Q $$$OK
+]]></Implementation>
+</Method>
+
+<Method name="Filter">
+<FormalSpec>filter:%String,object:%String</FormalSpec>
+<Private>1</Private>
+<ReturnType>%Boolean</ReturnType>
+<Implementation><![CDATA[
+    I filter="" Q 1
+    
+    S RVAL=0
+    #dim RE as %Regex.Matcher
+               
+    F I=1:1:$L(filter,";") {
+        S RE = ##class(%Regex.Matcher).%New($P(filter,";",I))
+        I RE.Match(object) S RVAL=1 Q
+    }
+    
+    Q RVAL
 ]]></Implementation>
 </Method>
 
@@ -58,7 +64,7 @@
 
 <Method name="GetErrorLog">
 <ReturnType>%String</ReturnType>
-<Implementation><![CDATA[	Q ..ErrorLog
+<Implementation><![CDATA[    Q ..ErrorLog
 ]]></Implementation>
 </Method>
 
@@ -78,12 +84,12 @@
 </Method>
 
 <Method name="ListObjects">
-<FormalSpec>uci:%String,include:%String,exclude:%String</FormalSpec>
+<FormalSpec>uci:%String,filter:%String</FormalSpec>
 <ReturnType>%Stream.GlobalCharacter</ReturnType>
 <Implementation><![CDATA[
-	try{ 
-    	ZN uci                               
-    	
+    try{ 
+        ZN uci                               
+        
         S STREAM = ##class(%Stream.GlobalCharacter).%New()
         //S STREAM.StreamFormatWrite = 0           
         
@@ -96,13 +102,13 @@
         while rs.%Next() {
             S NAME=rs.Data("Name")
             S ROUTINE=##class(%Library.Routine).%OpenId(NAME)               
-            I ROUTINE.Generated=0 D STREAM.WriteLine(NAME)     
+            I ROUTINE.Generated=0,..Filter(filter, NAME) D STREAM.WriteLine(NAME)     
         }            
         // collect class names
         S LSC=""
         S QSPECC="/diffexport=1/unicode=1"
         D $SYSTEM.OBJ.GetClassList(.LSC, QSPECC)
-        S I="" F  S I=$O(LSC(I)) Q:I=""  D STREAM.WriteLine(I_".cls")                   
+        S I="" F  S I=$O(LSC(I)) Q:I=""  I ..Filter(filter, NAME) D STREAM.WriteLine(I_".cls")                   
         // collect global names
         S rs=##class(%ResultSet).%New()
         S rs.ClassName="%SYS.GlobalQuery"
@@ -111,7 +117,7 @@
         I $$$ISERR(sc) throw ##class(%Exception.StatusException).CreateFromStatus(sc)        
         while rs.%Next() {
             S NAME=rs.Data("Name")
-            D STREAM.WriteLine(NAME_".gbl")     
+            I ..Filter(filter, NAME) D STREAM.WriteLine(NAME_".gbl")     
         }                
     }catch ex{
         S ..LastStatus = ex.AsStatus()
@@ -126,9 +132,9 @@
 <FormalSpec>uci:%String,xml:%Stream.GlobalBinary,qspec:%String</FormalSpec>
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
-	try{
-	    ZN uci	    	    		           
-    	S ..LastStatus = $SYSTEM.OBJ.LoadStream(xml, qspec)    	        	
+    try{
+        ZN uci                                 
+        S ..LastStatus = $SYSTEM.OBJ.LoadStream(xml, qspec)                 
     }catch ex{
         S ..LastStatus = ex.AsStatus()        
     }
@@ -144,28 +150,21 @@
 <ReturnType>%Stream.GlobalBinary</ReturnType>
 <Implementation><![CDATA[
     ZN uci
-    
+    S STREAM = $$$NULLOREF
+
     try{
         S ERRLOG=""
         S QSPECC="/diffexport=1"
+        S STREAM=##class(%Stream.GlobalBinary).%New()
                 
-        D ..TempCharacterStream.Clear()
-        D ..TempCharacterStream.Rewind()
-        D $SYSTEM.OBJ.ExportPatternToStream(object,..TempCharacterStream,QSPECC,.ERRLOG)          
-        
-        D ..TempBinaryStream.Clear()
-        D ..TempBinaryStream.Rewind()
-        
-        WHILE '..TempCharacterStream.AtEnd {    
-            S DAT = ..TempCharacterStream.ReadLine()
-            D ..TempBinaryStream.WriteLine(DAT)
-        }        
+        D $SYSTEM.OBJ.ExportPatternToStream(object,.STREAM,QSPECC,.ERRLOG)          
+        D STREAM.Rewind()     
     }catch ex{
         S ..LastStatus = ex.AsStatus()        
     }
     
     ZN "%SYS"
-    Q ..TempBinaryStream
+    Q STREAM
 ]]></Implementation>
 </Method>
 
@@ -189,7 +188,7 @@
 </Class>
 
 
-<Project name="QtCache" LastModified="2015-11-01 09:10:14.468656">
+<Project name="QtCache">
   <Items>
     <ProjectItem name="Qt.CacheTool" type="CLS"></ProjectItem>
   </Items>

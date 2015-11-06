@@ -258,14 +258,13 @@ d_list Qt_CacheTool::ListNamespaces()
    return __res;
 }
 
-d_ref<d_char_stream> Qt_CacheTool::ListObjects(const d_string& uci, const d_string& include, const d_string& exclude)
+d_ref<d_char_stream> Qt_CacheTool::ListObjects(const d_string& uci, const d_string& filter)
 {
    GEN_DECLARE_ARGS_AND_DB();
    wchar_t __mtd_name[] = L"ListObjects";
 
    __args_mgr.set_next(&uci);
-   __args_mgr.set_next(&include);
-   __args_mgr.set_next(&exclude);
+   __args_mgr.set_next(&filter);
 
    d_ref<d_char_stream> __res;
    __args_mgr.set_next_as_res(&__res);

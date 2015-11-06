@@ -39,7 +39,7 @@ public:
     QString lastStatus() const;
     QString errorLog() const;
 
-    QStringList listObjects(const QString& include, const QString& exclude) const;
+    QStringList listObjects(const QString& filter) const;
     QStringList listNamespaces(bool excludePercent = false) const;
     void execute(const QString&);
 

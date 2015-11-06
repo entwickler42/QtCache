@@ -211,10 +211,10 @@ void MainWindow::on_exportFiles_pressed()
     setBuisyUI();
     try{
         ui->statusBar->showMessage(tr("Receiving list of cachè objects..."));
-        QString include = ui->includeFilterEnabled->isChecked() ? ui->includeFilter->currentText() : "";
-        QString exclude = ui->excludeFilterEnabled->isChecked() ? ui->includeFilter->currentText() : "";
-        QStringList ls = cache()->listObjects(include, exclude);
+        QString filter = ui->includeFilterEnabled->isChecked() ? ui->includeFilter->currentText() : "";
+        QStringList ls = cache()->listObjects(filter);
         ui->progressBar->setMaximum(ls.count());
+        abortTask = false;
         for(int i=0; !abortTask && i<ls.count(); i++){
             const QString& s = ls.at(i);
             try{

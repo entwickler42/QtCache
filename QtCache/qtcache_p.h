@@ -160,12 +160,11 @@ public:
         }
     }
 
-    QStringList listObjects(const QString& include, const QString& exclude)
+    QStringList listObjects(const QString& filter)
     {
         d_string _uci(uci.toStdString());
-        d_string _include = include.toStdString();
-        d_string _exclude = exclude.toStdString();
-        d_ref<d_char_stream> bstream = tool()->ListObjects(_uci, _include, _exclude);
+        d_string _filter = filter.toStdString();
+        d_ref<d_char_stream> bstream = tool()->ListObjects(_uci, _filter);
         d_status sc = tool()->GetLastStatus();
         if (sc.get_code()){
             throw QtCacheException(sc);
@@ -174,8 +173,7 @@ public:
         QStringList objects;
         std::string line;
         io.rewind();
-        while (!io.eof()){
-            io >> line;
+        while (io >> line){
             objects << QString::fromStdString(line);
         }
         return objects;
@@ -190,25 +188,20 @@ public:
         if (sc.get_code()){
             throw QtCacheException(sc);
         }
-
         QDir out_dir(directoryPath);
         if(!out_dir.mkpath(".")){
             throw QtCacheException(QObject::tr("Output directory does not exists!"));
         }
-
         QFile f(QDir(directoryPath).absoluteFilePath(objectName));
 
         if (!f.open(QFile::WriteOnly)){
             throw QtCacheException(QObject::tr("Can't open output file:\n%1", "QtCachePrivate").arg(objectName));
         }
-
         d_iostream io(bstream);
         io.rewind();
-
         std::string buf;
         QTextStream ofstream(&f);
         ofstream.setCodec("UTF-8");
-
         while (std::getline(io,buf)){
             ofstream << QString::fromStdString(buf) << "\n";
         }
