@@ -2,6 +2,6 @@ TEMPLATE = subdirs
 
 SUBDIRS = QtCache \
           QtCacheUi \
-      QtCacheTool
+          QtCacheTool
 
 CONFIG += ordered

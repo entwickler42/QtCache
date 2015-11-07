@@ -5,8 +5,11 @@ INCLUDEPATH += $$PWD
 OTHER_FILES += $$PWD/QtCache.xml
 
 cppbind{
-    debug:LIBS += "-Lc:/InterSystems/TryCache/dev/cpp/lib/" -lcppbind_msvc120d
-    release:LIBS += "-Lc:/InterSystems/TryCache/dev/cpp/lib/" -lcppbind_msvc120
+    CONFIG(debug, debug|release){
+        LIBS += "-Lc:/InterSystems/TryCache/dev/cpp/lib/" -lcppbind_msvc120d
+    }else{
+        LIBS += "-Lc:/InterSystems/TryCache/dev/cpp/lib/" -lcppbind_msvc120
+    }
     INCLUDEPATH *= "c:/InterSystems/TryCache/dev/cpp/include/"
     INCLUDEPATH += $$PWD/cppbind/
     DEFINES += CACHECPPBIND
