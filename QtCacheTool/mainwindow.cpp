@@ -231,11 +231,15 @@ void MainWindow::on_exportFiles_pressed()
                 ui->progressBar->setValue(i+1);
                 QCoreApplication::processEvents();
             }catch(std::exception& ex){
-                QString err = tr("%1\n%2").arg(ex.what(), cache()->errorLog());
-                int rval = QMessageBox::warning(this, tr("Exception"),err,
-                                                QMessageBox::Cancel|QMessageBox::Ignore,
-                                                QMessageBox::Ignore);
-                abortTask = rval != QMessageBox::Ignore;
+                if (ui->ignoreExportErrors){
+                    qDebug(qPrintable(tr("Failed to export %1\n%2").arg(s, ex.what())));;
+                }else{
+                    QString err = tr("%1\n%2").arg(ex.what(), cache()->errorLog());
+                    int rval = QMessageBox::warning(this, tr("Exception"),err,
+                                                    QMessageBox::Cancel|QMessageBox::Ignore,
+                                                    QMessageBox::Ignore);
+                    abortTask = rval != QMessageBox::Ignore;
+                }
             }
         }
         if (abortTask){
