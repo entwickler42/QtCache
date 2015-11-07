@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<Export generator="Cache" version="25">
-<Routine name="yTEST01" type="MAC" languagemode="0"><![CDATA[
-ST
- ;Hello World
-]]></Routine>
-</Export>
