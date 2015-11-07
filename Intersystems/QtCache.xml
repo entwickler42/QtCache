@@ -102,13 +102,13 @@
         while rs.%Next() {
             S NAME=rs.Data("Name")
             S ROUTINE=##class(%Library.Routine).%OpenId(NAME)               
-            I ROUTINE.Generated=0,..Filter(filter, NAME) D STREAM.WriteLine(NAME)     
+            I ROUTINE.Generated=0,(..Filter(filter, NAME)) D STREAM.WriteLine(NAME)     
         }            
         // collect class names
         S LSC=""
         S QSPECC="/diffexport=1/unicode=1"
         D $SYSTEM.OBJ.GetClassList(.LSC, QSPECC)
-        S I="" F  S I=$O(LSC(I)) Q:I=""  I ..Filter(filter, NAME) D STREAM.WriteLine(I_".cls")                   
+        S I="" F  S I=$O(LSC(I)) Q:I=""  I ..Filter(filter, I_".cls") D STREAM.WriteLine(I_".cls")                   
         // collect global names
         S rs=##class(%ResultSet).%New()
         S rs.ClassName="%SYS.GlobalQuery"
@@ -117,7 +117,7 @@
         I $$$ISERR(sc) throw ##class(%Exception.StatusException).CreateFromStatus(sc)        
         while rs.%Next() {
             S NAME=rs.Data("Name")
-            I ..Filter(filter, NAME) D STREAM.WriteLine(NAME_".gbl")     
+            I ..Filter(filter, NAME_".gbl") D STREAM.WriteLine(NAME_".gbl")     
         }                
     }catch ex{
         S ..LastStatus = ex.AsStatus()
@@ -188,9 +188,26 @@
 </Class>
 
 
-<Project name="QtCache">
+<Project name="QtCache" LastModified="2015-11-07 10:50:30.863451" Target="ST^ySBR" TargetType="2">
   <Items>
     <ProjectItem name="Qt.CacheTool" type="CLS"></ProjectItem>
+    <ProjectItem name="ySBR.MAC" type="MAC"></ProjectItem>
   </Items>
+  <BreakPoints>
+    <BreakPoint Routine="Qt.CacheTool.CLS" Offset="Filter+7"></BreakPoint>
+    <BreakPoint Routine="Qt.CacheTool.CLS" Offset="Filter+11"></BreakPoint>
+    <BreakPoint Routine="ySBR.MAC" Offset="4"></BreakPoint>
+  </BreakPoints>
 </Project>
+
+
+<Routine name="ySBR" type="MAC" languagemode="0"><![CDATA[
+ST
+ #dim QtCache as Qt.CacheTool = ##class(Qt.CacheTool).%New()
+ #dim stream as %Stream.GlobalBinary
+ S stream = QtCache.ListObjects("DEV", "^.+cls")
+ WHILE 'stream.AtEnd {
+ 	W !,stream.ReadLine()
+ }
+]]></Routine>
 </Export>
