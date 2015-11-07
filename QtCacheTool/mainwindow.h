@@ -55,12 +55,17 @@ private slots:
     void on_abortTask_pressed();
     void on_selectOutputDirectory_pressed();
     void on_exportFiles_pressed();
+    void on_saveCurrentFilter_pressed();
+    void on_removeCurrentFilter_pressed();
 
 private:
     Ui::MainWindow *ui;
     QSettings* conf;
     CacheConnectionDialog* dlg;
     bool abortTask = false;
+
+    QStringList loadFilters() const;
+    void saveFilters(const QStringList&) const;
 };
 
 #endif // MAINWINDOW_H

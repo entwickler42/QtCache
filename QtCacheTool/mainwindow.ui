@@ -59,7 +59,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tabImport">
        <attribute name="title">
@@ -115,7 +115,7 @@
            </spacer>
           </item>
           <item>
-           <widget class="QCheckBox" name="ignoreErrors">
+           <widget class="QCheckBox" name="ignoreImportErrors">
             <property name="text">
              <string>&amp;Ignore Errors</string>
             </property>
@@ -185,8 +185,15 @@
             </item>
             <item>
              <widget class="QToolButton" name="selectOutputDirectory">
-              <property name="text">
-               <string>...</string>
+              <property name="minimumSize">
+               <size>
+                <width>25</width>
+                <height>25</height>
+               </size>
+              </property>
+              <property name="icon">
+               <iconset resource="resources.qrc">
+                <normaloff>:/QtCacheTool/img/folder.png</normaloff>:/QtCacheTool/img/folder.png</iconset>
               </property>
              </widget>
             </item>
@@ -201,11 +208,14 @@
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_4">
            <item>
-            <layout class="QVBoxLayout" name="verticalLayout_5">
+            <layout class="QHBoxLayout" name="horizontalLayout_4">
+             <property name="spacing">
+              <number>0</number>
+             </property>
              <item>
               <widget class="QLabel" name="label_2">
                <property name="text">
-                <string>Filter</string>
+                <string>Include filter</string>
                </property>
                <property name="buddy">
                 <cstring>includeFilter</cstring>
@@ -213,33 +223,105 @@
               </widget>
              </item>
              <item>
-              <layout class="QHBoxLayout" name="horizontalLayout_3">
-               <item>
-                <widget class="QComboBox" name="includeFilter">
-                 <property name="enabled">
-                  <bool>false</bool>
-                 </property>
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="editable">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QCheckBox" name="includeFilterEnabled">
-                 <property name="text">
-                  <string/>
-                 </property>
-                </widget>
-               </item>
-              </layout>
+              <spacer name="horizontalSpacer">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item>
+              <widget class="QToolButton" name="saveCurrentFilter">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
+               <property name="minimumSize">
+                <size>
+                 <width>25</width>
+                 <height>25</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>25</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+               <property name="toolTip">
+                <string>Save current filter to configuration</string>
+               </property>
+               <property name="statusTip">
+                <string>Save current filter to configuration</string>
+               </property>
+               <property name="icon">
+                <iconset resource="resources.qrc">
+                 <normaloff>:/QtCacheTool/img/filesave.png</normaloff>:/QtCacheTool/img/filesave.png</iconset>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QToolButton" name="removeCurrentFilter">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
+               <property name="minimumSize">
+                <size>
+                 <width>25</width>
+                 <height>25</height>
+                </size>
+               </property>
+               <property name="toolTip">
+                <string>Remove current filter from configuration</string>
+               </property>
+               <property name="statusTip">
+                <string>Remove current filter from configuration</string>
+               </property>
+               <property name="icon">
+                <iconset resource="resources.qrc">
+                 <normaloff>:/QtCacheTool/img/14_layer_deletelayer.png</normaloff>:/QtCacheTool/img/14_layer_deletelayer.png</iconset>
+               </property>
+              </widget>
              </item>
             </layout>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_3">
+             <item>
+              <widget class="QComboBox" name="includeFilter">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="editable">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QCheckBox" name="includeFilterEnabled">
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="ignoreExportErrors">
+             <property name="text">
+              <string>Ignore Errors</string>
+             </property>
+            </widget>
            </item>
           </layout>
          </widget>
@@ -339,17 +421,24 @@
  <layoutdefault spacing="6" margin="11"/>
  <tabstops>
   <tabstop>connectionString</tabstop>
+  <tabstop>targetUCI</tabstop>
   <tabstop>selectServer</tabstop>
   <tabstop>tabWidget</tabstop>
   <tabstop>listWidget</tabstop>
   <tabstop>addFiles</tabstop>
   <tabstop>removeFiles</tabstop>
+  <tabstop>ignoreImportErrors</tabstop>
+  <tabstop>compile</tabstop>
+  <tabstop>qspec</tabstop>
   <tabstop>importFiles</tabstop>
   <tabstop>outputDirectory</tabstop>
   <tabstop>selectOutputDirectory</tabstop>
-  <tabstop>includeFilterEnabled</tabstop>
+  <tabstop>saveCurrentFilter</tabstop>
+  <tabstop>removeCurrentFilter</tabstop>
   <tabstop>includeFilter</tabstop>
+  <tabstop>includeFilterEnabled</tabstop>
   <tabstop>exportFiles</tabstop>
+  <tabstop>abortTask</tabstop>
  </tabstops>
  <resources>
   <include location="resources.qrc"/>
@@ -363,11 +452,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>396</x>
-     <y>290</y>
+     <y>250</y>
     </hint>
     <hint type="destinationlabel">
      <x>396</x>
-     <y>316</y>
+     <y>276</y>
     </hint>
    </hints>
   </connection>
@@ -378,12 +467,44 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>385</x>
-     <y>233</y>
+     <x>392</x>
+     <y>224</y>
     </hint>
     <hint type="destinationlabel">
-     <x>366</x>
-     <y>237</y>
+     <x>373</x>
+     <y>228</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>includeFilterEnabled</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>removeCurrentFilter</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>392</x>
+     <y>224</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>392</x>
+     <y>190</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>includeFilterEnabled</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>saveCurrentFilter</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>382</x>
+     <y>217</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>354</x>
+     <y>192</y>
     </hint>
    </hints>
   </connection>

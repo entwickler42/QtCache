@@ -21,9 +21,17 @@
 #include <cacheconnectiondialog.h>
 #include <QMessageBox>
 #include <QFileDialog>
-#include <QThread>
+#include <QRegExp>
 #include <QSettings>
 
+
+QStringList& operator << (QStringList& ls, QComboBox& cb)
+{
+    for(int i=0; i<cb.count(); i++){
+        ls << cb.itemText(i);
+    }
+    return ls;
+}
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -42,12 +50,7 @@ MainWindow::MainWindow(QWidget *parent) :
         outputDirectory = QDir::currentPath();
     }
     ui->outputDirectory->setText(outputDirectory);
-    int count = conf->beginReadArray("ExportFilter");
-    for(int i=0; i<count; i++){
-        conf->setArrayIndex(i);
-        ui->includeFilter->addItem(conf->value("RegExp").toString());
-    }
-    conf->endArray();
+    ui->includeFilter->addItems(loadFilters());
 }
 
 MainWindow::~MainWindow()
@@ -169,7 +172,7 @@ void MainWindow::on_importFiles_pressed()
                 QString err = tr("%1\n%2").arg(ex.what(), cache()->errorLog());
                 item->setToolTip(err);
                 item->setIcon(QIcon(":/QtCacheTool/ImportFileError"));
-                if (!ui->ignoreErrors->isChecked()){
+                if (!ui->ignoreImportErrors->isChecked()){
                     int rval = QMessageBox::warning(this, tr("Exception"), err,
                                                     QMessageBox::Cancel|QMessageBox::Ignore,
                                                     QMessageBox::Ignore);
@@ -232,7 +235,7 @@ void MainWindow::on_exportFiles_pressed()
                 int rval = QMessageBox::warning(this, tr("Exception"),err,
                                                 QMessageBox::Cancel|QMessageBox::Ignore,
                                                 QMessageBox::Ignore);
-                abortTask = rval == QMessageBox::Cancel;
+                abortTask = rval != QMessageBox::Ignore;
             }
         }
         if (abortTask){
@@ -247,6 +250,57 @@ void MainWindow::on_exportFiles_pressed()
     setIdleUI();
 }
 
+void MainWindow::on_saveCurrentFilter_pressed()
+{
+    int index = ui->includeFilter->currentIndex();
+    if (ui->includeFilter->currentText() != ui->includeFilter->itemText(index)){
+        ui->includeFilter->addItem(ui->includeFilter->currentText());
+    }
+    saveFilters(QStringList() << *ui->includeFilter);
+}
+
+void MainWindow::on_removeCurrentFilter_pressed()
+{
+    int index = ui->includeFilter->currentIndex();
+    if (QMessageBox::question(this,
+                              tr("Confirm delete"),
+                              tr("Do you really want to remove this filter from the list?\n\n%1").arg(
+                                  ui->includeFilter->currentText()
+                                  )
+                              ) != QMessageBox::Yes){
+        return;
+    }
+    if (ui->includeFilter->currentText() != ui->includeFilter->itemText(index)){
+        ui->includeFilter->setCurrentIndex(index);
+    }else{
+        ui->includeFilter->removeItem(index);
+        saveFilters(QStringList() << *ui->includeFilter);
+    }
+}
+
+QStringList MainWindow::loadFilters() const
+{
+    QStringList ls;
+    int count = conf->beginReadArray("ExportFilter");
+    for(int i=0; i<count; i++){
+        conf->setArrayIndex(i);
+        ls << conf->value("RegExp").toString();
+    }
+    conf->endArray();
+    return ls;
+}
+
+void MainWindow::saveFilters(const QStringList& ls) const
+{
+    conf->remove("ExportFilter");
+    conf->beginWriteArray("ExportFilter");
+    for(int i=0; i<ls.count(); i++){
+        conf->setArrayIndex(i);
+        conf->setValue("RegExp", ls.at(i));
+    }
+    conf->endArray();
+}
+
 void MainWindow::setBuisyUI()
 {
     ui->targetUCI->setEnabled(false);
@@ -258,13 +312,11 @@ void MainWindow::setBuisyUI()
     ui->abortTask->setEnabled(true);
 }
 
-void MainWindow::setIdleUI()
-{
+void MainWindow::setIdleUI() {
     ui->targetUCI->setEnabled(true);
-    ui->addFiles->setEnabled(true);
-    ui->removeFiles->setEnabled(true);
-    ui->selectServer->setEnabled(true);
-    ui->tabExport->setEnabled(true);
-    ui->tabImport->setEnabled(true);
-    ui->abortTask->setEnabled(false);
+    ui->addFiles->setEnabled(true); ui->removeFiles->setEnabled(true);
+    ui->selectServer->setEnabled(true); ui->tabExport->setEnabled(true);
+    ui->tabImport->setEnabled(true); ui->abortTask->setEnabled(false);
 }
+
+

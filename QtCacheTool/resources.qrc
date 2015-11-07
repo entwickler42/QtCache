@@ -4,6 +4,9 @@
         <file alias="ImportFile">img/binary.png</file>
         <file alias="ImportFileOk">img/binary_green.png</file>
         <file alias="ImportFileError">img/binary_red.png</file>
+        <file>img/14_layer_deletelayer.png</file>
+        <file>img/filesave.png</file>
+        <file>img/folder.png</file>
     </qresource>
     <qresource prefix="/i18n">
         <file>qtcachetool_de_DE.qm</file>
