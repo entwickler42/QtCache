@@ -63,8 +63,8 @@ public:
 
         forceNew = (
                     cn != this->cn ||
-                user != this->user ||
-                passwd != this->passwd
+                    user != this->user ||
+                    passwd != this->passwd
                 );
         if (forceNew || !conn->is_connected()) {
             conn = tcp_conn::connect(
@@ -72,8 +72,8 @@ public:
                         user.toStdString(),
                         passwd.toStdString(),
                         0,
-                        &conn_err);
-
+                        &conn_err
+                        );
             if (conn_err.get_code()){
                 throw QtCacheException(conn_err);
             }else if (conn->is_connected()){
@@ -173,8 +173,8 @@ public:
         QStringList objects;
         std::string line;
         io.rewind();
-        while (io >> line){
-            objects << QString::fromStdString(line);
+        while (std::getline(io, line)){
+            objects << QString::fromStdString(line).remove('\r');
         }
         return objects;
     }
@@ -192,16 +192,16 @@ public:
         if(!out_dir.mkpath(".")){
             throw QtCacheException(QObject::tr("Output directory does not exists!"));
         }
-        QFile f(QDir(directoryPath).absoluteFilePath(objectName));
-
-        if (!f.open(QFile::WriteOnly)){
+        QFile f(out_dir.absoluteFilePath(objectName));
+        if (!f.open(QFile::WriteOnly|QFile::Truncate)){
             throw QtCacheException(QObject::tr("Can't open output file:\n%1", "QtCachePrivate").arg(objectName));
         }
-        d_iostream io(bstream);
-        io.rewind();
         std::string buf;
         QTextStream ofstream(&f);
         ofstream.setCodec("UTF-8");
+        ofstream.setGenerateByteOrderMark(true);
+        d_iostream io(bstream);
+        io.rewind();
         while (std::getline(io,buf)){
             ofstream << QString::fromStdString(buf) << "\n";
         }
