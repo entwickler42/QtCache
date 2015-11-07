@@ -13,17 +13,21 @@
 */
 
 #include "poormanslogger.h"
+#include <io.h>
 #include <stdio.h>
-
 #include <fcntl.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <io.h>
-#include <stdio.h>
+#include <QDate>
 
 PoorMansLogger::PoorMansLogger(const QString& filepath)
 {
-    FH = open(qPrintable(filepath), O_WRONLY | O_CREAT);
+    // unlink(qPrintable(QString(filepath).prepend("previous_")));
+    // rename(qPrintable(filepath), qPrintable(QString(filepath).prepend("previous_")));
+    QString _filepath(filepath);
+    _filepath.prepend('_').prepend(QDate::currentDate().toString(Qt::ISODate));
+
+    FH = open(qPrintable(_filepath), O_WRONLY | O_APPEND | O_CREAT);
     dup2(FH, fileno(stderr));
     dup2(FH, fileno(stdout));
 }
