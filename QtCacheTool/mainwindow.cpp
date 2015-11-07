@@ -37,12 +37,17 @@ MainWindow::MainWindow(QWidget *parent) :
     dlg->setUciEnabled(false);
     dlg->setFormat(CacheConnectionDialog::NAMESPACE_FLAG);
     dlg->load(conf);
-
     QString outputDirectory = conf->value("DefaultExportDirectory", QDir::currentPath()).toString();
     if (!QDir(outputDirectory).exists()){
         outputDirectory = QDir::currentPath();
     }
     ui->outputDirectory->setText(outputDirectory);
+    int count = conf->beginReadArray("ExportFilter");
+    for(int i=0; i<count; i++){
+        conf->setArrayIndex(i);
+        ui->includeFilter->addItem(conf->value("RegExp").toString());
+    }
+    conf->endArray();
 }
 
 MainWindow::~MainWindow()
