@@ -91,18 +91,6 @@
         <translation>Fehler ignorieren</translation>
     </message>
     <message>
-        <source>Filter</source>
-        <translation type="vanished">Filter</translation>
-    </message>
-    <message>
-        <source>Include</source>
-        <translation type="vanished">Einschließen</translation>
-    </message>
-    <message>
-        <source>Exclude</source>
-        <translation type="vanished">Ausschließen</translation>
-    </message>
-    <message>
         <location filename="mainwindow.ui" line="345"/>
         <source>&amp;Export</source>
         <translation>&amp;Exportieren</translation>
@@ -111,10 +99,6 @@
         <location filename="mainwindow.ui" line="361"/>
         <source>&amp;Abort</source>
         <translation>&amp;Abbrechen</translation>
-    </message>
-    <message>
-        <source>&amp;Program</source>
-        <translation type="vanished">&amp;Anwendung</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="382"/>

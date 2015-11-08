@@ -23,12 +23,12 @@ RESOURCES += \
 
 RC_FILE = qtcachetool.rc
 
-system(lupdate QtCacheTool.pro)
+system(lupdate -no-obsolete QtCacheTool.pro)
 system(lrelease QtCacheTool.pro)
 
 TRANSLATIONS = qtcachetool_de_DE.ts
 
 OTHER_FILES += qtcachetool_de_DE.ts
 
-include(../Intersystems/Intersystems.pri)
+# include(../Intersystems/Intersystems.pri)
 

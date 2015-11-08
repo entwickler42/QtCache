@@ -21,7 +21,7 @@ unix {
     INSTALLS += target
 }
 
-system(lupdate QtCache.pro)
+system(lupdate -no-obsolete QtCache.pro)
 system(lrelease QtCache.pro)
 
 TRANSLATIONS = qtcache_de_DE.ts
