@@ -66,6 +66,9 @@ private:
 
     QStringList loadFilters() const;
     void saveFilters(const QStringList&) const;
+
+    void saveGuiState() const;
+    void restoreGuiState() const;
 };
 
 #endif // MAINWINDOW_H

@@ -15,10 +15,14 @@
 #ifndef QTCACHEEXCEPTION
 #define QTCACHEEXCEPTION
 
-#include <Qt_CacheTool.h>
 #include <QString>
 #include <exception>
 
+namespace InterSystems {
+    class d_string;
+    class d_status;
+    class Db_err;
+}
 
 class QtCacheException
         : public std::exception
@@ -32,17 +36,11 @@ public:
         : std::exception(msg.c_str())
     {}
 
-    QtCacheException(const d_string& msg)
-        : QtCacheException(msg.value())
-    {}
+    QtCacheException(const InterSystems::d_string& msg);
 
-    QtCacheException(const d_status& sc)
-        : QtCacheException(sc.get_msg())
-    {}
+    QtCacheException(const InterSystems::d_status& sc);
 
-    QtCacheException(const Db_err& err)
-        : QtCacheException(err.get_msg())
-    {}
+    QtCacheException(const InterSystems::Db_err& err);
 };
 
 #endif // QTCACHEEXCEPTION

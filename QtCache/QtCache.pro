@@ -8,7 +8,8 @@ DESTDIR = ../build
 DEFINES += QTCACHE_LIBRARY
 
 SOURCES += qtcache.cpp \
-    poormanslogger.cpp
+    poormanslogger.cpp \
+    qtcacheexception.cpp
 
 HEADERS += qtcache.h \
            qtcache_global.h \

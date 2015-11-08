@@ -323,4 +323,14 @@ void MainWindow::setIdleUI() {
     ui->tabImport->setEnabled(true); ui->abortTask->setEnabled(false);
 }
 
+void MainWindow::saveGuiState() const
+{
+    if ((windowState() & Qt::WindowMaximized) != Qt::WindowMaximized){
+        conf->setValue("MainWindow/Geometry", geometry());
+    }
+}
 
+void MainWindow::restoreGuiState() const
+{
+    setGeometry(conf->value("MainWindow/Geometry", geometry()));
+}
