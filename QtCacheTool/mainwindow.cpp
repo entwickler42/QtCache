@@ -61,7 +61,13 @@ MainWindow::~MainWindow()
 
 void MainWindow::showEvent(QShowEvent*)
 {
+    restoreGeometry(conf->value("MainWindow/Geometry").toByteArray());
     ui->statusBar->showMessage(tr("Welcome to the Qt Caché Tool"));
+}
+
+void MainWindow::closeEvent(QCloseEvent *)
+{
+    conf->setValue("MainWindow/Geometry", saveGeometry());
 }
 
 void MainWindow::on_targetUCI_currentIndexChanged(const QString& text)
@@ -323,14 +329,3 @@ void MainWindow::setIdleUI() {
     ui->tabImport->setEnabled(true); ui->abortTask->setEnabled(false);
 }
 
-void MainWindow::saveGuiState() const
-{
-    if ((windowState() & Qt::WindowMaximized) != Qt::WindowMaximized){
-        conf->setValue("MainWindow/Geometry", geometry());
-    }
-}
-
-void MainWindow::restoreGuiState() const
-{
-    setGeometry(conf->value("MainWindow/Geometry", geometry()));
-}

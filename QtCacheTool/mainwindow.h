@@ -36,6 +36,7 @@ public:
 
 protected:
     virtual void showEvent(QShowEvent*);
+    virtual void closeEvent(QCloseEvent *);
 
     QtCache* cache() const
     {
@@ -66,9 +67,6 @@ private:
 
     QStringList loadFilters() const;
     void saveFilters(const QStringList&) const;
-
-    void saveGuiState() const;
-    void restoreGuiState() const;
 };
 
 #endif // MAINWINDOW_H
