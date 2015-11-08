@@ -56,7 +56,7 @@
     <message>
         <location filename="mainwindow.ui" line="156"/>
         <source>Import</source>
-        <translation>I&amp;mportieren</translation>
+        <translation>Importieren</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="166"/>
@@ -69,141 +69,192 @@
         <translation>Ausgabeverzeichnis</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="189"/>
-        <source>...</source>
-        <translation></translation>
+        <location filename="mainwindow.ui" line="218"/>
+        <source>Include filter</source>
+        <translation>Objekt Filter</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="200"/>
+        <location filename="mainwindow.ui" line="256"/>
+        <location filename="mainwindow.ui" line="259"/>
+        <source>Save current filter to configuration</source>
+        <translation>Sichert den aktuellen Filter in den Einstellungen</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.ui" line="279"/>
+        <location filename="mainwindow.ui" line="282"/>
+        <source>Remove current filter from configuration</source>
+        <translation>Entfernt den ausgewählten Filter aus der Liste</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.ui" line="322"/>
+        <source>Ignore Errors</source>
+        <translation>Fehler ignorieren</translation>
+    </message>
+    <message>
         <source>Filter</source>
-        <translation>Filter</translation>
+        <translation type="vanished">Filter</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="208"/>
         <source>Include</source>
-        <translation>Einschließen</translation>
+        <translation type="vanished">Einschließen</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="249"/>
         <source>Exclude</source>
-        <translation>Ausschließen</translation>
+        <translation type="vanished">Ausschließen</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="304"/>
+        <location filename="mainwindow.ui" line="345"/>
         <source>&amp;Export</source>
         <translation>&amp;Exportieren</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="320"/>
+        <location filename="mainwindow.ui" line="361"/>
         <source>&amp;Abort</source>
         <translation>&amp;Abbrechen</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="349"/>
         <source>&amp;Program</source>
-        <translation>&amp;Anwendung</translation>
+        <translation type="vanished">&amp;Anwendung</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="356"/>
-        <source>?</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="mainwindow.ui" line="366"/>
+        <location filename="mainwindow.ui" line="382"/>
         <source>&amp;Import Files</source>
         <translation>Dateien &amp;importieren</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="371"/>
+        <location filename="mainwindow.ui" line="387"/>
         <source>&amp;Export Files</source>
         <translation>Dateien &amp;exportieren</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="376"/>
+        <location filename="mainwindow.ui" line="392"/>
         <source>&amp;About</source>
         <translation>&amp;Informationen</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="85"/>
-        <location filename="mainwindow.cpp" line="87"/>
-        <location filename="mainwindow.cpp" line="114"/>
-        <location filename="mainwindow.cpp" line="116"/>
-        <location filename="mainwindow.cpp" line="161"/>
-        <location filename="mainwindow.cpp" line="177"/>
-        <location filename="mainwindow.cpp" line="196"/>
+        <location filename="mainwindow.cpp" line="99"/>
+        <location filename="mainwindow.cpp" line="101"/>
+        <location filename="mainwindow.cpp" line="128"/>
+        <location filename="mainwindow.cpp" line="130"/>
+        <location filename="mainwindow.cpp" line="176"/>
+        <location filename="mainwindow.cpp" line="191"/>
+        <location filename="mainwindow.cpp" line="238"/>
+        <location filename="mainwindow.cpp" line="252"/>
         <source>Exception</source>
         <translation>Ausnahmefehler</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="87"/>
-        <location filename="mainwindow.cpp" line="116"/>
+        <location filename="mainwindow.cpp" line="101"/>
+        <location filename="mainwindow.cpp" line="130"/>
         <source>Unknown exception occured!</source>
         <translation>Unbekannter Ausnahmefehler ist aufgetreten!</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="92"/>
+        <location filename="mainwindow.cpp" line="106"/>
         <source>Sucessfully connected to %1</source>
         <translation>Verbindung zu %1 erfolgreich hergestellt</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="93"/>
+        <location filename="mainwindow.cpp" line="107"/>
         <source>Failed to connected to %1</source>
         <translation>Fehler beim verbinden zu %1</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="50"/>
+        <location filename="mainwindow.cpp" line="64"/>
         <source>Welcome to the Qt Caché Tool</source>
         <translation>Willkommen zum Qt Caché Tool</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="56"/>
+        <location filename="mainwindow.cpp" line="70"/>
         <source>Selected target UCI: %1</source>
         <translation>Ziel UCI ausgewählt: %1</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="123"/>
-        <location filename="mainwindow.cpp" line="134"/>
-        <location filename="mainwindow.cpp" line="138"/>
-        <location filename="mainwindow.cpp" line="190"/>
+        <location filename="mainwindow.cpp" line="137"/>
+        <location filename="mainwindow.cpp" line="148"/>
+        <location filename="mainwindow.cpp" line="152"/>
+        <location filename="mainwindow.cpp" line="216"/>
         <source>Information</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="123"/>
+        <location filename="mainwindow.cpp" line="137"/>
         <source>No items selected!</source>
         <translation>Keine Einträge ausgewählt!</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="134"/>
-        <location filename="mainwindow.cpp" line="190"/>
+        <location filename="mainwindow.cpp" line="148"/>
+        <location filename="mainwindow.cpp" line="216"/>
         <source>Cachè connection has not been established yet!</source>
         <translation>Verbindung zu Caché wurde noch nicht hergestellt!</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="138"/>
+        <location filename="mainwindow.cpp" line="152"/>
         <source>List of files is empty!</source>
         <translation>Liste der Dateien ist leer!</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="152"/>
+        <location filename="mainwindow.cpp" line="166"/>
         <source>Importing %1</source>
         <translation>Importiere %1</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="157"/>
+        <location filename="mainwindow.cpp" line="172"/>
+        <location filename="mainwindow.cpp" line="237"/>
         <source>%1
 %2</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="171"/>
+        <location filename="mainwindow.cpp" line="185"/>
         <source>Import aborted!</source>
         <translation>Import abgebrochen!</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="174"/>
+        <location filename="mainwindow.cpp" line="188"/>
         <source>Import finished!</source>
         <translation>Import abgeschlossen!</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.cpp" line="221"/>
+        <source>Receiving list of cachè objects...</source>
+        <translation>Empfange die Liste der Caché Objekte...</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.cpp" line="230"/>
+        <source>Exporting %1</source>
+        <translation>Exportiere %1</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.cpp" line="235"/>
+        <source>Failed to export %1
+%2</source>
+        <translation>Fehler beim exportieren von %1
+%2</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.cpp" line="246"/>
+        <source>Export aborted!</source>
+        <translation>Export abgebrochen!</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.cpp" line="249"/>
+        <source>Export finished!</source>
+        <translation>Export abgeschlossen!</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.cpp" line="270"/>
+        <source>Confirm delete</source>
+        <translation>Löschen bestätigen</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.cpp" line="271"/>
+        <source>Do you really want to remove this filter from the list?
+
+%1</source>
+        <translation>Soll der ausgewählte Filter wirklich entfernt werden?
+
+%1</translation>
     </message>
 </context>
 </TS>

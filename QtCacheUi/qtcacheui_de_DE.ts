@@ -6,22 +6,22 @@
     <message>
         <location filename="cacheconnectiondialog.ui" line="26"/>
         <source>Caché Connection</source>
-        <translation type="unfinished"></translation>
+        <translation>Caché Verbindung</translation>
     </message>
     <message>
         <location filename="cacheconnectiondialog.ui" line="89"/>
         <source>Hostname or IP Address</source>
-        <translation type="unfinished">Hostname oder IP Adresse</translation>
+        <translation>Hostname oder IP Adresse</translation>
     </message>
     <message>
         <location filename="cacheconnectiondialog.ui" line="99"/>
         <source>172.0.0.1</source>
-        <translation type="unfinished"></translation>
+        <translation>127.0.0.1</translation>
     </message>
     <message>
         <location filename="cacheconnectiondialog.ui" line="110"/>
         <source>Port</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="cacheconnectiondialog.ui" line="136"/>
@@ -60,25 +60,25 @@
         <location filename="qtcacheui.cpp" line="27"/>
         <source>Caché (*.xml *.mac *.int *.cls *.inc *.gbl)</source>
         <comment>QtCacheUi</comment>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="qtcacheui.cpp" line="28"/>
         <source>Caché Sources (*.mac *.int *.cls *.inc)</source>
         <comment>QtCacheUi</comment>
-        <translation type="unfinished"></translation>
+        <translation>Caché Quellcode</translation>
     </message>
     <message>
         <location filename="qtcacheui.cpp" line="29"/>
         <source>Caché Globals (*.gbl)</source>
         <comment>QtCacheUi</comment>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="qtcacheui.cpp" line="30"/>
         <source>Any Files (*)</source>
         <comment>QtCacheUi</comment>
-        <translation type="unfinished"></translation>
+        <translation>Alle Dateien (*)</translation>
     </message>
 </context>
 </TS>
