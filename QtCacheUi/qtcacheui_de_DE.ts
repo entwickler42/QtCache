@@ -17,7 +17,7 @@
         <location filename="cacheconnectiondialog.ui" line="99"/>
         <source>127.0.0.1</source>
         <oldsource>172.0.0.1</oldsource>
-        <translation type="unfinished">127.0.0.1</translation>
+        <translation>127.0.0.1</translation>
     </message>
     <message>
         <location filename="cacheconnectiondialog.ui" line="110"/>

@@ -4,13 +4,13 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="qtcache_p.h" line="52"/>
+        <location filename="qtcache_p.h" line="55"/>
         <source>Cachè connection has not been established yet!</source>
         <comment>QtCachePrivate</comment>
         <translation>Verbindung zu Caché wurde noch nicht hergestellt!</translation>
     </message>
     <message>
-        <location filename="qtcache_p.h" line="139"/>
+        <location filename="qtcache_p.h" line="142"/>
         <source>Input file does not exists:
 %1</source>
         <comment>QtCachePrivate</comment>
@@ -18,7 +18,7 @@
 %1</translation>
     </message>
     <message>
-        <location filename="qtcache_p.h" line="142"/>
+        <location filename="qtcache_p.h" line="145"/>
         <source>Could not open file for reading:
 %1</source>
         <comment>QtCachePrivate</comment>
@@ -26,12 +26,18 @@
 %1</translation>
     </message>
     <message>
-        <location filename="qtcache_p.h" line="196"/>
+        <location filename="qtcache_p.h" line="163"/>
+        <source>Cachè is processing the input now. Please be patient...</source>
+        <comment>QtCachePrivate</comment>
+        <translation>Cachè verarbeitet nun die Importdatei. Bitte haben Sie etwas Geduld...</translation>
+    </message>
+    <message>
+        <location filename="qtcache_p.h" line="202"/>
         <source>Output directory does not exists!</source>
         <translation>Ausgabeverzeichnis existiert nicht!</translation>
     </message>
     <message>
-        <location filename="qtcache_p.h" line="200"/>
+        <location filename="qtcache_p.h" line="206"/>
         <source>Can&apos;t open output file:
 %1</source>
         <comment>QtCachePrivate</comment>
