@@ -24,7 +24,13 @@ class QTranslator;
 
 
 class QTCACHESHARED_EXPORT QtCache
+        : public QObject
 {
+    Q_OBJECT
+
+signals:
+    void reportProgress(const QString& message, qint64 pos, qint64 end);
+
 public:
     static QtCache* instance();
     virtual ~QtCache();

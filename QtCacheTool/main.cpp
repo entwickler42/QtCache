@@ -43,15 +43,17 @@ void i18n(QApplication* application)
 int main(int argc, char *argv[])
 {
     PoorMansLogger(QString("%1.log").arg("errors"));
-    QApplication a(argc, argv);
-    a.setApplicationName("Qt Caché Tool");
-    a.setOrganizationName("Entwickler42");
-    a.setApplicationVersion("1.0.0");
 
-    i18n(&a);
+    QCoreApplication::setApplicationName("Qt Caché Tool");
+    QCoreApplication::setOrganizationName("Entwickler42");
+    QCoreApplication::setOrganizationDomain("http://github.org/entwickler42");
+    QCoreApplication::setApplicationVersion("1.0.2");
+
+    QApplication app(argc, argv);
+    i18n(&app);
 
     MainWindow w;
     w.show();
 
-    return a.exec();
+    return app.exec();
 }

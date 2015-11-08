@@ -21,8 +21,9 @@
 #include <cacheconnectiondialog.h>
 #include <QMessageBox>
 #include <QFileDialog>
-#include <QRegExp>
 #include <QSettings>
+#include <QRegExp>
+#include <QCommandLineParser>
 
 
 QStringList& operator << (QStringList& ls, QComboBox& cb)
@@ -51,6 +52,10 @@ MainWindow::MainWindow(QWidget *parent) :
     }
     ui->outputDirectory->setText(outputDirectory);
     ui->includeFilter->addItems(loadFilters());
+    m_prefered_uci = conf->value("PreferedUCI").toString();
+    parseCommandlineOptions();
+
+    connect(QtCache::instance(), SIGNAL(reportProgress(QString,qint64,qint64)), this, SLOT(reportProgress(QString,qint64,qint64)));
 }
 
 MainWindow::~MainWindow()
@@ -98,6 +103,12 @@ void MainWindow::on_selectServer_pressed()
             if (ls.count()){
                 ui->targetUCI->clear();
                 ui->targetUCI->addItems(ls);
+                if (!m_prefered_uci.isEmpty()){
+                    int idx = ui->targetUCI->findText(m_prefered_uci);
+                    if(idx > -1) {
+                        ui->targetUCI->setCurrentIndex(idx);
+                    }
+                }
             }else{
                 throw std::exception(qPrintable(cache()->lastStatus()));
             }
@@ -288,6 +299,14 @@ void MainWindow::on_removeCurrentFilter_pressed()
     }
 }
 
+void MainWindow::reportProgress(const QString& message, qint64 pos, qint64 end)
+{
+    ui->progressBar2->setMaximum(end);
+    ui->progressBar2->setValue(pos);
+    ui->statusBar->showMessage(message);
+    QApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
+}
+
 QStringList MainWindow::loadFilters() const
 {
     QStringList ls;
@@ -309,6 +328,60 @@ void MainWindow::saveFilters(const QStringList& ls) const
         conf->setValue("RegExp", ls.at(i));
     }
     conf->endArray();
+}
+
+void MainWindow::parseCommandlineOptions()
+{
+    QCommandLineParser p;
+    p.addHelpOption();
+    p.addVersionOption();
+    QCommandLineOption server("s", tr("Cachè instance to connect to"), "Server", "127.0.0.1");
+    p.addOption(server);
+    QCommandLineOption port("p", tr("Cachè instance TCP port"), "Port", "1972");
+    p.addOption(port);
+    QCommandLineOption uci("n", tr("Cachè namespace to work on"), "UCI", "USER");
+    p.addOption(uci);
+    QCommandLineOption username("u", tr("Username used for authentication"), "Username");
+    p.addOption(username);
+    QCommandLineOption password("p", tr("Password used for authentication"), "Password");
+    p.addOption(password);
+    QCommandLineOption compile("c", tr("Compile imported objects"));
+    p.addOption(compile);
+    QCommandLineOption compileFlags("cf", tr("Compile flags"), "flags");
+    p.addOption(compileFlags);
+    QCommandLineOption importDirectory("i", tr("Directory of Cachè Object to be imported"), "ImportDirectory");
+    p.addOption(importDirectory);
+    QCommandLineOption exportDirectory("e", tr("Directory used for the Cachè Object export"), "ExportDirectory");
+    p.addOption(exportDirectory);
+    QCommandLineOption objectFilter("f", tr("Object filter used when exporting"), "Filter", "(?i).+int$;(?i).+mac$;(?i).+cls$");
+    p.addOption(objectFilter);
+
+    p.process(QApplication::instance()->arguments());
+
+    if (p.isSet(uci)){
+        m_prefered_uci = p.value(uci);
+    }
+    if (p.isSet(compile)){
+        ui->compile->setChecked(true);
+    }
+    if (p.isSet(compileFlags)){
+        ui->qspec->setText(p.value(compileFlags));
+    }
+    if (p.isSet(importDirectory)){
+        foreach(const QString& i, p.values(importDirectory)){
+            loadImportDirectory(i);
+        }
+    }else if(p.isSet(exportDirectory)){
+    }
+}
+
+void MainWindow::loadImportDirectory(const QString& path)
+{
+    foreach(const QString& i, QDir(path).entryList(QDir::Files)){
+        QListWidgetItem *item = new QListWidgetItem(ui->listWidget);
+        item->setText(QDir(path).absoluteFilePath(i));
+        item->setIcon(QIcon(":/QtCacheTool/ImportFile"));
+    }
 }
 
 void MainWindow::setBuisyUI()

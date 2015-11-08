@@ -91,8 +91,7 @@
         ZN uci                               
         
         S STREAM = ##class(%Stream.GlobalCharacter).%New()
-        //S STREAM.StreamFormatWrite = 0           
-        
+                        
         // collect routine names
         S rs=##class(%ResultSet).%New()
         S rs.ClassName="%Library.Routine"
@@ -104,11 +103,13 @@
             S ROUTINE=##class(%Library.Routine).%OpenId(NAME)               
             I ROUTINE.Generated=0,(..Filter(filter, NAME)) D STREAM.WriteLine(NAME)     
         }            
+        
         // collect class names
         S LSC=""
         S QSPECC="/diffexport=1/unicode=1"
         D $SYSTEM.OBJ.GetClassList(.LSC, QSPECC)
         S I="" F  S I=$O(LSC(I)) Q:I=""  I ..Filter(filter, I_".cls") D STREAM.WriteLine(I_".cls")                   
+        
         // collect global names
         S rs=##class(%ResultSet).%New()
         S rs.ClassName="%SYS.GlobalQuery"
@@ -124,6 +125,7 @@
     }
     
     ZN "%SYS"
+    
     Q STREAM
 ]]></Implementation>
 </Method>
@@ -133,15 +135,16 @@
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
     try{
-        ZN uci                                 
-        S ..LastStatus = $SYSTEM.OBJ.LoadStream(xml, qspec)                 
+        ZN uci
+                                    
+        S ..LastStatus = $SYSTEM.OBJ.LoadStream(xml, qspec)
     }catch ex{
         S ..LastStatus = ex.AsStatus()        
     }
         
     ZN "%SYS"
         
-    Q ..LastStatus
+	Q ..LastStatus
 ]]></Implementation>
 </Method>
 
@@ -149,10 +152,12 @@
 <FormalSpec>uci:%String,object:%String</FormalSpec>
 <ReturnType>%Stream.GlobalBinary</ReturnType>
 <Implementation><![CDATA[
-    ZN uci
+    
     S STREAM = $$$NULLOREF
 
-    try{
+    try{	    
+	    ZN uci
+	    
         S ERRLOG=""
         S QSPECC="/diffexport=1"
         S STREAM=##class(%Stream.GlobalBinary).%New()
@@ -188,22 +193,37 @@
 </Class>
 
 
-<Project name="QtCache" LastModified="2015-11-07 10:50:30.863451" Target="ST^ySBR" TargetType="2">
+<Project name="QtCache" LastModified="2015-11-08 17:58:38.207545" Target="ST^ySBR" TargetType="2">
   <Items>
     <ProjectItem name="Qt.CacheTool" type="CLS"></ProjectItem>
     <ProjectItem name="ySBR.MAC" type="MAC"></ProjectItem>
   </Items>
-  <BreakPoints>
-    <BreakPoint Routine="Qt.CacheTool.CLS" Offset="Filter+7"></BreakPoint>
-    <BreakPoint Routine="Qt.CacheTool.CLS" Offset="Filter+11"></BreakPoint>
-    <BreakPoint Routine="ySBR.MAC" Offset="4"></BreakPoint>
-  </BreakPoints>
+  <WatchVariables>
+    <WatchVariable Variable="errlog" Pane="1"></WatchVariable>
+  </WatchVariables>
 </Project>
 
 
 <Routine name="ySBR" type="MAC" languagemode="0"><![CDATA[
 ST
+ B
+ 
  #dim QtCache as Qt.CacheTool = ##class(Qt.CacheTool).%New()
+ 
+ #dim fstream as %Stream.FileBinary = ##class(%Stream.FileBinary).%New()
+ #dim stream as %Stream.GlobalBinary = ##class(%Stream.GlobalBinary).%New()
+ 
+ ;S fstream.Filename = "d:\src\QtCache\build\Import\stage2\Package_Toplog.xml"
+ S fstream.Filename = "d:\src\QtCache\build\Import\stage3\KZ0311.mac"
+ while 'fstream.AtEnd {
+ 	S buf=fstream.Read()
+ 	D stream.Write(buf)
+ }
+ 
+ D QtCache.ImportXML("DEV", stream, "ckf")
+ 
+ Q
+ 
  #dim stream as %Stream.GlobalBinary
  S stream = QtCache.ListObjects("DEV", "^.+cls")
  WHILE 'stream.AtEnd {

@@ -18,7 +18,7 @@
 
 
 QtCache::QtCache()
-    : d(new QtCachePrivate)
+    : d(new QtCachePrivate(this))
 {}
 
 QtCache::~QtCache()

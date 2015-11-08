@@ -43,6 +43,9 @@ protected:
         return QtCache::instance();
     }
 
+    void parseCommandlineOptions();
+    void loadImportDirectory(const QString& path);
+
     void setBuisyUI();
     void setIdleUI();
 
@@ -59,11 +62,14 @@ private slots:
     void on_saveCurrentFilter_pressed();
     void on_removeCurrentFilter_pressed();
 
+    void reportProgress(const QString&, qint64, qint64);
+
 private:
     Ui::MainWindow *ui;
     QSettings* conf;
     CacheConnectionDialog* dlg;
     bool abortTask = false;
+    QString m_prefered_uci = "";
 
     QStringList loadFilters() const;
     void saveFilters(const QStringList&) const;

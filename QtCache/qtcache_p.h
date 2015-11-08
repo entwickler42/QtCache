@@ -20,6 +20,7 @@
 #include <QObject>
 #include <QTextStream>
 #include <Qt_CacheTool.h>
+#include "qtcache.h"
 #include "qtcacheexception.h"
 
 #include <ios>
@@ -37,8 +38,10 @@ public:
     QString uci = "%SYS";
     QString user = "";
     QString passwd = "";
+    QtCache *i_ptr;
 
-    QtCachePrivate()
+    QtCachePrivate(QtCache* qtcache)
+        : i_ptr(qtcache)
     {}
 
     virtual ~QtCachePrivate()
@@ -142,18 +145,24 @@ public:
             throw QtCacheException(QObject::tr("Could not open file for reading:\n%1", "QtCachePrivate").arg(filepath));
         }
 
-        QByteArray data = f.readAll();
-        f.close();
-
-        d_string _data(data.constData());
-        d_string _uci(uci.toStdString());
-        d_string _qspec(qspec.toStdString());
         d_ref<d_bin_stream> bstream = d_bin_stream::create_new(db);
-
         d_iostream io(bstream);
-        io << _data;
+
+        qint64 file_pos = 0;
+        qint64 file_size = f.size();
+        const qint64 chunk_size = 512;
+        char buf[chunk_size];
+        while (!f.atEnd()){
+            qint64 s = f.read(buf, chunk_size);
+            io.write(buf, s);
+            file_pos += s;
+            emit i_ptr->reportProgress(filepath, file_pos, file_size);
+        }
         io.rewind();
 
+        emit i_ptr->reportProgress(QObject::tr("Cachè is processing the input now. Please be patient...", "QtCachePrivate"), 0, 100);
+        d_string _uci(uci.toStdString());
+        d_string _qspec(qspec.toStdString());
         d_status sc = tool()->ImportXML(_uci, bstream, _qspec);
         if (sc.get_code()){
             throw QtCacheException(sc);

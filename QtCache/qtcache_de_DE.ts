@@ -26,12 +26,12 @@
 %1</translation>
     </message>
     <message>
-        <location filename="qtcache_p.h" line="193"/>
+        <location filename="qtcache_p.h" line="196"/>
         <source>Output directory does not exists!</source>
         <translation>Ausgabeverzeichnis existiert nicht!</translation>
     </message>
     <message>
-        <location filename="qtcache_p.h" line="197"/>
+        <location filename="qtcache_p.h" line="200"/>
         <source>Can&apos;t open output file:
 %1</source>
         <comment>QtCachePrivate</comment>
