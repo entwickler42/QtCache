@@ -94,12 +94,12 @@ void QtCache::execute(const QString& code)
     d->execute(code);
 }
 
-void QtCache::importFile(const QString& filepath, const QString& qspec)
+void QtCache::importObject(const QString& filepath, const QString& qspec)
 {
-    d->importFile(filepath, qspec);
+    d->importObject(filepath, qspec);
 }
 
-void QtCache::exportFiles(const QString& directoryPath, const QString& objectName)
+void QtCache::exportObject(const QString& directoryPath, const QString& objectName)
 {
-    d->exportFiles(directoryPath, objectName);
+    d->exportObject(directoryPath, objectName);
 }

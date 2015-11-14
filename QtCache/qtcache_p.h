@@ -166,7 +166,7 @@ public:
         return objects;
     }
 
-    void importFile(const QString& filepath, const QString& qspec)
+    void importObject(const QString& filepath, const QString& qspec)
     {
         QFile f(filepath);
 
@@ -201,7 +201,7 @@ public:
         }
     }
 
-    void exportFiles(const QString& directoryPath, const QString& objectName)
+    void exportObject(const QString& directoryPath, const QString& objectName)
     {
         d_string _objectName = objectName.toStdString();
         d_string _uci = uci.toStdString();

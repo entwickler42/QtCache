@@ -186,7 +186,7 @@ void MainWindow::on_importFiles_pressed()
             QListWidgetItem* item = ui->listWidget->item(i);
             ui->statusBar->showMessage(tr("Importing %1").arg(item->text()));
             try{
-                cache()->importFile(item->text(), qspec);
+                cache()->importObject(item->text(), qspec);
                 item->setIcon(QIcon(":/QtCacheTool/ImportFileOk"));
                 QCoreApplication::processEvents();
             }catch(std::exception& ex){
@@ -283,10 +283,10 @@ void MainWindow::on_exportFiles_pressed()
         for(int i=0; !abortTask && i<ls.count(); i++){
             const QString& s = ls.at(i);
             try{
-                cache()->exportFiles(ui->outputDirectory->text(), s);
                 ui->statusBar->showMessage(tr("Exporting %1").arg(s));
                 ui->progressBar->setValue(i+1);
                 QCoreApplication::processEvents();
+                cache()->exportObject(ui->outputDirectory->text(), s);
             }catch(std::exception& ex){
                 if (ui->ignoreExportErrors){
                     qDebug(qPrintable(tr("Failed to export %1\n%2").arg(s, ex.what())));;
