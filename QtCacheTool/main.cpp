@@ -47,7 +47,7 @@ int main(int argc, char *argv[])
     QCoreApplication::setApplicationName("Qt Caché Tool");
     QCoreApplication::setOrganizationName("Entwickler42");
     QCoreApplication::setOrganizationDomain("http://github.org/entwickler42");
-    QCoreApplication::setApplicationVersion("1.0.2");
+    QCoreApplication::setApplicationVersion("1.0.3");
 
     QApplication app(argc, argv);
     i18n(&app);
