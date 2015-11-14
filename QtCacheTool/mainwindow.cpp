@@ -112,17 +112,16 @@ void MainWindow::on_selectServer_pressed()
             }else{
                 throw std::exception(qPrintable(cache()->lastStatus()));
             }
+            ui->statusBar->showMessage(
+                        cache()->isConnected() ?
+                            tr("Sucessfully connected to %1").arg(dlg->server()) :
+                            tr("Failed to connected to %1").arg(dlg->server())
+                            );
         }catch(std::exception& ex){
             QMessageBox::critical(this, tr("Exception"), ex.what());
         }catch(...){
             QMessageBox::critical(this, tr("Exception"), tr("Unknown exception occured!"));
         }
-
-        ui->statusBar->showMessage(
-                    cache()->isConnected() ?
-                        tr("Sucessfully connected to %1").arg(dlg->server()) :
-                        tr("Failed to connected to %1").arg(dlg->server())
-                        );
     }
 }
 

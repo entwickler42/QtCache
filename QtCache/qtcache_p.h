@@ -46,7 +46,7 @@ public:
 
     virtual ~QtCachePrivate()
     {
-        delete db;
+        disconnect();
     }
 
     QtCacheToolType tool()
@@ -55,9 +55,21 @@ public:
             throw QtCacheException(QObject::tr("Cachè connection has not been established yet!", "QtCachePrivate"));
         }
         if (Qt_CacheTool.is_null()) {
-            Qt_CacheTool = Qt_CacheTool::create_new(db);
+            Db_err err;
+            Qt_CacheTool = Qt_CacheTool::create_new(db,0,&err);
+            if (err.get_code()){
+                throw QtCacheException(err);
+            }
         }
         return Qt_CacheTool;
+    }
+
+    long jobId() const
+    {
+        if (connected && NULL != db){
+            return db->get_job_id();
+        }
+        return 0;
     }
 
     void connect(const QString& cn, const QString& user, const QString& passwd, bool forceNew = false)
@@ -69,8 +81,11 @@ public:
                     user != this->user ||
                     passwd != this->passwd
                 );
-        if (forceNew || !conn->is_connected()) {
-            conn = tcp_conn::connect(
+        if (forceNew && connected){
+            disconnect();
+        }
+        if (forceNew || !connected) {
+            d_connection conn = tcp_conn::connect(
                         cn.toStdString(),
                         user.toStdString(),
                         passwd.toStdString(),
@@ -84,7 +99,6 @@ public:
                 this->user = user;
                 this->passwd = passwd;
                 this->connected = true;
-                delete db;
                 db = new Database(conn);
                 installCacheBackend();
             }
@@ -93,8 +107,7 @@ public:
 
     void disconnect()
     {
-        Qt_CacheTool = QtCacheToolType();
-        conn = d_connection();
+        delete db; db = NULL;
         connected = false;
     }
 
@@ -134,6 +147,25 @@ public:
         return q_ls;
     }
 
+    QStringList listObjects(const QString& filter)
+    {
+        d_string _uci(uci.toStdString());
+        d_string _filter = filter.toStdString();
+        d_ref<d_char_stream> bstream = tool()->ListObjects(_uci, _filter);
+        d_status sc = tool()->GetLastStatus();
+        if (sc.get_code()){
+            throw QtCacheException(sc);
+        }
+        d_iostream io(bstream);
+        QStringList objects;
+        std::string line;
+        io.rewind();
+        while (std::getline(io, line)){
+            objects << QString::fromStdString(line).remove('\r');
+        }
+        return objects;
+    }
+
     void importFile(const QString& filepath, const QString& qspec)
     {
         QFile f(filepath);
@@ -169,25 +201,6 @@ public:
         }
     }
 
-    QStringList listObjects(const QString& filter)
-    {
-        d_string _uci(uci.toStdString());
-        d_string _filter = filter.toStdString();
-        d_ref<d_char_stream> bstream = tool()->ListObjects(_uci, _filter);
-        d_status sc = tool()->GetLastStatus();
-        if (sc.get_code()){
-            throw QtCacheException(sc);
-        }
-        d_iostream io(bstream);
-        QStringList objects;
-        std::string line;
-        io.rewind();
-        while (std::getline(io, line)){
-            objects << QString::fromStdString(line).remove('\r');
-        }
-        return objects;
-    }
-
     void exportFiles(const QString& directoryPath, const QString& objectName)
     {
         d_string _objectName = objectName.toStdString();
@@ -219,7 +232,6 @@ public:
 private:
     bool connected = false;
     Database* db = NULL;
-    d_connection conn;
     QtCacheToolType Qt_CacheTool;
 
     void installCacheBackend()

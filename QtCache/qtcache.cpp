@@ -74,6 +74,11 @@ QString QtCache::errorLog() const
     return QString::fromStdString(err.value());
 }
 
+long QtCache::jobId() const
+{
+    return d->jobId();
+}
+
 QStringList QtCache::listObjects(const QString& filter = "") const
 {
     return d->listObjects(filter);
