@@ -185,6 +185,8 @@
     S SC=$$$OK
     
     TRY{
+	    ZN uci
+	    
         X code
     }CATCH EX{
         #dim ex as %Exception.AbstractException
@@ -192,13 +194,14 @@
         S ..LastStatus = SC
     }
     
+    ZN "%SYS"
     Q SC
 ]]></Implementation>
 </Method>
 </Class>
 
 
-<Project name="QtCache" LastModified="2015-11-08 17:58:38.207545" Target="ST^ySBR" TargetType="2">
+<Project name="QtCache" LastModified="2015-11-14 12:51:23.086189" Target="ST^ySBR" TargetType="2">
   <Items>
     <ProjectItem name="Qt.CacheTool" type="CLS"></ProjectItem>
     <ProjectItem name="ySBR.MAC" type="MAC"></ProjectItem>
