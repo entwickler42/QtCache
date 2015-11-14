@@ -73,6 +73,9 @@ private:
 
     QStringList loadFilters() const;
     void saveFilters(const QStringList&) const;
+
+    void preImportHook();
+    void postImportHook();
 };
 
 #endif // MAINWINDOW_H

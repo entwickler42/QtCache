@@ -53,8 +53,11 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->outputDirectory->setText(outputDirectory);
     ui->includeFilter->addItems(loadFilters());
     m_prefered_uci = conf->value("PreferedUCI").toString();
+    ui->preImportHook->setText(conf->value("PreImportHook","").toString());
+    ui->enablePreImportHook->setChecked(!ui->preImportHook->text().isEmpty());
+    ui->postImportHook->setText(conf->value("PostImportHook","").toString());
+    ui->enablePostImportHook->setChecked(!ui->postImportHook->text().isEmpty());
     parseCommandlineOptions();
-
     connect(QtCache::instance(), SIGNAL(reportProgress(QString,qint64,qint64)), this, SLOT(reportProgress(QString,qint64,qint64)));
 }
 
@@ -175,6 +178,7 @@ void MainWindow::on_importFiles_pressed()
     }
     setBuisyUI();
     try{
+        preImportHook();
         QString qspec = ui->compile->isChecked() ? ui->qspec->text() : QString("");
         abortTask = false;
         ui->progressBar->setMaximum(ui->listWidget->count());
@@ -198,6 +202,7 @@ void MainWindow::on_importFiles_pressed()
             }
             ui->progressBar->setValue(i+1);
         }
+        postImportHook();
         if (abortTask){
             ui->statusBar->showMessage(tr("Import aborted!"));
             ui->progressBar->setValue(0);
@@ -205,9 +210,44 @@ void MainWindow::on_importFiles_pressed()
             ui->statusBar->showMessage(tr("Import finished!"));
         }
     }catch(std::exception& ex){
+        ui->statusBar->showMessage(tr("Import failed!"));
         QMessageBox::critical(this, tr("Exception"), ex.what());
     }
     setIdleUI();
+}
+
+void MainWindow::preImportHook()
+{
+    if (ui->enablePreImportHook->isChecked() && !ui->preImportHook->text().isEmpty()){
+        try{
+            cache()->execute(ui->preImportHook->text());
+            conf->setValue("PreImportHook", ui->preImportHook->text());
+        }catch(std::exception& ex){
+            int rval = QMessageBox::warning(this,
+                                            tr("Exception"),
+                                            tr("Failed to execute pre import hook:\n\n%1").arg(ex.what()),
+                                            QMessageBox::Cancel|QMessageBox::Ignore,
+                                            QMessageBox::Ignore);
+            if (rval == QMessageBox::Cancel) throw;
+        }
+    }
+}
+
+void MainWindow::postImportHook()
+{
+    if (ui->enablePostImportHook->isChecked() && !ui->postImportHook->text().isEmpty()){
+        try{
+            cache()->execute(ui->postImportHook->text());
+            conf->setValue("PostImportHook", ui->postImportHook->text());
+        }catch(std::exception& ex){
+            int rval = QMessageBox::warning(this,
+                                            tr("Exception"),
+                                            tr("Failed to execute post import hook:\n\n%1").arg(ex.what()),
+                                            QMessageBox::Cancel|QMessageBox::Ignore,
+                                            QMessageBox::Ignore);
+            if (rval == QMessageBox::Cancel) throw;
+        }
+    }
 }
 
 void MainWindow::on_abortTask_pressed()
@@ -351,10 +391,14 @@ void MainWindow::parseCommandlineOptions()
     p.addOption(compileFlags);
     QCommandLineOption importDirectory("i", tr("Directory of Cachè Object to be imported"), "ImportDirectory");
     p.addOption(importDirectory);
-    QCommandLineOption exportDirectory("e", tr("Directory used for the Cachè Object export"), "ExportDirectory");
-    p.addOption(exportDirectory);
+    QCommandLineOption outputDirectory("e", tr("Directory used for the Cachè Object export"), "OutputDirectory");
+    p.addOption(outputDirectory);
     QCommandLineOption objectFilter("f", tr("Object filter used when exporting"), "Filter", "(?i).+int$;(?i).+mac$;(?i).+cls$");
     p.addOption(objectFilter);
+    QCommandLineOption preImportHook("pre-import-hook", tr("Cachè Object script to be executed before an import"), "COS");
+    p.addOption(preImportHook);
+    QCommandLineOption postImportHook("post-import-hook", tr("Cachè Object script to be executed after an import"), "COS");
+    p.addOption(postImportHook);
 
     p.process(QApplication::instance()->arguments());
 
@@ -371,7 +415,17 @@ void MainWindow::parseCommandlineOptions()
         foreach(const QString& i, p.values(importDirectory)){
             loadImportDirectory(i);
         }
-    }else if(p.isSet(exportDirectory)){
+    }
+    if(p.isSet(outputDirectory)){
+        ui->outputDirectory->setText(p.value(outputDirectory));
+    }
+    if(p.isSet(preImportHook)){
+        ui->preImportHook->setText(p.value(preImportHook));
+        ui->enablePreImportHook->setChecked(true);
+    }
+    if(p.isSet(postImportHook)){
+        ui->postImportHook->setText(p.value(postImportHook));
+        ui->enablePostImportHook->setChecked(true);
     }
 }
 
