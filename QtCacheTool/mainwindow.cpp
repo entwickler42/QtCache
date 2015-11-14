@@ -117,6 +117,7 @@ void MainWindow::on_selectServer_pressed()
                             tr("Sucessfully connected to %1").arg(dlg->server()) :
                             tr("Failed to connected to %1").arg(dlg->server())
                             );
+            ui->connectionString->setToolTip(tr("JobId: %1").arg(cache()->jobId()));
         }catch(std::exception& ex){
             QMessageBox::critical(this, tr("Exception"), ex.what());
         }catch(...){
