@@ -1,13 +1,13 @@
 QT += core gui
-
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
-
-TARGET = QtCacheUi
 TEMPLATE = lib
+TARGET = QtCacheUi
 
 DESTDIR = ../build
-
 DEFINES += QTCACHEUI_LIBRARY
+
+win32:VERSION = 1.0.3.0
+else:VERSION = 1.0.3
 
 SOURCES += \
     cacheconnectiondialog.cpp \

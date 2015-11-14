@@ -13,6 +13,7 @@
 */
 
 #include "mainwindow.h"
+#include "config.h"
 #include <poormanslogger.h>
 #include <QApplication>
 #include <QSettings>
@@ -44,10 +45,10 @@ int main(int argc, char *argv[])
 {
     PoorMansLogger(QString("%1.log").arg("errors"));
 
-    QCoreApplication::setApplicationName("Qt Caché Tool");
-    QCoreApplication::setOrganizationName("Entwickler42");
-    QCoreApplication::setOrganizationDomain("http://github.org/entwickler42");
-    QCoreApplication::setApplicationVersion("1.0.3");
+    QCoreApplication::setApplicationName(VER_FILEDESCRIPTION_STR);
+    QCoreApplication::setOrganizationName(VER_COMPANYNAME_STR);
+    QCoreApplication::setOrganizationDomain(VER_COMPANYDOMAIN_STR);
+    QCoreApplication::setApplicationVersion(VER_FILEVERSION_STR);
 
     QApplication app(argc, argv);
     i18n(&app);

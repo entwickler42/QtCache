@@ -1,9 +1,11 @@
-QT       -= gui
-
-TARGET = QtCache
+QT -= gui
 TEMPLATE = lib
+TARGET = QtCache
 
 DESTDIR = ../build
+
+win32:VERSION = 1.0.3.0
+else:VERSION = 1.0.3
 
 DEFINES += QTCACHE_LIBRARY
 
