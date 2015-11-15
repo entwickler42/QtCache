@@ -17,6 +17,7 @@
 
 #include "qtcache_global.h"
 #include <QObject>
+#include <poormanslogger.h>
 
 
 class QtCachePrivate;

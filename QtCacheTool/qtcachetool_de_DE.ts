@@ -347,4 +347,32 @@
         <translation type="unfinished"></translation>
     </message>
 </context>
+<context>
+    <name>QObject</name>
+    <message>
+        <location filename="main.cpp" line="49"/>
+        <source>===&gt; QtCacheTool started: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="main.cpp" line="64"/>
+        <source>&lt;=== QtCacheTool finished: %1</source>
+        <comment>QtCacheTool</comment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="main.cpp" line="67"/>
+        <source>&lt;=== QtCacheTool terminated: %1
+what: %1</source>
+        <comment>QtCacheTool</comment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="main.cpp" line="71"/>
+        <source>&lt;=== QtCacheTool terminated: %1
+what: </source>
+        <comment>QtCacheTool</comment>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
 </TS>

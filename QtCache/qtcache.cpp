@@ -14,7 +14,7 @@
 
 #include "qtcache.h"
 #include "qtcache_p.h"
-
+#include "poormanslogger.h"
 
 QtCache::QtCache()
     : d(new QtCachePrivate(this))

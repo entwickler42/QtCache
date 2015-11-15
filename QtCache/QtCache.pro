@@ -9,15 +9,15 @@ DESTDIR = ../build
 
 DEFINES += QTCACHE_LIBRARY
 
-SOURCES += qtcache.cpp \
-    poormanslogger.cpp \
+SOURCES += poormanslogger.cpp \
+    qtcache.cpp \
     qtcacheexception.cpp
 
-HEADERS += qtcache.h \
-           qtcache_global.h \
+HEADERS += poormanslogger.h \
+    qtcache_global.h \
     qtcache_p.h \
+    qtcache.h \
     qtcacheexception.h \
-    poormanslogger.h
 
 TRANSLATIONS = qtcache_de_DE.ts
 

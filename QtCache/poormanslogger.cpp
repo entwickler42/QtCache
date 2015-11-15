@@ -20,6 +20,10 @@
 #include <sys/stat.h>
 
 
+using namespace PML;
+
+PoorMansLogger PML::LOG("error.log");
+
 PoorMansLogger::PoorMansLogger(const QString& filepath)
 {
     QString _filepath(filepath);

@@ -288,9 +288,8 @@ void MainWindow::on_exportFiles_pressed()
                 QCoreApplication::processEvents();
                 cache()->exportObject(ui->outputDirectory->text(), s);
             }catch(std::exception& ex){
-                if (ui->ignoreExportErrors){
-                    qDebug(qPrintable(tr("Failed to export %1\n%2").arg(s, ex.what())));;
-                }else{
+                PML::LOG << tr("Failed to export %1\n%2").arg(s, ex.what());
+                if (!ui->ignoreExportErrors){
                     QString err = tr("%1\n%2").arg(ex.what(), cache()->errorLog());
                     int rval = QMessageBox::warning(this, tr("Exception"),err,
                                                     QMessageBox::Cancel|QMessageBox::Ignore,

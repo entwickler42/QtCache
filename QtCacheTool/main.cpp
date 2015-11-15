@@ -14,13 +14,11 @@
 
 #include "mainwindow.h"
 #include "config.h"
-#include <poormanslogger.h>
 #include <QApplication>
 #include <QTranslator>
 #include <QSettings>
 #include <QDateTime>
 #include <QDir>
-
 
 
 void i18n(QApplication* application)
@@ -45,10 +43,9 @@ void i18n(QApplication* application)
 
 int main(int argc, char *argv[])
 {
-    PoorMansLogger log("errors.log");
     int sc = -1;
     try{
-        log << QObject::tr("===> QtCacheTool started: %1").arg(
+        PML::LOG << QObject::tr("===> QtCacheTool started: %1").arg(
                          QDateTime::currentDateTime().toString(Qt::ISODate));
 
         QCoreApplication::setApplicationName(VER_FILEDESCRIPTION_STR);
@@ -63,14 +60,14 @@ int main(int argc, char *argv[])
         w.show();
         sc = app.exec();
 
-        log << QObject::tr("<=== QtCacheTool finished: %1", "QtCacheTool").arg(
+        PML::LOG << QObject::tr("<=== QtCacheTool finished: %1", "QtCacheTool").arg(
                          QDateTime::currentDateTime().toString(Qt::ISODate));
     }catch(std::exception& ex){
-        log << QObject::tr("<=== QtCacheTool terminated: %1\nwhat: %1", "QtCacheTool").arg(
+        PML::LOG << QObject::tr("<=== QtCacheTool terminated: %1\nwhat: %1", "QtCacheTool").arg(
                          QDateTime::currentDateTime().toString(Qt::ISODate),
                          ex.what());
     }catch(...){
-        log << QObject::tr("<=== QtCacheTool terminated: %1\nwhat: ", "QtCacheTool").arg(
+        PML::LOG << QObject::tr("<=== QtCacheTool terminated: %1\nwhat: ", "QtCacheTool").arg(
                          QDateTime::currentDateTime().toString(Qt::ISODate),
                          "unknown error");
     }

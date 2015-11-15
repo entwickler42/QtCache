@@ -17,26 +17,27 @@
 
 #include "qtcache_global.h"
 #include <QString>
-
 #include <iostream>
 
-std::ostream& operator << (std::ostream& s, const QString& str)
-{
-    s << qPrintable(str);
-    return s;
-}
+
+namespace PML {
 
 class QTCACHESHARED_EXPORT PoorMansLogger
 {
 public:
-    PoorMansLogger(const QString& filepath = "logfile.log");
+    PoorMansLogger(const QString& filepath = "error.log");
     ~PoorMansLogger();
 
-    PoorMansLogger& operator << (const QString& s)
+    const PoorMansLogger& operator << (const QString& s) const
     {
-        std::cerr << s << std::endl;
+        std::cerr << qPrintable(s) << std::endl;
         return *this;
     }
 };
+
+extern QTCACHESHARED_EXPORT PoorMansLogger LOG;
+
+}
+
 
 #endif // POORMANSLOGGER_H
