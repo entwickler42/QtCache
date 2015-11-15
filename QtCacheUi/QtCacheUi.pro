@@ -30,15 +30,15 @@ win32:LIBS += "-L$(DESTDIR)" -lQtCache
 FORMS += \
     cacheconnectiondialog.ui
 
+TRANSLATIONS = qtcacheui_de_DE.ts
+
 RESOURCES += \
-    resources.qrc
+    QtCacheUi.qrc
+
+OTHER_FILES += qtcacheui_de_DE.ts
 
 system(lupdate -no-obsolete QtCacheUi.pro)
 system(lrelease QtCacheUi.pro)
-
-TRANSLATIONS = qtcacheui_de_DE.ts
-
-OTHER_FILES += qtcacheui_de_DE.ts
 
 # include(../Intersystems/Intersystems.pri)
 

@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/src">
+        <file>QtCache.xml</file>
+    </qresource>
+</RCC>

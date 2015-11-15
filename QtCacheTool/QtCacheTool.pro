@@ -16,22 +16,22 @@ HEADERS  += mainwindow.h \
 
 FORMS    += mainwindow.ui
 
+TRANSLATIONS = qtcachetool_de_DE.ts
+
+RESOURCES += \
+    QtCacheTool.qrc
+
+RC_FILE = qtcachetool.rc
+
+OTHER_FILES += qtcachetool_de_DE.ts \
+    qtcachetool.rc
+
 INCLUDEPATH += ../QtCache ../QtCacheUi
 
 win32:LIBS += "-L$(DESTDIR)" -lQtCache -lQtCacheUi
 
-RESOURCES += \
-    resources.qrc
-
-RC_FILE = qtcachetool.rc
-
 system(lupdate -no-obsolete QtCacheTool.pro)
 system(lrelease QtCacheTool.pro)
-
-TRANSLATIONS = qtcachetool_de_DE.ts
-
-OTHER_FILES += qtcachetool_de_DE.ts \
-    qtcachetool.rc
 
 # include(../Intersystems/Intersystems.pri)
 

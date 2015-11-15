@@ -251,7 +251,7 @@
         <translation>Empfange die Liste der Caché Objekte...</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="287"/>
+        <location filename="mainwindow.cpp" line="286"/>
         <source>Exporting %1</source>
         <translation>Exportiere %1</translation>
     </message>

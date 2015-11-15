@@ -2,6 +2,9 @@ CONFIG += cppbind exceptions rtti
 
 INCLUDEPATH += $$PWD
 
+RESOURCES += \
+    $$PWD/Intersystems.qrc
+
 OTHER_FILES += $$PWD/QtCache.xml
 
 cppbind{

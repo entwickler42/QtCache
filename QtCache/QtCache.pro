@@ -19,6 +19,13 @@ HEADERS += qtcache.h \
     qtcacheexception.h \
     poormanslogger.h
 
+TRANSLATIONS = qtcache_de_DE.ts
+
+RESOURCES += \
+    QtCache.qrc
+
+OTHER_FILES += qtcache_de_DE.ts
+
 unix {
     target.path = /usr/lib
     INSTALLS += target
@@ -27,8 +34,7 @@ unix {
 system(lupdate -no-obsolete QtCache.pro)
 system(lrelease QtCache.pro)
 
-TRANSLATIONS = qtcache_de_DE.ts
-
-OTHER_FILES += qtcache_de_DE.ts
-
 include(../Intersystems/Intersystems.pri)
+
+
+
