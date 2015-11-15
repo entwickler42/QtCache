@@ -22,18 +22,25 @@
 
 PoorMansLogger::PoorMansLogger(const QString& filepath)
 {
-    // unlink(qPrintable(QString(filepath).prepend("previous_")));
-    // rename(qPrintable(filepath), qPrintable(QString(filepath).prepend("previous_")));
     QString _filepath(filepath);
     _filepath.prepend('_').prepend(QDate::currentDate().toString(Qt::ISODate));
+    int FH = -1;
+    int retry = 3;
+    do{
+        FH = open(qPrintable(_filepath), O_WRONLY | O_APPEND | O_CREAT);
+        _filepath.replace(".","_.");
+    }while(retry-- && FH < 0);
 
-    FH = open(qPrintable(_filepath), O_WRONLY | O_APPEND | O_CREAT);
-    dup2(FH, fileno(stderr));
-    dup2(FH, fileno(stdout));
+    if (FH > -1){
+        dup2(FH, fileno(stderr));
+        dup2(FH, fileno(stdout));
+        close(FH);
+    }
 }
 
 PoorMansLogger::~PoorMansLogger()
 {
-    close(FH);
+    fclose(stderr);
+    fclose(stdout);
 }
 

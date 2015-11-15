@@ -24,9 +24,6 @@ class QTCACHESHARED_EXPORT PoorMansLogger
 public:
     PoorMansLogger(const QString& filepath = "logfile.log");
     ~PoorMansLogger();
-
-private:
-    int FH;
 };
 
 #endif // POORMANSLOGGER_H
