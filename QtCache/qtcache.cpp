@@ -14,7 +14,6 @@
 
 #include "qtcache.h"
 #include "qtcache_p.h"
-#include <QTranslator>
 
 
 QtCache::QtCache()

@@ -18,12 +18,11 @@
 #include <fcntl.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <QDate>
+
 
 PoorMansLogger::PoorMansLogger(const QString& filepath)
 {
     QString _filepath(filepath);
-    _filepath.prepend('_').prepend(QDate::currentDate().toString(Qt::ISODate));
     int FH = -1;
     int retry = 3;
     do{
@@ -39,8 +38,5 @@ PoorMansLogger::PoorMansLogger(const QString& filepath)
 }
 
 PoorMansLogger::~PoorMansLogger()
-{
-    fclose(stderr);
-    fclose(stdout);
-}
+{}
 

@@ -16,9 +16,11 @@
 #include "config.h"
 #include <poormanslogger.h>
 #include <QApplication>
-#include <QSettings>
 #include <QTranslator>
+#include <QSettings>
+#include <QDateTime>
 #include <QDir>
+
 
 
 void i18n(QApplication* application)
@@ -43,18 +45,35 @@ void i18n(QApplication* application)
 
 int main(int argc, char *argv[])
 {
-    PoorMansLogger(QString("%1.log").arg("errors"));
+    PoorMansLogger log("errors.log");
+    int sc = -1;
+    try{
+        log << QObject::tr("===> QtCacheTool started: %1").arg(
+                         QDateTime::currentDateTime().toString(Qt::ISODate));
 
-    QCoreApplication::setApplicationName(VER_FILEDESCRIPTION_STR);
-    QCoreApplication::setOrganizationName(VER_COMPANYNAME_STR);
-    QCoreApplication::setOrganizationDomain(VER_COMPANYDOMAIN_STR);
-    QCoreApplication::setApplicationVersion(VER_FILEVERSION_STR);
+        QCoreApplication::setApplicationName(VER_FILEDESCRIPTION_STR);
+        QCoreApplication::setOrganizationName(VER_COMPANYNAME_STR);
+        QCoreApplication::setOrganizationDomain(VER_COMPANYDOMAIN_STR);
+        QCoreApplication::setApplicationVersion(VER_FILEVERSION_STR);
 
-    QApplication app(argc, argv);
-    i18n(&app);
+        QApplication app(argc, argv);
+        i18n(&app);
 
-    MainWindow w;
-    w.show();
+        MainWindow w;
+        w.show();
+        sc = app.exec();
 
-    return app.exec();
+        log << QObject::tr("<=== QtCacheTool finished: %1", "QtCacheTool").arg(
+                         QDateTime::currentDateTime().toString(Qt::ISODate));
+    }catch(std::exception& ex){
+        log << QObject::tr("<=== QtCacheTool terminated: %1\nwhat: %1", "QtCacheTool").arg(
+                         QDateTime::currentDateTime().toString(Qt::ISODate),
+                         ex.what());
+    }catch(...){
+        log << QObject::tr("<=== QtCacheTool terminated: %1\nwhat: ", "QtCacheTool").arg(
+                         QDateTime::currentDateTime().toString(Qt::ISODate),
+                         "unknown error");
+    }
+
+    return sc;
 }
