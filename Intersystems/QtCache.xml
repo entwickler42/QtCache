@@ -201,38 +201,9 @@
 </Class>
 
 
-<Project name="QtCache" LastModified="2015-11-14 12:51:23.086189" Target="ST^ySBR" TargetType="2">
+<Project name="QtCache" LastModified="2015-11-15 12:45:39.884464" Target="ST^ySBR" TargetType="2">
   <Items>
     <ProjectItem name="Qt.CacheTool" type="CLS"></ProjectItem>
-    <ProjectItem name="ySBR.MAC" type="MAC"></ProjectItem>
   </Items>
 </Project>
-
-
-<Routine name="ySBR" type="MAC" languagemode="0"><![CDATA[
-ST
- B
- 
- #dim QtCache as Qt.CacheTool = ##class(Qt.CacheTool).%New()
- 
- #dim fstream as %Stream.FileBinary = ##class(%Stream.FileBinary).%New()
- #dim stream as %Stream.GlobalBinary = ##class(%Stream.GlobalBinary).%New()
- 
- ;S fstream.Filename = "d:\src\QtCache\build\Import\stage2\Package_Toplog.xml"
- S fstream.Filename = "d:\src\QtCache\build\Import\stage3\KZ0311.mac"
- while 'fstream.AtEnd {
- 	S buf=fstream.Read()
- 	D stream.Write(buf)
- }
- 
- D QtCache.ImportXML("DEV", stream, "ckf")
- 
- Q
- 
- #dim stream as %Stream.GlobalBinary
- S stream = QtCache.ListObjects("DEV", "^.+cls")
- WHILE 'stream.AtEnd {
- 	W !,stream.ReadLine()
- }
-]]></Routine>
 </Export>

@@ -78,8 +78,8 @@ public:
 
         forceNew = (
                     cn != this->cn ||
-                    user != this->user ||
-                    passwd != this->passwd
+                user != this->user ||
+                passwd != this->passwd
                 );
         if (forceNew && connected){
             disconnect();
@@ -236,11 +236,23 @@ private:
 
     void installCacheBackend()
     {
-#ifdef CACHEVISM
-        VISM::_DVisM vism;
-        vism.setControl("{88f75483-0574-11d0-8085-0000c0bd354b}");
-#endif
+        try{
+            QFile xml(":/src/QtCache.xml");
+            if (!xml.open(QFile::ReadOnly)){
+                throw std::exception("can not open QtCache.xml from resources");
+            }
+            QByteArray data = xml.readAll();
+            d_ref<d_bin_stream> bstream = d_bin_stream::create_new(db);
+            bstream->write(d_binary(data.toStdString()));
+            bstream->rewind();
+            d_string qspec = "cf";
+            D_type* args[2] = { &bstream, &qspec };
+            Dyn_obj::run_class_method(db, L"%SYSTEM.OBJ", L"LoadStream", args, 2);
+        }catch(std::exception& ex){
+            std::cerr << ex.what();
+        }
     }
+
 };
 
 
