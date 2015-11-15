@@ -30,6 +30,8 @@ INCLUDEPATH += ../QtCache ../QtCacheUi
 
 win32:LIBS += "-L$(DESTDIR)" -lQtCache -lQtCacheUi
 
+QMAKE_LFLAGS_WINDOWS = /SUBSYSTEM:WINDOWS,5.01
+
 system(lupdate -no-obsolete QtCacheTool.pro)
 system(lrelease QtCacheTool.pro)
 
