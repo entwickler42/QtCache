@@ -56,18 +56,6 @@
 ]]></Implementation>
 </Method>
 
-<Method name="GetLastStatus">
-<ReturnType>%Status</ReturnType>
-<Implementation><![CDATA[    Q ..LastStatus
-]]></Implementation>
-</Method>
-
-<Method name="GetErrorLog">
-<ReturnType>%String</ReturnType>
-<Implementation><![CDATA[    Q ..ErrorLog
-]]></Implementation>
-</Method>
-
 <Method name="ListNamespaces">
 <ReturnType>%Library.List</ReturnType>
 <Implementation><![CDATA[
@@ -201,7 +189,7 @@
 </Class>
 
 
-<Project name="QtCache" LastModified="2015-11-15 12:45:39.884464" Target="ST^ySBR" TargetType="2">
+<Project name="QtCache" LastModified="2015-11-15 13:12:54.402025" Target="ST^ySBR" TargetType="2">
   <Items>
     <ProjectItem name="Qt.CacheTool" type="CLS"></ProjectItem>
   </Items>

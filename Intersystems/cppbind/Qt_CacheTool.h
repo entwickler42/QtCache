@@ -72,10 +72,6 @@ public:
 
    virtual d_ref<d_bin_stream> ExportXML(const d_string& uci, const d_string& object);
 
-   virtual d_string GetErrorLog();
-
-   virtual d_status GetLastStatus();
-
    virtual d_status ImportXML(const d_string& uci, const d_ref<d_bin_stream>& xml, const d_string& qspec);
 
    static d_status LastStatusIsValid(Database* __db, const d_string& value);

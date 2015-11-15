@@ -159,32 +159,6 @@ d_ref<d_bin_stream> Qt_CacheTool::ExportXML(const d_string& uci, const d_string&
    return __res;
 }
 
-d_string Qt_CacheTool::GetErrorLog()
-{
-   GEN_DECLARE_ARGS_AND_DB();
-   wchar_t __mtd_name[] = L"GetErrorLog";
-
-   d_string __res;
-   __args_mgr.set_next_as_res(&__res);
-
-   Critical_section cs(__db->get_cs_handle());
-   __db->run_method(get_ref(), __srv_cl_name, __mtd_name, __args_mgr);
-   return __res;
-}
-
-d_status Qt_CacheTool::GetLastStatus()
-{
-   GEN_DECLARE_ARGS_AND_DB();
-   wchar_t __mtd_name[] = L"GetLastStatus";
-
-   d_status __res;
-   __args_mgr.set_next_as_res(&__res);
-
-   Critical_section cs(__db->get_cs_handle());
-   __db->run_method(get_ref(), __srv_cl_name, __mtd_name, __args_mgr);
-   return __res;
-}
-
 d_status Qt_CacheTool::ImportXML(const d_string& uci, const d_ref<d_bin_stream>& xml, const d_string& qspec)
 {
    GEN_DECLARE_ARGS_AND_DB();

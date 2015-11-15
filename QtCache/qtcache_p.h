@@ -152,7 +152,7 @@ public:
         d_string _uci(uci.toStdString());
         d_string _filter = filter.toStdString();
         d_ref<d_char_stream> bstream = tool()->ListObjects(_uci, _filter);
-        d_status sc = tool()->GetLastStatus();
+        d_status sc = tool()->getLastStatus();
         if (sc.get_code()){
             throw QtCacheException(sc);
         }
@@ -206,7 +206,7 @@ public:
         d_string _objectName = objectName.toStdString();
         d_string _uci = uci.toStdString();
         d_ref<d_bin_stream> bstream = tool()->ExportXML(_uci, _objectName);
-        d_status sc = tool()->GetLastStatus();
+        d_status sc = tool()->getLastStatus();
         if (sc.get_code()){
             throw QtCacheException(sc);
         }
