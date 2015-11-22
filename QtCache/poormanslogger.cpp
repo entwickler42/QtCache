@@ -13,7 +13,11 @@
 */
 
 #include "poormanslogger.h"
+#ifdef WIN32
 #include <io.h>
+#else
+#include <unistd.h>
+#endif
 #include <stdio.h>
 #include <fcntl.h>
 #include <sys/types.h>

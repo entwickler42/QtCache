@@ -16,7 +16,7 @@
 #define QTCACHEEXCEPTION
 
 #include <QString>
-#include <exception>
+#include <stdexcept>
 
 namespace InterSystems {
     class d_string;
@@ -25,15 +25,19 @@ namespace InterSystems {
 }
 
 class QtCacheException
-        : public std::exception
+        : public std::runtime_error
 {
 public:
     QtCacheException(const QString& msg)
-        : std::exception(msg.toStdString().c_str())
+        : QtCacheException(msg.toStdString().c_str())
     {}
 
     QtCacheException(const std::string& msg)
-        : std::exception(msg.c_str())
+        : QtCacheException(msg.c_str())
+    {}
+
+    QtCacheException(const char* msg)
+        : std::runtime_error(msg)
     {}
 
     QtCacheException(const InterSystems::d_string& msg);

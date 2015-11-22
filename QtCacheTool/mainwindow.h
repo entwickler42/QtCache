@@ -26,6 +26,7 @@ class CacheConnectionDialog;
 class QSettings;
 
 
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT

@@ -239,7 +239,7 @@ private:
         try{
             QFile xml(":/src/QtCache.xml");
             if (!xml.open(QFile::ReadOnly)){
-                throw std::exception("can not open QtCache.xml from resources");
+                throw QtCacheException("can not open QtCache.xml from resources");
             }
             QByteArray data = xml.readAll();
             d_ref<d_bin_stream> bstream = d_bin_stream::create_new(db);

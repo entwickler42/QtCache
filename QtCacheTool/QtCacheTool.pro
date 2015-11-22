@@ -29,11 +29,12 @@ OTHER_FILES += qtcachetool_de_DE.ts \
 INCLUDEPATH += ../QtCache ../QtCacheUi
 
 win32:LIBS += "-L$(DESTDIR)" -lQtCache -lQtCacheUi
+linux-g++:LIBS += "-L$(DESTDIR)" -lQtCache -lQtCacheUi
 
 QMAKE_LFLAGS_WINDOWS = /SUBSYSTEM:WINDOWS,5.01
 
 system(lupdate -no-obsolete QtCacheTool.pro)
 system(lrelease QtCacheTool.pro)
 
-# include(../Intersystems/Intersystems.pri)
+linux-g++:include(../Intersystems/Intersystems.pri)
 

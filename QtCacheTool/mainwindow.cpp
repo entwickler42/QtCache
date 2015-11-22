@@ -24,9 +24,9 @@
 #include <QSettings>
 #include <QRegExp>
 #include <QCommandLineParser>
+#include <QStringList>
 
-
-QStringList& operator << (QStringList& ls, QComboBox& cb)
+QStringList& operator << (QStringList ls, const QComboBox& cb)
 {
     for(int i=0; i<cb.count(); i++){
         ls << cb.itemText(i);
@@ -113,7 +113,7 @@ void MainWindow::on_selectServer_pressed()
                     }
                 }
             }else{
-                throw std::exception(qPrintable(cache()->lastStatus()));
+                throw QtCacheException(cache()->lastStatus());
             }
             ui->statusBar->showMessage(
                         cache()->isConnected() ?
