@@ -9,13 +9,13 @@ OTHER_FILES += $$PWD/QtCache.xml
 
 cppbind{
     CONFIG(debug, debug|release){
-        WIN32:LIBS += "-Lc:/InterSystems/TryCache/dev/cpp/lib/" -lcppbind_msvc120d
+        win32:LIBS += "-Lc:/InterSystems/TryCache/dev/cpp/lib/" -lcppbind_msvc120d
         linux-g++:LIBS += "-L/usr/cachesys/bin" -lcppbind
     }else{
-        WIN32:LIBS += "-Lc:/InterSystems/TryCache/dev/cpp/lib/" -lcppbind_msvc120
+        win32:LIBS += "-Lc:/InterSystems/TryCache/dev/cpp/lib/" -lcppbind_msvc120
         linux-g++:LIBS += "-L/usr/cachesys/bin" -lcppbind
     }
-    WIN32:INCLUDEPATH *= "c:/InterSystems/TryCache/dev/cpp/include/"
+    win32:INCLUDEPATH *= "c:/InterSystems/TryCache/dev/cpp/include/"
     linux-g++:INCLUDEPATH *= "/usr/cachesys/dev/cpp/include/"
     INCLUDEPATH += $$PWD/cppbind/
     DEFINES += CACHECPPBIND
