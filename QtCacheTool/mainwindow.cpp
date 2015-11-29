@@ -16,17 +16,20 @@
 #include "ui_mainwindow.h"
 
 #include <qtcache.h>
-#include <qtcacheexception.h>
 #include <qtcacheui.h>
+#include <qtcacheexception.h>
 #include <cacheconnectiondialog.h>
+#include <qtcachexmlreader.h>
+#include <QCommandLineParser>
+#include <QStringList>
 #include <QMessageBox>
 #include <QFileDialog>
 #include <QSettings>
 #include <QRegExp>
-#include <QCommandLineParser>
-#include <QStringList>
 
-QStringList& operator << (QStringList ls, const QComboBox& cb)
+
+
+QStringList operator << (QStringList ls, const QComboBox& cb)
 {
     for(int i=0; i<cb.count(); i++){
         ls << cb.itemText(i);
@@ -138,9 +141,7 @@ void MainWindow::on_addFiles_pressed()
         dlg.setFileMode(QFileDialog::ExistingFiles);
         if (dlg.exec() == QFileDialog::Accepted){
             foreach(const QString& s, dlg.selectedFiles()){
-                QListWidgetItem* item = new QListWidgetItem(ui->listWidget);
-                item->setIcon(QIcon(":/QtCacheTool/ImportFile"));
-                item->setText(s);
+                loadImportFile(dlg.directory().absoluteFilePath(s));
             }
             conf->setValue("DefaultImportDirectory", dlg.directory().absolutePath());
         }
@@ -149,6 +150,20 @@ void MainWindow::on_addFiles_pressed()
     }catch(...){
         QMessageBox::critical(this, tr("Exception"), tr("Unknown exception occured!"));
     }
+}
+
+void MainWindow::loadImportDirectory(const QString& path)
+{
+    foreach(const QString& i, QDir(path).entryList(QDir::Files)){
+        loadImportFile(QDir(path).absoluteFilePath(i));
+    }
+}
+
+void MainWindow::loadImportFile(const QString& filepath)
+{
+    QListWidgetItem *item = new QListWidgetItem(ui->listWidget);
+    item->setIcon(QIcon(":/QtCacheTool/ImportFile"));
+    item->setText(filepath);
 }
 
 void MainWindow::on_removeFiles_pressed()
@@ -179,13 +194,18 @@ void MainWindow::on_importFiles_pressed()
     setBuisyUI();
     try{
         preImportHook();
-        QString qspec = ui->compile->isChecked() ? ui->qspec->text() : QString("");
         abortTask = false;
         ui->progressBar->setMaximum(ui->listWidget->count());
+
+        QString qspec = ui->compile->isChecked() ? ui->qspec->text() : QString("");
+        QList<QtCacheXml::Reader> import_readers;
+
         for(int i=0; !abortTask && i<ui->listWidget->count(); i++){
             QListWidgetItem* item = ui->listWidget->item(i);
             ui->statusBar->showMessage(tr("Importing %1").arg(item->text()));
             try{
+                import_readers.push_back(QtCacheXml::Reader(item->text()));
+
                 cache()->importObject(item->text(), qspec);
                 item->setIcon(QIcon(":/QtCacheTool/ImportFileOk"));
                 QCoreApplication::processEvents();
@@ -425,15 +445,6 @@ void MainWindow::parseCommandlineOptions()
     if(p.isSet(postImportHook)){
         ui->postImportHook->setText(p.value(postImportHook));
         ui->enablePostImportHook->setChecked(true);
-    }
-}
-
-void MainWindow::loadImportDirectory(const QString& path)
-{
-    foreach(const QString& i, QDir(path).entryList(QDir::Files)){
-        QListWidgetItem *item = new QListWidgetItem(ui->listWidget);
-        item->setText(QDir(path).absoluteFilePath(i));
-        item->setIcon(QIcon(":/QtCacheTool/ImportFile"));
     }
 }
 

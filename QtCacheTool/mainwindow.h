@@ -46,6 +46,7 @@ protected:
 
     void parseCommandlineOptions();
     void loadImportDirectory(const QString& path);
+    void loadImportFile(const QString& filepath);
 
     void setBuisyUI();
     void setIdleUI();
