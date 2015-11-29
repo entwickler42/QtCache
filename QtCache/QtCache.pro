@@ -11,13 +11,17 @@ DEFINES += QTCACHE_LIBRARY
 
 SOURCES += poormanslogger.cpp \
     qtcache.cpp \
-    qtcacheexception.cpp
+    qtcacheexception.cpp \
+    qtcachexmlobject.cpp \
+    qtcachexmlreader.cpp
 
 HEADERS += poormanslogger.h \
     qtcache_global.h \
     qtcache_p.h \
     qtcache.h \
     qtcacheexception.h \
+    qtcachexmlobject.h \
+    qtcachexmlreader.h
 
 TRANSLATIONS = qtcache_de_DE.ts
 
