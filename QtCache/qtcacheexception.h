@@ -32,19 +32,19 @@ public:
         : QtCacheException(msg.toStdString().c_str())
     {}
 
-    QtCacheException(const std::string& msg)
+    explicit QtCacheException(const std::string& msg)
         : QtCacheException(msg.c_str())
     {}
 
-    QtCacheException(const char* msg)
+    explicit QtCacheException(const char* msg)
         : std::runtime_error(msg)
     {}
 
-    QtCacheException(const InterSystems::d_string& msg);
+    explicit QtCacheException(const InterSystems::d_string& msg);
 
-    QtCacheException(const InterSystems::d_status& sc);
+    explicit QtCacheException(const InterSystems::d_status& sc);
 
-    QtCacheException(const InterSystems::Db_err& err);
+    explicit QtCacheException(const InterSystems::Db_err& err);
 };
 
 #endif // QTCACHEEXCEPTION
