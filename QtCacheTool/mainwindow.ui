@@ -2,19 +2,11 @@
 <ui version="4.0">
  <class>MainWindow</class>
  <widget class="QMainWindow" name="MainWindow">
-  <property name="geometry">
-   <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>436</width>
-    <height>535</height>
-   </rect>
-  </property>
   <property name="windowTitle">
    <string>Qt Caché Tool</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="resources.qrc">
+   <iconset resource="QtCacheTool.qrc">
     <normaloff>:/QtCacheTool/img/application.png</normaloff>:/QtCacheTool/img/application.png</iconset>
   </property>
   <widget class="QWidget" name="centralWidget">
@@ -42,14 +34,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QComboBox" name="targetUCI">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-          </widget>
+          <widget class="QComboBox" name="targetUCI"/>
          </item>
          <item>
           <widget class="QPushButton" name="selectServer">
@@ -85,7 +70,7 @@
            <attribute name="title">
             <string>File List</string>
            </attribute>
-           <layout class="QHBoxLayout" name="horizontalLayout_2">
+           <layout class="QVBoxLayout" name="verticalLayout_3">
             <item>
              <widget class="QListWidget" name="listWidget">
               <property name="editTriggers">
@@ -106,7 +91,7 @@
              </widget>
             </item>
             <item>
-             <layout class="QVBoxLayout" name="verticalLayout_3">
+             <layout class="QHBoxLayout" name="horizontalLayout_2">
               <item>
                <widget class="QPushButton" name="addFiles">
                 <property name="text">
@@ -122,14 +107,14 @@
                </widget>
               </item>
               <item>
-               <spacer name="verticalSpacer">
+               <spacer name="horizontalSpacer_2">
                 <property name="orientation">
-                 <enum>Qt::Vertical</enum>
+                 <enum>Qt::Horizontal</enum>
                 </property>
                 <property name="sizeHint" stdset="0">
                  <size>
-                  <width>20</width>
-                  <height>40</height>
+                  <width>40</width>
+                  <height>20</height>
                  </size>
                 </property>
                </spacer>
@@ -141,12 +126,6 @@
                   <horstretch>0</horstretch>
                   <verstretch>0</verstretch>
                  </sizepolicy>
-                </property>
-                <property name="minimumSize">
-                 <size>
-                  <width>0</width>
-                  <height>46</height>
-                 </size>
                 </property>
                 <property name="text">
                  <string>Import</string>
@@ -333,7 +312,7 @@
                </size>
               </property>
               <property name="icon">
-               <iconset resource="resources.qrc">
+               <iconset resource="QtCacheTool.qrc">
                 <normaloff>:/QtCacheTool/img/folder.png</normaloff>:/QtCacheTool/img/folder.png</iconset>
               </property>
              </widget>
@@ -408,7 +387,7 @@
                 <string>Save current filter to configuration</string>
                </property>
                <property name="icon">
-                <iconset resource="resources.qrc">
+                <iconset resource="QtCacheTool.qrc">
                  <normaloff>:/QtCacheTool/img/filesave.png</normaloff>:/QtCacheTool/img/filesave.png</iconset>
                </property>
               </widget>
@@ -431,7 +410,7 @@
                 <string>Remove current filter from configuration</string>
                </property>
                <property name="icon">
-                <iconset resource="resources.qrc">
+                <iconset resource="QtCacheTool.qrc">
                  <normaloff>:/QtCacheTool/img/14_layer_deletelayer.png</normaloff>:/QtCacheTool/img/14_layer_deletelayer.png</iconset>
                </property>
               </widget>
@@ -535,7 +514,7 @@
   <tabstop>abortTask</tabstop>
  </tabstops>
  <resources>
-  <include location="resources.qrc"/>
+  <include location="QtCacheTool.qrc"/>
  </resources>
  <connections>
   <connection>

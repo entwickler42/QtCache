@@ -18,7 +18,6 @@
 #include <QFile>
 #include <QXmlStreamReader>
 
-
 using namespace QtCacheXml;
 
 Reader::Reader(QObject* parent)

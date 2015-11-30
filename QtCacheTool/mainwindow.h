@@ -18,14 +18,11 @@
 #include <QMainWindow>
 #include <qtcache.h>
 
-
 namespace Ui {
     class MainWindow;
 }
 class CacheConnectionDialog;
 class QSettings;
-
-
 
 class MainWindow : public QMainWindow
 {
