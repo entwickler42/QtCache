@@ -9,10 +9,12 @@ win32:VERSION = 1.0.3.0
 else:VERSION = 1.0.3
 
 SOURCES += main.cpp\
-        mainwindow.cpp
+        mainwindow.cpp \
+    qtcachetoolsettings.cpp
 
 HEADERS  += mainwindow.h \
-    config.h
+    config.h \
+    qtcachetoolsettings.h
 
 FORMS    += mainwindow.ui
 

@@ -17,6 +17,7 @@
 
 #include <QMainWindow>
 #include <qtcache.h>
+#include "qtcachetoolsettings.h"
 
 namespace Ui {
     class MainWindow;
@@ -65,16 +66,17 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
-    QSettings* conf;
+    QtCacheToolSettings* conf;
     CacheConnectionDialog* dlg;
     bool abortTask = false;
-    QString m_prefered_uci = "";
 
     QStringList loadFilters() const;
     void saveFilters(const QStringList&) const;
 
     void preImportHook();
     void postImportHook();
+
+    void saveSettings();
 };
 
 #endif // MAINWINDOW_H

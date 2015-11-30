@@ -27,8 +27,6 @@
 #include <QSettings>
 #include <QRegExp>
 
-
-
 QStringList operator << (QStringList ls, const QComboBox& cb)
 {
     for(int i=0; i<cb.count(); i++){
@@ -40,45 +38,57 @@ QStringList operator << (QStringList ls, const QComboBox& cb)
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
-    conf(new QSettings("QtCacheTool.ini", QSettings::IniFormat)),
+    conf(new QtCacheToolSettings(this)),
     dlg(new CacheConnectionDialog(this))
 {
     ui->setupUi(this);
-    ui->qspec->setText(conf->value("QSPEC", "cfk").toString());
+    ui->qspec->setText(conf->QSPEC());
     dlg->setUci(QStringList() << "%SYS");
     dlg->setUciEnabled(false);
     dlg->setFormat(CacheConnectionDialog::NAMESPACE_FLAG);
-    dlg->load(conf);
-    QString outputDirectory = conf->value("DefaultExportDirectory", QDir::currentPath()).toString();
+    dlg->load(conf->config());
+    QString outputDirectory = conf->config()->value("DefaultExportDirectory", QDir::currentPath()).toString();
     if (!QDir(outputDirectory).exists()){
         outputDirectory = QDir::currentPath();
     }
     ui->outputDirectory->setText(outputDirectory);
     ui->includeFilter->addItems(loadFilters());
-    m_prefered_uci = conf->value("PreferedUCI").toString();
-    ui->preImportHook->setText(conf->value("PreImportHook","").toString());
-    ui->enablePreImportHook->setChecked(!ui->preImportHook->text().isEmpty());
-    ui->postImportHook->setText(conf->value("PostImportHook","").toString());
-    ui->enablePostImportHook->setChecked(!ui->postImportHook->text().isEmpty());
+
+    ui->preImportHook->setText(conf->preImportHook());
+    ui->enablePreImportHook->setChecked(!conf->preImportHook().isEmpty());
+
+    ui->postImportHook->setText(conf->postImportHook());
+    ui->enablePostImportHook->setChecked(!conf->postImportHook().isEmpty());
+
     parseCommandlineOptions();
     connect(QtCache::instance(), SIGNAL(reportProgress(QString,qint64,qint64)), this, SLOT(reportProgress(QString,qint64,qint64)));
 }
 
 MainWindow::~MainWindow()
 {
+    saveSettings();
     delete dlg;
     delete ui;
 }
 
+void MainWindow::saveSettings()
+{
+    conf->setPreImportHook(ui->enablePreImportHook->isChecked() ? ui->preImportHook->text() : "");
+    conf->setPostImportHook(ui->enablePostImportHook->isChecked() ? ui->postImportHook->text() : "");
+    if (!ui->targetUCI->currentText().isEmpty()){
+        conf->setPreferedUCI(ui->targetUCI->currentText());
+    }
+}
+
 void MainWindow::showEvent(QShowEvent*)
 {
-    restoreGeometry(conf->value("MainWindow/Geometry").toByteArray());
+    restoreGeometry(conf->config()->value("MainWindow/Geometry").toByteArray());
     ui->statusBar->showMessage(tr("Welcome to the Qt Caché Tool"));
 }
 
 void MainWindow::closeEvent(QCloseEvent *)
 {
-    conf->setValue("MainWindow/Geometry", saveGeometry());
+    conf->config()->setValue("MainWindow/Geometry", saveGeometry());
 }
 
 void MainWindow::on_targetUCI_currentIndexChanged(const QString& text)
@@ -89,7 +99,7 @@ void MainWindow::on_targetUCI_currentIndexChanged(const QString& text)
 
 void MainWindow::on_qspec_editingFinished()
 {
-    conf->setValue("QSPEC", ui->qspec->text());
+    conf->config()->setValue("QSPEC", ui->qspec->text());
 }
 
 void MainWindow::on_selectServer_pressed()
@@ -103,14 +113,14 @@ void MainWindow::on_selectServer_pressed()
                         dlg->connectionString(),
                         dlg->username(),
                         dlg->password());
-            dlg->save(conf);
+            dlg->save(conf->config());
             QStringList ls = cache()->listNamespaces(
-                        conf->value("ExcludePercentUCI", true).toBool());
+                        conf->config()->value("ExcludePercentUCI", true).toBool());
             if (ls.count()){
                 ui->targetUCI->clear();
                 ui->targetUCI->addItems(ls);
-                if (!m_prefered_uci.isEmpty()){
-                    int idx = ui->targetUCI->findText(m_prefered_uci);
+                if (!conf->preferedUCI().isEmpty()){
+                    int idx = ui->targetUCI->findText(conf->preferedUCI());
                     if(idx > -1) {
                         ui->targetUCI->setCurrentIndex(idx);
                     }
@@ -136,14 +146,14 @@ void MainWindow::on_addFiles_pressed()
 {
     try{
         QFileDialog dlg;
-        dlg.setDirectory(conf->value("DefaultImportDirectory", QDir::currentPath()).toString());
+        dlg.setDirectory(conf->config()->value("DefaultImportDirectory", QDir::currentPath()).toString());
         dlg.setNameFilters(QtCacheUi::defaultNameFilters());
         dlg.setFileMode(QFileDialog::ExistingFiles);
         if (dlg.exec() == QFileDialog::Accepted){
             foreach(const QString& s, dlg.selectedFiles()){
                 loadImportFile(dlg.directory().absoluteFilePath(s));
             }
-            conf->setValue("DefaultImportDirectory", dlg.directory().absolutePath());
+            conf->config()->setValue("DefaultImportDirectory", dlg.directory().absolutePath());
         }
     }catch(std::exception &ex){
         QMessageBox::critical(this, tr("Exception"), ex.what());
@@ -241,7 +251,6 @@ void MainWindow::preImportHook()
     if (ui->enablePreImportHook->isChecked() && !ui->preImportHook->text().isEmpty()){
         try{
             cache()->execute(ui->preImportHook->text());
-            conf->setValue("PreImportHook", ui->preImportHook->text());
         }catch(std::exception& ex){
             int rval = QMessageBox::warning(this,
                                             tr("Exception"),
@@ -258,7 +267,6 @@ void MainWindow::postImportHook()
     if (ui->enablePostImportHook->isChecked() && !ui->postImportHook->text().isEmpty()){
         try{
             cache()->execute(ui->postImportHook->text());
-            conf->setValue("PostImportHook", ui->postImportHook->text());
         }catch(std::exception& ex){
             int rval = QMessageBox::warning(this,
                                             tr("Exception"),
@@ -278,12 +286,12 @@ void MainWindow::on_abortTask_pressed()
 void MainWindow::on_selectOutputDirectory_pressed()
 {
     QFileDialog dlg;
-    dlg.setDirectory(conf->value("DefaultExportDirectory", QDir::currentPath()).toString());
+    dlg.setDirectory(conf->config()->value("DefaultExportDirectory", QDir::currentPath()).toString());
     dlg.setOption(QFileDialog::ShowDirsOnly);
     dlg.setFileMode(QFileDialog::Directory);
     if (dlg.exec() == QDialog::Accepted){
         ui->outputDirectory->setText(dlg.directory().absolutePath());
-        conf->setValue("DefaultExportDirectory", dlg.directory().absolutePath());
+        conf->config()->setValue("DefaultExportDirectory", dlg.directory().absolutePath());
     }
 }
 
@@ -343,7 +351,7 @@ void MainWindow::on_removeCurrentFilter_pressed()
 {
     int index = ui->includeFilter->currentIndex();
     if (QMessageBox::question(this,
-                              tr("Confirm delete"),
+                              tr("conf->config()irm delete"),
                               tr("Do you really want to remove this filter from the list?\n\n%1").arg(
                                   ui->includeFilter->currentText()
                                   )
@@ -369,24 +377,24 @@ void MainWindow::reportProgress(const QString& message, qint64 pos, qint64 end)
 QStringList MainWindow::loadFilters() const
 {
     QStringList ls;
-    int count = conf->beginReadArray("ExportFilter");
+    int count = conf->config()->beginReadArray("ExportFilter");
     for(int i=0; i<count; i++){
-        conf->setArrayIndex(i);
-        ls << conf->value("RegExp").toString();
+        conf->config()->setArrayIndex(i);
+        ls << conf->config()->value("RegExp").toString();
     }
-    conf->endArray();
+    conf->config()->endArray();
     return ls;
 }
 
 void MainWindow::saveFilters(const QStringList& ls) const
 {
-    conf->remove("ExportFilter");
-    conf->beginWriteArray("ExportFilter");
+    conf->config()->remove("ExportFilter");
+    conf->config()->beginWriteArray("ExportFilter");
     for(int i=0; i<ls.count(); i++){
-        conf->setArrayIndex(i);
-        conf->setValue("RegExp", ls.at(i));
+        conf->config()->setArrayIndex(i);
+        conf->config()->setValue("RegExp", ls.at(i));
     }
-    conf->endArray();
+    conf->config()->endArray();
 }
 
 void MainWindow::parseCommandlineOptions()
@@ -422,7 +430,7 @@ void MainWindow::parseCommandlineOptions()
     p.process(QApplication::instance()->arguments());
 
     if (p.isSet(uci)){
-        m_prefered_uci = p.value(uci);
+        conf->setPreferedUCI(p.value(uci));
     }
     if (p.isSet(compile)){
         ui->compile->setChecked(true);
