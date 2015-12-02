@@ -166,7 +166,7 @@ public:
         return objects;
     }
 
-    void importObject(const QString& filepath, const QString& qspec)
+    void importObject(const QString& filepath, const QString& qspec = "")
     {
         QFile f(filepath);
 
@@ -227,6 +227,14 @@ public:
         while (std::getline(io,buf)){
             ofstream << QString::fromStdString(buf) << "\n";
         }
+    }
+
+    void compileObject(const QString& name, const QString& qspec)
+    {
+        d_string _qspec = qspec.toStdString();
+        d_string _name = name.toStdString();
+        D_type* args[2] = { &_name, &_qspec };
+        Dyn_obj::run_class_method(db, L"%SYSTEM.OBJ", L"CompileList", args, 2);
     }
 
 private:

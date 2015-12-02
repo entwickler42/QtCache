@@ -19,7 +19,6 @@
 #include <qtcacheui.h>
 #include <qtcacheexception.h>
 #include <cacheconnectiondialog.h>
-#include <qtcachexmlreader.h>
 #include <QCommandLineParser>
 #include <QStringList>
 #include <QMessageBox>
@@ -208,14 +207,11 @@ void MainWindow::on_importFiles_pressed()
         ui->progressBar->setMaximum(ui->listWidget->count());
 
         QString qspec = ui->compile->isChecked() ? ui->qspec->text() : QString("");
-        QList<QtCacheXml::Reader> import_readers;
 
         for(int i=0; !abortTask && i<ui->listWidget->count(); i++){
             QListWidgetItem* item = ui->listWidget->item(i);
             ui->statusBar->showMessage(tr("Importing %1").arg(item->text()));
             try{
-                import_readers.push_back(QtCacheXml::Reader(item->text()));
-
                 cache()->importObject(item->text(), qspec);
                 item->setIcon(QIcon(":/QtCacheTool/ImportFileOk"));
                 QCoreApplication::processEvents();
