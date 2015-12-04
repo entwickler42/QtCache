@@ -19,10 +19,8 @@
 #include <QObject>
 #include <poormanslogger.h>
 
-
 class QtCachePrivate;
 class QTranslator;
-
 
 class QTCACHESHARED_EXPORT QtCache
         : public QObject
@@ -52,11 +50,10 @@ public:
     QStringList listNamespaces(bool excludePercent = false) const;
     void execute(const QString&);
 
-    void importObjects(const QStringList& filepaths, const QString& qspec = "");
-    void importObject(const QString& filepath, const QString& qspec = "");
-    void exportObject(const QString& directoryPath, const QString& objectName);
+    void importFile(const QString& filepath, const QString& qspec = "");
+    void exportFile(const QString& directoryPath, const QString& objectName);
 
-    void compileObject(const QString& name, const QString& qspec);
+    void compile(const QString& name, const QString& qspec);
 
 protected:
     QtCache();

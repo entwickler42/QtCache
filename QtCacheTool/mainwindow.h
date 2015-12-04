@@ -64,6 +64,12 @@ private slots:
 
     void reportProgress(const QString&, qint64, qint64);
 
+    void bulkImportFinished();
+    void bulkImportError(std::exception& ex);
+    void bulkImportCompiling(const QString& filename, int pos, int max);
+    void bulkImportLoading(const QString& filename, int pos, int max);
+    void bulkImportUploading(const QString& filename, int pos, int max);
+
 private:
     Ui::MainWindow *ui;
     QtCacheToolSettings* conf;

@@ -15,7 +15,6 @@
 #include "qtcache.h"
 #include "qtcache_p.h"
 #include "poormanslogger.h"
-#include <qtcachexmlreader.h>
 
 QtCache::QtCache()
     : d(new QtCachePrivate(this))
@@ -94,38 +93,17 @@ void QtCache::execute(const QString& code)
     d->execute(code);
 }
 
-void QtCache::importObjects(const QStringList& filepaths, const QString& qspec)
+void QtCache::importFile(const QString& filepath, const QString& qspec)
 {
-    int pos = 0;
-    int end = filepaths.length();
-    QtCacheXml::Object::List imported_objects;
-    foreach(const QString& filepath, filepaths){
-        emit reportProgress(filepath, pos, ++end);
-        QtCacheXml::Reader r(filepath);
-        imported_objects += r.routines();
-        imported_objects += r.classes();
-        d->importObject(filepath);
-    }
-
-    pos = 0;
-    end = imported_objects.length();
-    foreach(const QtCacheXml::Object& obj, imported_objects){
-        emit reportProgress(obj.name(), pos, ++end);
-        compileObject(obj.name(), qspec);
-    }
+    d->importFile(filepath, qspec);
 }
 
-void QtCache::importObject(const QString& filepath, const QString& qspec)
+void QtCache::exportFile(const QString& directoryPath, const QString& objectName)
 {
-    d->importObject(filepath, qspec);
+    d->exportFile(directoryPath, objectName);
 }
 
-void QtCache::exportObject(const QString& directoryPath, const QString& objectName)
+void QtCache::compile(const QString& name, const QString& qspec)
 {
-    d->exportObject(directoryPath, objectName);
-}
-
-void QtCache::compileObject(const QString& name, const QString& qspec)
-{
-    d->compileObject(name, qspec);
+    d->compile(name, qspec);
 }

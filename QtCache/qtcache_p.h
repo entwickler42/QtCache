@@ -166,7 +166,7 @@ public:
         return objects;
     }
 
-    void importObject(const QString& filepath, const QString& qspec = "")
+    void importFile(const QString& filepath, const QString& qspec = "")
     {
         QFile f(filepath);
 
@@ -201,7 +201,7 @@ public:
         }
     }
 
-    void exportObject(const QString& directoryPath, const QString& objectName)
+    void exportFile(const QString& directoryPath, const QString& objectName)
     {
         d_string _objectName = objectName.toStdString();
         d_string _uci = uci.toStdString();
@@ -229,7 +229,7 @@ public:
         }
     }
 
-    void compileObject(const QString& name, const QString& qspec)
+    void compile(const QString& name, const QString& qspec)
     {
         d_string _qspec = qspec.toStdString();
         d_string _name = name.toStdString();
@@ -262,7 +262,6 @@ private:
     }
 
 };
-
 
 
 #endif // QTCACHE_P_H

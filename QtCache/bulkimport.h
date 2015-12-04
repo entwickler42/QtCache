@@ -2,9 +2,12 @@
 #define BULKIMPORT_H
 
 #include <QObject>
+#include "qtcache_global.h"
 #include "qtcache.h"
 
-class BulkImport
+namespace LibQtCache {
+
+class QTCACHESHARED_EXPORT BulkImport
         : public QObject
 {
     Q_OBJECT
@@ -15,9 +18,9 @@ public:
 signals:
     void finished();
     void error(std::exception& ex);
-    void loadingFile(const QString& filename, int pos, int max);
-    void uploadingFile(const QString& filename, int pos, int max);
-    void compilingFile(const QString& filename, int pos, int max);
+    void loading(const QString& filename, int pos, int max);
+    void uploading(const QString& filename, int pos, int max);
+    void compiling(const QString& filename, int pos, int max);
 
 public slots:
     void load(const QStringList& filepaths, const QString& qspec = "");
@@ -26,12 +29,11 @@ public slots:
         m_abort_import = true;
     }
 
-protected:
-    void load(const QString& filepath, const QString& qspec = "");
-
 private:
     QtCache* m_cache = NULL;
     bool m_abort_import = false;
 };
+
+}
 
 #endif // BULKIMPORT_H

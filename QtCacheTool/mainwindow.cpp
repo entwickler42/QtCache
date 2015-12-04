@@ -19,6 +19,7 @@
 #include <qtcacheui.h>
 #include <qtcacheexception.h>
 #include <cacheconnectiondialog.h>
+#include <bulkimport.h>
 #include <QCommandLineParser>
 #include <QStringList>
 #include <QMessageBox>
@@ -203,38 +204,18 @@ void MainWindow::on_importFiles_pressed()
     setBuisyUI();
     try{
         preImportHook();
-        abortTask = false;
-        ui->progressBar->setMaximum(ui->listWidget->count());
 
         QString qspec = ui->compile->isChecked() ? ui->qspec->text() : QString("");
-
-        for(int i=0; !abortTask && i<ui->listWidget->count(); i++){
+        QStringList import_files;
+        for(int i=0; i<ui->listWidget->count(); i++){
             QListWidgetItem* item = ui->listWidget->item(i);
-            ui->statusBar->showMessage(tr("Importing %1").arg(item->text()));
-            try{
-                cache()->importObject(item->text(), qspec);
-                item->setIcon(QIcon(":/QtCacheTool/ImportFileOk"));
-                QCoreApplication::processEvents();
-            }catch(std::exception& ex){
-                QString err = tr("%1\n%2").arg(ex.what(), cache()->errorLog());
-                item->setToolTip(err);
-                item->setIcon(QIcon(":/QtCacheTool/ImportFileError"));
-                if (!ui->ignoreImportErrors->isChecked()){
-                    int rval = QMessageBox::warning(this, tr("Exception"), err,
-                                                    QMessageBox::Cancel|QMessageBox::Ignore,
-                                                    QMessageBox::Ignore);
-                    abortTask = rval == QMessageBox::Cancel;
-                }
-            }
-            ui->progressBar->setValue(i+1);
+            import_files.append(item->text());
         }
+
+        LibQtCache::BulkImport import(cache());
+        import.load(import_files, qspec);
+
         postImportHook();
-        if (abortTask){
-            ui->statusBar->showMessage(tr("Import aborted!"));
-            ui->progressBar->setValue(0);
-        }else{
-            ui->statusBar->showMessage(tr("Import finished!"));
-        }
     }catch(std::exception& ex){
         ui->statusBar->showMessage(tr("Import failed!"));
         QMessageBox::critical(this, tr("Exception"), ex.what());
@@ -310,7 +291,7 @@ void MainWindow::on_exportFiles_pressed()
                 ui->statusBar->showMessage(tr("Exporting %1").arg(s));
                 ui->progressBar->setValue(i+1);
                 QCoreApplication::processEvents();
-                cache()->exportObject(ui->outputDirectory->text(), s);
+                cache()->exportFile(ui->outputDirectory->text(), s);
             }catch(std::exception& ex){
                 PML::LOG << tr("Failed to export %1\n%2").arg(s, ex.what());
                 if (!ui->ignoreExportErrors){
@@ -369,6 +350,21 @@ void MainWindow::reportProgress(const QString& message, qint64 pos, qint64 end)
     ui->statusBar->showMessage(message);
     QApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
 }
+
+void MainWindow::bulkImportFinished()
+{}
+
+void MainWindow::bulkImportError(std::exception& ex)
+{}
+
+void MainWindow::bulkImportCompiling(const QString& filename, int pos, int max)
+{}
+
+void MainWindow::bulkImportLoading(const QString& filename, int pos, int max)
+{}
+
+void MainWindow::bulkImportUploading(const QString& filename, int pos, int max)
+{}
 
 QStringList MainWindow::loadFilters() const
 {
