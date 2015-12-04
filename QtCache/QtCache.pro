@@ -13,7 +13,8 @@ SOURCES += poormanslogger.cpp \
     qtcache.cpp \
     qtcacheexception.cpp \
     qtcachexmlobject.cpp \
-    qtcachexmlreader.cpp
+    qtcachexmlreader.cpp \
+    bulkimport.cpp
 
 HEADERS += poormanslogger.h \
     qtcache_global.h \
@@ -21,7 +22,8 @@ HEADERS += poormanslogger.h \
     qtcache.h \
     qtcacheexception.h \
     qtcachexmlobject.h \
-    qtcachexmlreader.h
+    qtcachexmlreader.h \
+    bulkimport.h
 
 TRANSLATIONS = qtcache_de_DE.ts
 
