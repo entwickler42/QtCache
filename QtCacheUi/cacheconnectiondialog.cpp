@@ -17,6 +17,7 @@
 
 #include <QSettings>
 
+QTCACHENAMESPACEUSE
 
 CacheConnectionDialog::CacheConnectionDialog(QWidget *parent) :
     QDialog(parent),

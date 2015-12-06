@@ -1,38 +1,52 @@
+/*
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License.
+
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
 #include "qtcachexmlobject.h"
 
-using namespace QtCacheXml;
+QTCACHENAMESPACEUSE
 
-Object::Object()
+XmlObject::XmlObject()
 {
 }
 
-QString Object::fromType(Type t)
+QString XmlObject::fromType(Type t)
 {
     switch (t)
     {
-    case Object::GBL: return "GBL";
-    case Object::CLS: return "CLS";
-    case Object::MAC: return "MAC";
-    case Object::INT: return "INT";
-    case Object::INC: return "INC";
+    case XmlObject::GBL: return "GBL";
+    case XmlObject::CLS: return "CLS";
+    case XmlObject::MAC: return "MAC";
+    case XmlObject::INT: return "INT";
+    case XmlObject::INC: return "INC";
     default: return "UNKNOWN";
     }
 }
 
-Object::Type Object::fromString(QStringRef typeString)
+XmlObject::Type XmlObject::fromString(QStringRef typeString)
 {
-    if (typeString.compare("GBL", Qt::CaseInsensitive) == 0) return Object::GBL;
-    if (typeString.compare("CLS", Qt::CaseInsensitive) == 0) return Object::CLS;
-    if (typeString.compare("MAC", Qt::CaseInsensitive) == 0) return Object::MAC;
-    if (typeString.compare("INT", Qt::CaseInsensitive) == 0) return Object::INT;
-    if (typeString.compare("INC", Qt::CaseInsensitive) == 0) return Object::INC;
-    return Object::UNKNOWN;
+    if (typeString.compare("GBL", Qt::CaseInsensitive) == 0) return XmlObject::GBL;
+    if (typeString.compare("CLS", Qt::CaseInsensitive) == 0) return XmlObject::CLS;
+    if (typeString.compare("MAC", Qt::CaseInsensitive) == 0) return XmlObject::MAC;
+    if (typeString.compare("INT", Qt::CaseInsensitive) == 0) return XmlObject::INT;
+    if (typeString.compare("INC", Qt::CaseInsensitive) == 0) return XmlObject::INC;
+    return XmlObject::UNKNOWN;
 }
 
-Object::List Object::select(const List& source, Types types)
+XmlObject::List XmlObject::select(const List& source, Types types)
 {
     List selected_objects;
-    foreach(const Object& i, source){
+    foreach(const XmlObject& i, source){
         if ((i.m_type & types) == types){ selected_objects.append(i); }
     }
     return selected_objects;

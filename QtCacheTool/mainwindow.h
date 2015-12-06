@@ -22,7 +22,11 @@
 namespace Ui {
     class MainWindow;
 }
-class CacheConnectionDialog;
+
+namespace QtC {
+    class CacheConnectionDialog;
+}
+
 class QSettings;
 
 class MainWindow : public QMainWindow
@@ -37,9 +41,9 @@ protected:
     virtual void showEvent(QShowEvent*);
     virtual void closeEvent(QCloseEvent *);
 
-    QtCache* cache() const
+    QtC::QtCache* cache() const
     {
-        return QtCache::instance();
+        return QtC::QtCache::instance();
     }
 
     void parseCommandlineOptions();
@@ -73,7 +77,7 @@ private slots:
 private:
     Ui::MainWindow *ui;
     QtCacheToolSettings* conf;
-    CacheConnectionDialog* dlg;
+    QtC::CacheConnectionDialog* dlg;
     bool abortTask = false;
 
     QStringList loadFilters() const;

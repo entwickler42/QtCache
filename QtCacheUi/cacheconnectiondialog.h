@@ -24,6 +24,8 @@ namespace Ui {
 
 class QSettings;
 
+QTCACHENAMESPACEBEGIN
+
 class QTCACHEUISHARED_EXPORT CacheConnectionDialog
         : public QDialog
 {
@@ -71,5 +73,7 @@ private:
     Ui::CacheConnectionDialog *ui;
     int constrformat = 0;
 };
+
+QTCACHENAMESPACEEND
 
 #endif // CACHECONNECTIONDIALOG_H

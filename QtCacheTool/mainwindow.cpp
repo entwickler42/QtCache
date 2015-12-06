@@ -19,7 +19,7 @@
 #include <qtcacheui.h>
 #include <qtcacheexception.h>
 #include <cacheconnectiondialog.h>
-#include <bulkimport.h>
+#include <qtcachebulkimport.h>
 #include <QCommandLineParser>
 #include <QStringList>
 #include <QMessageBox>
@@ -39,13 +39,13 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
     conf(new QtCacheToolSettings(this)),
-    dlg(new CacheConnectionDialog(this))
+    dlg(new QtC::CacheConnectionDialog(this))
 {
     ui->setupUi(this);
     ui->qspec->setText(conf->QSPEC());
     dlg->setUci(QStringList() << "%SYS");
     dlg->setUciEnabled(false);
-    dlg->setFormat(CacheConnectionDialog::NAMESPACE_FLAG);
+    dlg->setFormat(QtC::CacheConnectionDialog::NAMESPACE_FLAG);
     dlg->load(conf->config());
     QString outputDirectory = conf->config()->value("DefaultExportDirectory", QDir::currentPath()).toString();
     if (!QDir(outputDirectory).exists()){
@@ -61,7 +61,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->enablePostImportHook->setChecked(!conf->postImportHook().isEmpty());
 
     parseCommandlineOptions();
-    connect(QtCache::instance(), SIGNAL(reportProgress(QString,qint64,qint64)), this, SLOT(reportProgress(QString,qint64,qint64)));
+    connect(QtC::QtCache::instance(), SIGNAL(reportProgress(QString,qint64,qint64)), this, SLOT(reportProgress(QString,qint64,qint64)));
 }
 
 MainWindow::~MainWindow()
@@ -126,7 +126,7 @@ void MainWindow::on_selectServer_pressed()
                     }
                 }
             }else{
-                throw QtCacheException(cache()->lastStatus());
+                throw QtC::QtCacheException(cache()->lastStatus());
             }
             ui->statusBar->showMessage(
                         cache()->isConnected() ?
@@ -147,7 +147,7 @@ void MainWindow::on_addFiles_pressed()
     try{
         QFileDialog dlg;
         dlg.setDirectory(conf->config()->value("DefaultImportDirectory", QDir::currentPath()).toString());
-        dlg.setNameFilters(QtCacheUi::defaultNameFilters());
+        dlg.setNameFilters(QtC::QtCacheUi::defaultNameFilters());
         dlg.setFileMode(QFileDialog::ExistingFiles);
         if (dlg.exec() == QFileDialog::Accepted){
             foreach(const QString& s, dlg.selectedFiles()){
@@ -212,7 +212,7 @@ void MainWindow::on_importFiles_pressed()
             import_files.append(item->text());
         }
 
-        LibQtCache::BulkImport import(cache());
+        QtC::BulkImport import(cache());
         import.load(import_files, qspec);
 
         postImportHook();

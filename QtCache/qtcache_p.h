@@ -15,19 +15,19 @@
 #ifndef QTCACHE_P_H
 #define QTCACHE_P_H
 
-#include <QDir>
-#include <QFile>
-#include <QObject>
-#include <QTextStream>
-#include <Qt_CacheTool.h>
 #include "qtcache.h"
 #include "qtcacheexception.h"
-
 #include <ios>
+#include <QDir>
+#include <QFile>
+#include <QTextStream>
+#include <Qt_CacheTool.h>
 
 #ifdef CACHEVISM
 #include <vismocx.h>
 #endif
+
+QTCACHENAMESPACEBEGIN
 
 typedef d_ref<Qt_CacheTool> QtCacheToolType;
 
@@ -263,6 +263,7 @@ private:
 
 };
 
+QTCACHENAMESPACEEND
 
 #endif // QTCACHE_P_H
 

@@ -17,6 +17,7 @@
 #include <QFile>
 #include <QTranslator>
 
+QTCACHENAMESPACEUSE
 
 QtCacheUi::QtCacheUi()
 {}

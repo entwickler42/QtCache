@@ -20,6 +20,8 @@
 
 class QTranslator;
 
+QTCACHENAMESPACEBEGIN
+
 class QTCACHEUISHARED_EXPORT QtCacheUi
 {
 public:
@@ -28,5 +30,7 @@ public:
 private:
     QtCacheUi();
 };
+
+QTCACHENAMESPACEEND
 
 #endif // QTCACHEUI_H

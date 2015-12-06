@@ -16,6 +16,8 @@
 #include "qtcache_p.h"
 #include "poormanslogger.h"
 
+QTCACHENAMESPACEUSE
+
 QtCache::QtCache()
     : d(new QtCachePrivate(this))
 {}

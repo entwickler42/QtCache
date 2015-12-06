@@ -1,6 +1,7 @@
 #ifndef QTCACHEUI_GLOBAL_H
 #define QTCACHEUI_GLOBAL_H
 
+#include <qtcacheconfig.h>
 #include <QtCore/qglobal.h>
 
 #if defined(QTCACHEUI_LIBRARY)

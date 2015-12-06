@@ -15,6 +15,7 @@
 #ifndef QTCACHEEXCEPTION
 #define QTCACHEEXCEPTION
 
+#include "qtcacheconfig.h"
 #include <QString>
 #include <stdexcept>
 
@@ -23,6 +24,8 @@ namespace InterSystems {
     class d_status;
     class Db_err;
 }
+
+QTCACHENAMESPACEBEGIN
 
 class QtCacheException
         : public std::runtime_error
@@ -46,6 +49,8 @@ public:
 
     explicit QtCacheException(const InterSystems::Db_err& err);
 };
+
+QTCACHENAMESPACEEND
 
 #endif // QTCACHEEXCEPTION
 

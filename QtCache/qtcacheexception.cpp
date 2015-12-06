@@ -13,8 +13,9 @@
 */
 
 #include "qtcacheexception.h"
-#include <Qt_CacheTool.h>
+#include <cppbind.h>
 
+QTCACHENAMESPACEUSE
 
 QtCacheException::QtCacheException(const d_string& msg)
     : QtCacheException(msg.value())
@@ -27,4 +28,3 @@ QtCacheException::QtCacheException(const d_status& sc)
 QtCacheException::QtCacheException(const Db_err& err)
     : QtCacheException(err.get_msg())
 {}
-

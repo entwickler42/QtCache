@@ -14,7 +14,7 @@ SOURCES += poormanslogger.cpp \
     qtcacheexception.cpp \
     qtcachexmlobject.cpp \
     qtcachexmlreader.cpp \
-    bulkimport.cpp
+    qtcachebulkimport.cpp
 
 HEADERS += poormanslogger.h \
     qtcache_global.h \
@@ -23,7 +23,8 @@ HEADERS += poormanslogger.h \
     qtcacheexception.h \
     qtcachexmlobject.h \
     qtcachexmlreader.h \
-    bulkimport.h
+    qtcachebulkimport.h \
+    qtcacheconfig.h
 
 TRANSLATIONS = qtcache_de_DE.ts
 
@@ -37,8 +38,10 @@ unix {
     INSTALLS += target
 }
 
-system(lupdate -no-obsolete QtCache.pro)
-system(lrelease QtCache.pro)
+CONFIG(release, debug|release){
+#    system(lupdate -no-obsolete QtCache.pro)
+#    system(lrelease QtCache.pro)
+}
 
 include(../Intersystems/Intersystems.pri)
 

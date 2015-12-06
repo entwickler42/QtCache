@@ -16,11 +16,14 @@
 #define QTCACHE_H
 
 #include "qtcache_global.h"
+#include "poormanslogger.h"
 #include <QObject>
-#include <poormanslogger.h>
+
+class QTranslator;
+
+QTCACHENAMESPACEBEGIN
 
 class QtCachePrivate;
-class QTranslator;
 
 class QTCACHESHARED_EXPORT QtCache
         : public QObject
@@ -61,5 +64,7 @@ protected:
 private:
     QtCachePrivate* d;
 };
+
+QTCACHENAMESPACEEND
 
 #endif // QTCACHE_H

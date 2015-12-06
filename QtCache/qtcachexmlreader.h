@@ -15,6 +15,7 @@
 #ifndef CACHEXMLHEADERS_H
 #define CACHEXMLHEADERS_H
 
+#include "qtcacheconfig.h"
 #include "qtcache_global.h"
 #include "qtcachexmlobject.h"
 #include <QObject>
@@ -23,25 +24,25 @@
 class QIODevice;
 class QXmlStreamReader;
 
-namespace QtCacheXml {
+QTCACHENAMESPACEBEGIN
 
-class QTCACHESHARED_EXPORT Reader
+class QTCACHESHARED_EXPORT XmlObjectReader
         : public QObject
 {
     Q_OBJECT
 
 public:
-    Reader(QObject* parent = 0);
-    explicit Reader(const QString& filepath, QObject* parent = 0);
-    explicit Reader(QIODevice* io, QObject* parent = 0);
-    virtual ~Reader();
+    XmlObjectReader(QObject* parent = 0);
+    explicit XmlObjectReader(const QString& filepath, QObject* parent = 0);
+    explicit XmlObjectReader(QIODevice* io, QObject* parent = 0);
+    virtual ~XmlObjectReader();
 
-    Reader(const Reader& other)
+    XmlObjectReader(const XmlObjectReader& other)
     {
         *this = other;
     }
 
-    Reader& operator = (const Reader& other)
+    XmlObjectReader& operator = (const XmlObjectReader& other)
     {
         setParent(other.parent());
         m_time_stamp = other.m_time_stamp;
@@ -52,17 +53,17 @@ public:
         return *this;
     }
 
-    Object::List routines(Object::Types types = Object::Types(Object::INT|Object::MAC) ) const
-    { return Object::select(m_objects, types); }
+    XmlObject::List routines(XmlObject::Types types = XmlObject::Types(XmlObject::INT|XmlObject::MAC) ) const
+    { return XmlObject::select(m_objects, types); }
 
-    Object::List includes() const
-    { return Object::select(m_objects, Object::INC); }
+    XmlObject::List includes() const
+    { return XmlObject::select(m_objects, XmlObject::INC); }
 
-    Object::List classes() const
-    { return Object::select(m_objects, Object::CLS); }
+    XmlObject::List classes() const
+    { return XmlObject::select(m_objects, XmlObject::CLS); }
 
-    Object::List globals() const
-    { return Object::select(m_objects, Object::GBL); }
+    XmlObject::List globals() const
+    { return XmlObject::select(m_objects, XmlObject::GBL); }
 
     void read(QIODevice* io);
     void read(const QString& filepath);
@@ -71,7 +72,7 @@ public:
     const QString& generator() const { return m_generator; }
     const QString& zv() const { return m_zv; }
     const QString& version() const { return m_version; }
-    const Object::List& objects() const { return m_objects; }
+    const XmlObject::List& objects() const { return m_objects; }
 
     void setTimeSpamp(const QString& ts) { m_time_stamp = ts;}
     void setGenerator(const QString& generator) { m_time_stamp = generator;}
@@ -83,14 +84,14 @@ private:
     QString m_generator;
     QString m_zv;
     QString m_version;
-    Object::List m_objects;
+    XmlObject::List m_objects;
 
-    static void readRoutineHeaders(QXmlStreamReader* stream, Reader* document);
-    static void readClassHeaders(QXmlStreamReader* stream, Reader* document);
-    static void loadGlobalHeaders(QXmlStreamReader* stream, Reader* document);
-    static void readExportHeaders(QXmlStreamReader* stream, Reader* document);
+    static void readRoutineHeaders(QXmlStreamReader* stream, XmlObjectReader* document);
+    static void readClassHeaders(QXmlStreamReader* stream, XmlObjectReader* document);
+    static void loadGlobalHeaders(QXmlStreamReader* stream, XmlObjectReader* document);
+    static void readExportHeaders(QXmlStreamReader* stream, XmlObjectReader* document);
 };
 
-}
+QTCACHENAMESPACEEND
 
 #endif // CACHEXMLHEADERS_H

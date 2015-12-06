@@ -18,33 +18,33 @@
 #include <QFile>
 #include <QXmlStreamReader>
 
-using namespace QtCacheXml;
+QTCACHENAMESPACEUSE
 
-Reader::Reader(QObject* parent)
+XmlObjectReader::XmlObjectReader(QObject* parent)
     : QObject(parent)
 {}
 
-Reader::Reader(const QString& filepath, QObject* parent)
-    : Reader(parent)
+XmlObjectReader::XmlObjectReader(const QString& filepath, QObject* parent)
+    : XmlObjectReader(parent)
 {
     read(filepath);
 }
 
-Reader::Reader(QIODevice* io, QObject* parent)
-    : Reader(parent)
+XmlObjectReader::XmlObjectReader(QIODevice* io, QObject* parent)
+    : XmlObjectReader(parent)
 {
     read(io);
 }
 
-Reader::~Reader()
+XmlObjectReader::~XmlObjectReader()
 {}
 
-void Reader::readRoutineHeaders(QXmlStreamReader* stream, Reader* document)
+void XmlObjectReader::readRoutineHeaders(QXmlStreamReader* stream, XmlObjectReader* document)
 {
-    Object xobj;
+    XmlObject xobj;
     foreach(const QXmlStreamAttribute &i, stream->attributes()){
         if (i.name().compare("name", Qt::CaseInsensitive) == 0) xobj.setName(i.value().toString());
-        else if (i.name().compare("type", Qt::CaseInsensitive) == 0) xobj.setType(Object::fromString(i.value()));
+        else if (i.name().compare("type", Qt::CaseInsensitive) == 0) xobj.setType(XmlObject::fromString(i.value()));
         else if (i.name().compare("timestamp", Qt::CaseInsensitive) == 0){
             xobj.setTimeChanged(i.value().toString());
             xobj.setTimeCreated(document->timeStamp());
@@ -53,15 +53,15 @@ void Reader::readRoutineHeaders(QXmlStreamReader* stream, Reader* document)
     document->m_objects.append(xobj);
 }
 
-void Reader::readClassHeaders(QXmlStreamReader* stream, Reader* document)
+void XmlObjectReader::readClassHeaders(QXmlStreamReader* stream, XmlObjectReader* document)
 {
-    Object xobj;
+    XmlObject xobj;
     foreach(const QXmlStreamAttribute &i, stream->attributes()){
         if (i.name().compare("name", Qt::CaseInsensitive) == 0) xobj.setName(i.value().toString());
     }
     xobj.setTimeChanged(document->timeStamp());
     xobj.setTimeCreated(document->timeStamp());
-    xobj.setType(Object::CLS);
+    xobj.setType(XmlObject::CLS);
     while(!(stream->isEndElement() && stream->name().compare("class", Qt::CaseInsensitive) == 0)){
         stream->readNext();
         if (stream->isStartElement() && stream->name().compare("timechanged", Qt::CaseInsensitive) == 0){
@@ -73,12 +73,12 @@ void Reader::readClassHeaders(QXmlStreamReader* stream, Reader* document)
     document->m_objects.append(xobj);
 }
 
-void Reader::loadGlobalHeaders(QXmlStreamReader* stream, Reader* document)
+void XmlObjectReader::loadGlobalHeaders(QXmlStreamReader* stream, XmlObjectReader* document)
 {
-    Object xobj;
+    XmlObject xobj;
     xobj.setTimeChanged(document->timeStamp());
     xobj.setTimeCreated(document->timeStamp());
-    xobj.setType(Object::GBL);
+    xobj.setType(XmlObject::GBL);
     while(!stream->atEnd()){
         stream->readNext();
         if (stream->name().compare("sub", Qt::CaseInsensitive) == 0){
@@ -89,7 +89,7 @@ void Reader::loadGlobalHeaders(QXmlStreamReader* stream, Reader* document)
     }
 }
 
-void Reader::readExportHeaders(QXmlStreamReader* stream, Reader* document)
+void XmlObjectReader::readExportHeaders(QXmlStreamReader* stream, XmlObjectReader* document)
 {
     document->m_time_stamp.clear();
     document->m_generator.clear();
@@ -118,13 +118,13 @@ void Reader::readExportHeaders(QXmlStreamReader* stream, Reader* document)
     }
 }
 
-void Reader::read(QIODevice* io)
+void XmlObjectReader::read(QIODevice* io)
 {
     QXmlStreamReader r(io);
     readExportHeaders(&r, this);
 }
 
-void Reader::read(const QString& filepath)
+void XmlObjectReader::read(const QString& filepath)
 {
     QFile f(filepath);
     if (!f.exists()){
