@@ -12,7 +12,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 #include "qtcachebulkimport.h"
 #include <stdexcept>
 #include <qtcachexmlreader.h>
@@ -35,14 +34,12 @@ void BulkImport::load(const QStringList& filepaths, const QString& qspec)
     for(int i=0; i<filepaths.length() && !m_abort_import; i++){
         const QString& filepath = filepaths.at(i);
         try{
-            setCurrentStep(BulkImport::LOADING);
-            emit reportProgress(BulkImportProgress(filepath, i+1, filepaths.count()));
+            reflectStepAndProgress(LOADING, BulkImportProgress(filepath, i+1, filepaths.count()));
             XmlObjectReader r(filepath);
             object_list += r.routines();
             object_list += r.classes();
-            setCurrentStep(BulkImport::UPLOADING);
-            emit reportProgress(BulkImportProgress(filepath, i+1, filepaths.count()));
-            m_cache->importFile(filepath);
+            reflectStepAndProgress(UPLOADING, BulkImportProgress(filepath, i+1, filepaths.count()));
+            m_cache->importXmlFile(filepath);
         }catch(std::exception& ex){
             emit error(ex, filepath);
         }
@@ -51,16 +48,15 @@ void BulkImport::load(const QStringList& filepaths, const QString& qspec)
 
         for(int i=0; i<object_list.count() && !m_abort_import; i++){
             const XmlObject& obj = object_list.at(i);
-            setCurrentStep(BulkImport::COMPILING);
-            emit reportProgress(BulkImportProgress(obj.name(), i+1, object_list.count()));
+            reflectStepAndProgress(COMPILING, BulkImportProgress(obj.name(), i+1, object_list.count()));
             try{
-                m_cache->compileObject(obj.name(), qspec);
+                m_cache->compileObjects(obj.name(), qspec);
             }catch(std::exception& ex){
                 emit error(ex, obj.name());
             }
         }
     }
-    setCurrentStep(BulkImport::IDLE);
+    reflectStepAndProgress(IDLE, BulkImportProgress("", 0, 0));
     emit finished();
 }
 

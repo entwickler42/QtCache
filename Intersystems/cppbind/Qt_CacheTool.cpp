@@ -82,6 +82,22 @@ d_int Qt_CacheTool::_IsA(Database* __db, const d_string& isclass)
    return __res;
 }
 
+d_status Qt_CacheTool::CompileList(const d_string& objectNames, const d_string& qspec)
+{
+   GEN_DECLARE_ARGS_AND_DB();
+   wchar_t __mtd_name[] = L"CompileList";
+
+   __args_mgr.set_next(&objectNames);
+   __args_mgr.set_next(&qspec);
+
+   d_status __res;
+   __args_mgr.set_next_as_res(&__res);
+
+   Critical_section cs(__db->get_cs_handle());
+   __db->run_method(get_ref(), __srv_cl_name, __mtd_name, __args_mgr);
+   return __res;
+}
+
 d_string Qt_CacheTool::ErrorLogDisplayToLogical(Database* __db, const d_string& _val)
 {
    GEN_DECLARE_ARGS();

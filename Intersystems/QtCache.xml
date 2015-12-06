@@ -166,6 +166,24 @@
 ]]></Implementation>
 </Method>
 
+<Method name="CompileList">
+<FormalSpec>objectNames:%String,qspec:%String</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    try{
+        ZN uci
+                                    
+        S ..LastStatus = $SYSTEM.OBJ.CompileList(objectNames, qspec)
+    }catch ex{
+        S ..LastStatus = ex.AsStatus()        
+    }
+        
+    ZN "%SYS"
+        
+	Q ..LastStatus
+]]></Implementation>
+</Method>
+
 <Method name="Execute">
 <FormalSpec>uci:%String,code:%String</FormalSpec>
 <ReturnType>%Status</ReturnType>
@@ -189,7 +207,7 @@
 </Class>
 
 
-<Project name="QtCache" LastModified="2015-11-15 13:12:54.402025" Target="ST^ySBR" TargetType="2">
+<Project name="QtCache" LastModified="2015-12-06 19:28:43.369846" Target="ST^ySBR" TargetType="2">
   <Items>
     <ProjectItem name="Qt.CacheTool" type="CLS"></ProjectItem>
   </Items>

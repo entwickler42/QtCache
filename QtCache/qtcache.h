@@ -53,9 +53,9 @@ public:
     QStringList listNamespaces(bool excludePercent = false) const;
     void execute(const QString&);
 
-    void importFile(const QString& filepath, const QString& qspec = "");
-    void exportFile(const QString& directoryPath, const QString& objectName);
-    void compileObject(const QString& name, const QString& qspec = "cf");
+    void importXmlFile(const QString& filepath, const QString& qspec = "");
+    void exportXmlFile(const QString& directoryPath, const QString& objectName);
+    void compileObjects(const QString& objectNames, const QString& qspec = "cf");
 
 protected:
     QtCache();

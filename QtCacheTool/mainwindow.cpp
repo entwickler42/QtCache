@@ -291,7 +291,7 @@ void MainWindow::on_exportFiles_pressed()
                 ui->statusBar->showMessage(tr("Exporting %1").arg(s));
                 ui->progressBar->setValue(i+1);
                 QCoreApplication::processEvents();
-                cache()->exportFile(ui->outputDirectory->text(), s);
+                cache()->exportXmlFile(ui->outputDirectory->text(), s);
             }catch(std::exception& ex){
                 PML::LOG << tr("Failed to export %1\n%2").arg(s, ex.what());
                 if (!ui->ignoreExportErrors){

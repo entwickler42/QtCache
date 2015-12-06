@@ -73,9 +73,10 @@ private:
     QtCache* m_cache = NULL;
     bool m_abort_import = false;
 
-    void setCurrentStep(ImportStep step)
+    void reflectStepAndProgress(ImportStep step, const BulkImportProgress& progress)
     {
         m_current_step = step;
+        emit reportProgress(progress);
     }
 };
 

@@ -95,17 +95,17 @@ void QtCache::execute(const QString& code)
     d->execute(code);
 }
 
-void QtCache::importFile(const QString& filepath, const QString& qspec)
+void QtCache::importXmlFile(const QString& filepath, const QString& qspec)
 {
-    d->importFile(filepath, qspec);
+    d->importXmlFile(filepath, qspec);
 }
 
-void QtCache::exportFile(const QString& directoryPath, const QString& objectName)
+void QtCache::exportXmlFile(const QString& directoryPath, const QString& objectName)
 {
-    d->exportFile(directoryPath, objectName);
+    d->exportXmlFile(directoryPath, objectName);
 }
 
-void QtCache::compileObject(const QString& name, const QString& qspec)
+void QtCache::compileObjects(const QString& objectNames, const QString& qspec)
 {
-    d->compileObject(name, qspec);
+    d->compileObjects(objectNames, qspec);
 }

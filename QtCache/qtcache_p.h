@@ -166,7 +166,7 @@ public:
         return objects;
     }
 
-    void importFile(const QString& filepath, const QString& qspec = "")
+    void importXmlFile(const QString& filepath, const QString& qspec = "")
     {
         QFile f(filepath);
 
@@ -201,7 +201,7 @@ public:
         }
     }
 
-    void exportFile(const QString& directoryPath, const QString& objectName)
+    void exportXmlFile(const QString& directoryPath, const QString& objectName)
     {
         d_string _objectName = objectName.toStdString();
         d_string _uci = uci.toStdString();
@@ -229,12 +229,11 @@ public:
         }
     }
 
-    void compileObject(const QString& name, const QString& qspec)
+    void compileObjects(const QString& objectNames, const QString& qspec)
     {
-        d_string _qspec = qspec.toStdString();
-        d_string _name = name.toStdString();
-        D_type* args[2] = { &_name, &_qspec };
-        Dyn_obj::run_class_method(db, L"%SYSTEM.OBJ", L"CompileList", args, 2);
+        d_string _objectNames(objectNames.toStdString());
+        d_string _qspec(qspec.toStdString());
+        tool()->CompileList(_objectNames, _qspec);
     }
 
 private:
