@@ -15,7 +15,7 @@
 #ifndef QTCACHEXMLOBJECT_H
 #define QTCACHEXMLOBJECT_H
 
-#include "qtcacheconfig.h"
+#include "qtcache_config.h"
 #include "qtcache_global.h"
 #include <QObject>
 

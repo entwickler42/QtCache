@@ -15,7 +15,7 @@
 #ifndef QTCACHEEXCEPTION
 #define QTCACHEEXCEPTION
 
-#include "qtcacheconfig.h"
+#include "qtcache_config.h"
 #include <QString>
 #include <stdexcept>
 

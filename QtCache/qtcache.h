@@ -55,8 +55,7 @@ public:
 
     void importFile(const QString& filepath, const QString& qspec = "");
     void exportFile(const QString& directoryPath, const QString& objectName);
-
-    void compile(const QString& name, const QString& qspec);
+    void compileObject(const QString& name, const QString& qspec = "cf");
 
 protected:
     QtCache();

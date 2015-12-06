@@ -229,7 +229,7 @@ public:
         }
     }
 
-    void compile(const QString& name, const QString& qspec)
+    void compileObject(const QString& name, const QString& qspec)
     {
         d_string _qspec = qspec.toStdString();
         d_string _name = name.toStdString();

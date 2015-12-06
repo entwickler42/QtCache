@@ -105,7 +105,7 @@ void QtCache::exportFile(const QString& directoryPath, const QString& objectName
     d->exportFile(directoryPath, objectName);
 }
 
-void QtCache::compile(const QString& name, const QString& qspec)
+void QtCache::compileObject(const QString& name, const QString& qspec)
 {
-    d->compile(name, qspec);
+    d->compileObject(name, qspec);
 }

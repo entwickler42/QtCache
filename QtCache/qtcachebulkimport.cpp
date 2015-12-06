@@ -21,6 +21,7 @@ QTCACHENAMESPACEUSE
 
 BulkImport::BulkImport(QtCache* cache, QObject *parent)
     : QObject(parent),
+      m_current_step(BulkImport::IDLE),
       m_cache(cache)
 {
     if (NULL == m_cache) throw new std::invalid_argument("QtCache* cache must not be NULL");
@@ -33,29 +34,33 @@ void BulkImport::load(const QStringList& filepaths, const QString& qspec)
 
     for(int i=0; i<filepaths.length() && !m_abort_import; i++){
         const QString& filepath = filepaths.at(i);
-        emit loading(filepath, i+1, filepaths.count());
         try{
+            setCurrentStep(BulkImport::LOADING);
+            emit reportProgress(BulkImportProgress(filepath, i+1, filepaths.count()));
             XmlObjectReader r(filepath);
             object_list += r.routines();
             object_list += r.classes();
+            setCurrentStep(BulkImport::UPLOADING);
+            emit reportProgress(BulkImportProgress(filepath, i+1, filepaths.count()));
             m_cache->importFile(filepath);
         }catch(std::exception& ex){
-            emit error(ex);
+            emit error(ex, filepath);
         }
     }
-
     if (!qspec.isEmpty()){
-        try{
-            for(int i=0; i<object_list.count() && !m_abort_import; i++){
-                const XmlObject& obj = object_list.at(i);
-                emit compiling(obj.name(), i+1, object_list.count());
-                m_cache->compile(obj.name(), qspec);
+
+        for(int i=0; i<object_list.count() && !m_abort_import; i++){
+            const XmlObject& obj = object_list.at(i);
+            setCurrentStep(BulkImport::COMPILING);
+            emit reportProgress(BulkImportProgress(obj.name(), i+1, object_list.count()));
+            try{
+                m_cache->compileObject(obj.name(), qspec);
+            }catch(std::exception& ex){
+                emit error(ex, obj.name());
             }
-        }catch(std::exception& ex){
-            emit error(ex);
         }
     }
-
+    setCurrentStep(BulkImport::IDLE);
     emit finished();
 }
 

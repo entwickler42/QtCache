@@ -15,11 +15,25 @@
 #ifndef BULKIMPORT_H
 #define BULKIMPORT_H
 
-#include "qtcacheconfig.h"
+#include "qtcache_config.h"
 #include "qtcache_global.h"
 #include "qtcache.h"
 
 QTCACHENAMESPACEBEGIN
+
+class BulkImportProgress
+{
+public:
+    BulkImportProgress(const QString& filename, int pos, int max)
+        : filename(filename),
+          pos(pos),
+          max(max)
+    {
+    }
+    const QString& filename;
+    const int pos;
+    const int max;
+};
 
 class QTCACHESHARED_EXPORT BulkImport
         : public QObject
@@ -27,14 +41,25 @@ class QTCACHESHARED_EXPORT BulkImport
     Q_OBJECT
 
 public:
+    enum ImportStep
+    {
+        IDLE,
+        LOADING,
+        UPLOADING,
+        COMPILING
+    };
+
     explicit BulkImport(QtCache* cache, QObject *parent = 0);
+
+    const ImportStep& CurrentStep() const
+    {
+        return m_current_step;
+    }
 
 signals:
     void finished();
-    void error(std::exception& ex);
-    void loading(const QString& filename, int pos, int max);
-    void uploading(const QString& filename, int pos, int max);
-    void compiling(const QString& filename, int pos, int max);
+    void error(std::exception& ex, const QString& filename);
+    void reportProgress(const BulkImportProgress& progress);
 
 public slots:
     void load(const QStringList& filepaths, const QString& qspec = "");
@@ -44,8 +69,14 @@ public slots:
     }
 
 private:
+    ImportStep m_current_step;
     QtCache* m_cache = NULL;
     bool m_abort_import = false;
+
+    void setCurrentStep(ImportStep step)
+    {
+        m_current_step = step;
+    }
 };
 
 QTCACHENAMESPACEEND

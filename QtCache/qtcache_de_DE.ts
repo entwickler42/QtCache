@@ -45,4 +45,20 @@
 %1</translation>
     </message>
 </context>
+<context>
+    <name>QtCacheXml::Reader</name>
+    <message>
+        <location filename="qtcachexmlreader.cpp" line="133"/>
+        <source>Input file does not exists:
+%1</source>
+        <translation type="unfinished">Quelldatei existiert nicht:
+%1</translation>
+    </message>
+    <message>
+        <location filename="qtcachexmlreader.cpp" line="136"/>
+        <source>Can not open input file:
+%1</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
 </TS>

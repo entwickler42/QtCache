@@ -15,7 +15,7 @@
 #ifndef CACHEXMLHEADERS_H
 #define CACHEXMLHEADERS_H
 
-#include "qtcacheconfig.h"
+#include "qtcache_config.h"
 #include "qtcache_global.h"
 #include "qtcachexmlobject.h"
 #include <QObject>
