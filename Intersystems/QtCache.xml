@@ -137,7 +137,7 @@
         
     ZN "%SYS"
         
-	Q ..LastStatus
+    Q ..LastStatus
 ]]></Implementation>
 </Method>
 
@@ -148,9 +148,9 @@
     
     S STREAM = $$$NULLOREF
 
-    try{	    
-	    ZN uci
-	    
+    try{        
+        ZN uci
+        
         S ERRLOG=""
         S QSPECC="/diffexport=1"
         S STREAM=##class(%Stream.GlobalBinary).%New()
@@ -167,7 +167,7 @@
 </Method>
 
 <Method name="CompileList">
-<FormalSpec>objectNames:%String,qspec:%String</FormalSpec>
+<FormalSpec>uci:%String,objectNames:%String,qspec:%String</FormalSpec>
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
     try{
@@ -180,7 +180,7 @@
         
     ZN "%SYS"
         
-	Q ..LastStatus
+    Q ..LastStatus
 ]]></Implementation>
 </Method>
 
@@ -191,8 +191,8 @@
     S SC=$$$OK
     
     TRY{
-	    ZN uci
-	    
+        ZN uci
+        
         X code
     }CATCH EX{
         #dim ex as %Exception.AbstractException
@@ -207,7 +207,7 @@
 </Class>
 
 
-<Project name="QtCache" LastModified="2015-12-06 19:28:43.369846" Target="ST^ySBR" TargetType="2">
+<Project name="QtCache" Target="ST^ySBR" TargetType="2">
   <Items>
     <ProjectItem name="Qt.CacheTool" type="CLS"></ProjectItem>
   </Items>
