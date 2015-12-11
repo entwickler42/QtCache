@@ -74,7 +74,12 @@
     S LS=""
     
     try{    
-        S I="" F  S I=$O(^CONFIG("Namespaces",I)) Q:I=""  S LS=LS_$LB(I)        
+        S RS=##class(%ResultSet).%New("%SYS.Namespace:List")
+        S SC=RS.Execute(0,0) 
+        
+        WHILE RS.%Next() { 
+            S LS=LS_$LB(RS.Data("Nsp"))
+        }
     }catch ex{
         S ..LastStatus = ex.AsStatus()
     }
