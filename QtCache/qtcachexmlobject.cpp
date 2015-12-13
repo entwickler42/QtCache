@@ -47,7 +47,7 @@ XmlObject::List XmlObject::select(const List& source, Types types)
 {
     List selected_objects;
     foreach(const XmlObject& i, source){
-        if ((i.m_type & types) == types){ selected_objects.append(i); }
+        if ((i.m_type & types) == i.m_type){ selected_objects.append(i); }
     }
     return selected_objects;
 }
