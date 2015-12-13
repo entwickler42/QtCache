@@ -42,6 +42,4 @@ CONFIG(release, debug|release){
     #system(lrelease QtCacheUi.pro)
 }
 
-
-# include(../Intersystems/Intersystems.pri)
-
+include(../Intersystems/Intersystems.pri)

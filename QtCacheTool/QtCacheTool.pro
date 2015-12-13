@@ -40,5 +40,6 @@ CONFIG(release, debug|release){
 #    system(lrelease QtCacheTool.pro)
 }
 
-linux-g++:include(../Intersystems/Intersystems.pri)
+#linux-g++:include(../Intersystems/Intersystems.pri)
 
+include(../Intersystems/Intersystems.pri)

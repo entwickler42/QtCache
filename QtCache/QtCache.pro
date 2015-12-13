@@ -44,6 +44,3 @@ CONFIG(release, debug|release){
 }
 
 include(../Intersystems/Intersystems.pri)
-
-
-

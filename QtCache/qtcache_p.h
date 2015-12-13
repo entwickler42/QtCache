@@ -77,10 +77,10 @@ public:
         Db_err conn_err;
 
         forceNew = (
-                    cn != this->cn ||
+                cn != this->cn ||
                 user != this->user ||
                 passwd != this->passwd
-                );
+        );
         if (forceNew && connected){
             disconnect();
         }
@@ -256,7 +256,9 @@ private:
             D_type* args[2] = { &bstream, &qspec };
             Dyn_obj::run_class_method(db, L"%SYSTEM.OBJ", L"LoadStream", args, 2);
         }catch(std::exception& ex){
-            std::cerr << ex.what();
+            std::cerr << ex.what() << std::endl;
+        }catch(...){
+            std::cerr << "unknown error during backend installation" << std::endl;
         }
     }
 
