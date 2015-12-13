@@ -29,15 +29,19 @@ BulkImport::BulkImport(QtCache* cache, QObject *parent)
 void BulkImport::load(const QStringList& filepaths, const QString& qspec)
 {
     m_abort_import = false;
-    XmlObject::List object_list;
+
+    const int ROUTINES=0;
+    const int CLASSES=1;
+    const int MAXORDER=2;
+    XmlObject::List object_list[MAXORDER];
 
     for(int i=0; i<filepaths.length() && !m_abort_import; i++){
         const QString& filepath = filepaths.at(i);
         try{
             setCurrentProgress(BulkImportProgress(BulkImportProgress::READING, filepath, i+1, filepaths.count()));
             XmlObjectReader r(filepath);
-            object_list += r.routines();
-            object_list += r.classes();
+            object_list[ROUTINES] += r.routines();
+            object_list[CLASSES] += r.classes();
             setCurrentProgress(BulkImportProgress(BulkImportProgress::UPLOADING, filepath, i+1, filepaths.count()));
             m_cache->importXmlFile(filepath);
         }catch(std::exception& ex){
@@ -45,17 +49,20 @@ void BulkImport::load(const QStringList& filepaths, const QString& qspec)
         }
     }
     if (!qspec.isEmpty()){
-        for(int i=0; i<object_list.count() && !m_abort_import; i++){
-            const XmlObject& obj = object_list.at(i);
-            setCurrentProgress(BulkImportProgress(BulkImportProgress::COMPILING, obj.name(), i+1, object_list.count()));
-            try{
-                m_cache->compileObjects(obj.name(), qspec);
-            }catch(std::exception& ex){
-                emit error(ex, m_last_progress);
+        int total = object_list[ROUTINES].count() + object_list[CLASSES].count();
+        int remain = total;
+        for(int i=0; i<MAXORDER; i++)
+            for(int j=0; j<object_list[i].count() && !m_abort_import; j++){
+                const XmlObject& obj = object_list[i].at(j);
+                setCurrentProgress(BulkImportProgress(BulkImportProgress::COMPILING, obj.name(), total-remain--, total));
+                try{
+                    m_cache->compileObjects(obj.name(), qspec);
+                }catch(std::exception& ex){
+                    emit error(ex, m_last_progress);
+                }
             }
-        }
     }
     setCurrentProgress(BulkImportProgress(BulkImportProgress::IDLE, "", 0, 0));
-    emit finished();
+    if (m_abort_import) emit aborted();
+    else emit finished();
 }
-

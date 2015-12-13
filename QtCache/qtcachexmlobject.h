@@ -41,7 +41,11 @@ public:
     XmlObject();
 
     const Type& type() const { return m_type; }
-    const QString& name() const { return m_name; }
+    const QString& name() const
+    {
+        m_name_with_suffix = QString("%1.%2").arg(m_name, fromType(m_type));
+        return m_name_with_suffix;
+    }
     const QString& timeCreated() const { return m_timeCreated; }
     const QString& timeChanged() const { return m_timeChanged; }
 
@@ -57,6 +61,7 @@ public:
 private:
     Type m_type;
     QString m_name;
+    mutable QString m_name_with_suffix;
     QString m_timeCreated;
     QString m_timeChanged;
 };

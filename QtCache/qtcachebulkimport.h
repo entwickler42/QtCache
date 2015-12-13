@@ -59,6 +59,7 @@ public:
     }
 
 signals:
+    void aborted();
     void finished();
     void error(std::exception& ex, const QtC::BulkImportProgress& progress);
     void reportProgress(const QtC::BulkImportProgress& progress);

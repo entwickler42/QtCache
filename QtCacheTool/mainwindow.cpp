@@ -202,6 +202,7 @@ void MainWindow::on_importFiles_pressed()
         i->setToolTip("");
     }
     setBuisyUI();
+    abortTask = false;
     bulk_import_active = true;
     try{
         preImportHook();
@@ -214,6 +215,7 @@ void MainWindow::on_importFiles_pressed()
         }
 
         QtC::BulkImport import(cache());
+        connect(&import, SIGNAL(aborted()), this, SLOT(bulkImportAborted()));
         connect(&import, SIGNAL(finished()), this, SLOT(bulkImportFinished()));
         connect(&import, SIGNAL(error(std::exception&, const QtC::BulkImportProgress&)), this, SLOT(bulkImportError(std::exception&, const QtC::BulkImportProgress&)));
         connect(&import, SIGNAL(reportProgress(const QtC::BulkImportProgress&)), this, SLOT(bulkImportProgress(const QtC::BulkImportProgress&)));
@@ -228,16 +230,27 @@ void MainWindow::on_importFiles_pressed()
     setIdleUI();
 }
 
+void MainWindow::bulkImportAborted()
+{
+    ui->statusBar->showMessage(tr("Bulkimport was aborted!"));
+}
+
 void MainWindow::bulkImportFinished()
 {
     ui->progressBar->setMaximum(100);
     ui->progressBar->setValue(0);
-    ui->statusBar->showMessage(tr("Bulkimport finished!"));
+    ui->statusBar->showMessage(tr("Bulkimport has finished!"));
 }
 
-void MainWindow::bulkImportError(std::exception& ex, const QtC::BulkImportProgress&)
+void MainWindow::bulkImportError(std::exception& ex, const QtC::BulkImportProgress& progress)
 {
-    QMessageBox::warning(this, "Exception", ex.what());
+    bulkImportProgress(progress);
+    if (!ui->ignoreImportErrors->isChecked()){
+        int rval = QMessageBox::warning(this, tr("Exception"), ex.what(),
+                                        QMessageBox::Cancel|QMessageBox::Ignore,
+                                        QMessageBox::Ignore);
+        abortTask = rval == QMessageBox::Cancel;
+    }
 }
 
 void MainWindow::bulkImportProgress(const QtC::BulkImportProgress& progress)
@@ -256,14 +269,20 @@ void MainWindow::bulkImportProgress(const QtC::BulkImportProgress& progress)
         break;
 
     }
-    QApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
+    if(abortTask){
+        QtC::BulkImport* import = dynamic_cast<QtC::BulkImport*>(sender());
+        import->abort();
+    }
+    QApplication::processEvents();
 }
 
 void MainWindow::reportProgress(const QString& message, qint64 pos, qint64 end)
 {
-    ui->progressBar2->setMaximum(end);
-    ui->progressBar2->setValue(pos);
-    if (!bulk_import_active) ui->statusBar->showMessage(message);
+    ui->progressBar->setMaximum(end);
+    ui->progressBar->setValue(pos);
+    if (!bulk_import_active) {
+        ui->statusBar->showMessage(message);
+    }
     QApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
 }
 

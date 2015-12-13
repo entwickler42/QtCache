@@ -32,7 +32,7 @@ class QtCacheException
 {
 public:
     QtCacheException(const QString& msg)
-        : QtCacheException(msg.toStdString().c_str())
+        : QtCacheException(msg.toStdString())
     {}
 
     explicit QtCacheException(const std::string& msg)

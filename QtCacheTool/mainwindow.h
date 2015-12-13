@@ -69,6 +69,7 @@ private slots:
 
     void reportProgress(const QString&, qint64, qint64);
 
+    void bulkImportAborted();
     void bulkImportFinished();
     void bulkImportError(std::exception& ex, const QtC::BulkImportProgress&);
     void bulkImportProgress(const QtC::BulkImportProgress& progress);

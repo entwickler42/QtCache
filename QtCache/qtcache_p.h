@@ -123,6 +123,7 @@ public:
                     d_string(uci.toStdString()),
                     d_string(code.toStdString()));
         if (sc.get_code()){
+            sc.get_msg(db);
             throw QtCacheException(sc);
         }
     }
@@ -154,6 +155,7 @@ public:
         d_ref<d_char_stream> bstream = tool()->ListObjects(_uci, _filter);
         d_status sc = tool()->getLastStatus();
         if (sc.get_code()){
+            sc.get_msg(db);
             throw QtCacheException(sc);
         }
         d_iostream io(bstream);
@@ -197,6 +199,7 @@ public:
         d_string _qspec(qspec.toStdString());
         d_status sc = tool()->ImportXML(_uci, bstream, _qspec);
         if (sc.get_code()){
+            sc.get_msg(db);
             throw QtCacheException(sc);
         }
     }
@@ -208,6 +211,7 @@ public:
         d_ref<d_bin_stream> bstream = tool()->ExportXML(_uci, _objectName);
         d_status sc = tool()->getLastStatus();
         if (sc.get_code()){
+            sc.get_msg(db);
             throw QtCacheException(sc);
         }
         QDir out_dir(directoryPath);
@@ -233,7 +237,12 @@ public:
     {
         d_string _objectNames(objectNames.toStdString());
         d_string _qspec(qspec.toStdString());
-        tool()->CompileList(_objectNames, _qspec);
+        d_string _uci = uci.toStdString();
+        d_status sc = tool()->CompileList(_uci, _objectNames, _qspec);
+        if (sc.get_code()){
+            sc.get_msg(db);
+            throw QtCacheException(tool()->getErrorLog());
+        }
     }
 
 private:

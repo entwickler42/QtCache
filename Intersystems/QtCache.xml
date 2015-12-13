@@ -28,7 +28,7 @@
 <Implementation><![CDATA[
     S i%LastStatus = status
     I $$$ISERR(..LastStatus) {
-        S i%ErrorLog = $SYSTEM.Status.GetOneErrorText(..LastStatus)
+        S i%ErrorLog = $SYSTEM.Status.GetErrorText(..LastStatus)
     }ELSE{
         S i%ErrorLog = ""
     }
@@ -174,8 +174,8 @@
 <Implementation><![CDATA[
     try{
         ZN uci
-                                    
-        S ..LastStatus = $SYSTEM.OBJ.CompileList(objectNames, qspec)
+        S errlog=""              
+        S ..LastStatus = $SYSTEM.OBJ.CompileList(objectNames, qspec, .errlog)
     }catch ex{
         S ..LastStatus = ex.AsStatus()        
     }
@@ -209,7 +209,7 @@
 </Class>
 
 
-<Project name="QtCache" LastModified="2015-12-13 15:12:19.664807" Target="ST^ySBR" TargetType="2">
+<Project name="QtCache" LastModified="2015-12-13 16:37:21.178756" Target="ST^ySBR" TargetType="2">
   <Items>
     <ProjectItem name="Qt.CacheTool" type="CLS"></ProjectItem>
   </Items>
