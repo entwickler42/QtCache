@@ -31,7 +31,7 @@ public:
 
     QString QSPEC() const
     {
-        return conf->value("QSPEC", "cfk").toString();
+        return conf->value("QSPEC", "cfkb").toString();
     }
 
     void setQSPEC(const QString& value)

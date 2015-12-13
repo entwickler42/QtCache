@@ -2,14 +2,6 @@
 <ui version="4.0">
  <class>MainWindow</class>
  <widget class="QMainWindow" name="MainWindow">
-  <property name="geometry">
-   <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>434</width>
-    <height>535</height>
-   </rect>
-  </property>
   <property name="windowTitle">
    <string>Qt Caché Tool</string>
   </property>
@@ -193,7 +185,7 @@
                     </sizepolicy>
                    </property>
                    <property name="text">
-                    <string>ckf</string>
+                    <string>ckfb</string>
                    </property>
                    <property name="alignment">
                     <set>Qt::AlignCenter</set>
