@@ -20,7 +20,7 @@ QTCACHENAMESPACEUSE
 
 BulkImport::BulkImport(QtCache* cache, QObject *parent)
     : QObject(parent),
-      m_current_step(BulkImport::IDLE),
+      m_last_progress(BulkImportProgress::IDLE, "", 0, 0),
       m_cache(cache)
 {
     if (NULL == m_cache) throw new std::invalid_argument("QtCache* cache must not be NULL");
@@ -34,29 +34,28 @@ void BulkImport::load(const QStringList& filepaths, const QString& qspec)
     for(int i=0; i<filepaths.length() && !m_abort_import; i++){
         const QString& filepath = filepaths.at(i);
         try{
-            reflectStepAndProgress(LOADING, BulkImportProgress(filepath, i+1, filepaths.count()));
+            setCurrentProgress(BulkImportProgress(BulkImportProgress::READING, filepath, i+1, filepaths.count()));
             XmlObjectReader r(filepath);
             object_list += r.routines();
             object_list += r.classes();
-            reflectStepAndProgress(UPLOADING, BulkImportProgress(filepath, i+1, filepaths.count()));
+            setCurrentProgress(BulkImportProgress(BulkImportProgress::UPLOADING, filepath, i+1, filepaths.count()));
             m_cache->importXmlFile(filepath);
         }catch(std::exception& ex){
-            emit error(ex, filepath);
+            emit error(ex, m_last_progress);
         }
     }
     if (!qspec.isEmpty()){
-
         for(int i=0; i<object_list.count() && !m_abort_import; i++){
             const XmlObject& obj = object_list.at(i);
-            reflectStepAndProgress(COMPILING, BulkImportProgress(obj.name(), i+1, object_list.count()));
+            setCurrentProgress(BulkImportProgress(BulkImportProgress::COMPILING, obj.name(), i+1, object_list.count()));
             try{
                 m_cache->compileObjects(obj.name(), qspec);
             }catch(std::exception& ex){
-                emit error(ex, obj.name());
+                emit error(ex, m_last_progress);
             }
         }
     }
-    reflectStepAndProgress(IDLE, BulkImportProgress("", 0, 0));
+    setCurrentProgress(BulkImportProgress(BulkImportProgress::IDLE, "", 0, 0));
     emit finished();
 }
 

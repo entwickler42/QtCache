@@ -25,6 +25,7 @@ namespace Ui {
 
 namespace QtC {
     class CacheConnectionDialog;
+    class BulkImportProgress;
 }
 
 class QSettings;
@@ -69,16 +70,15 @@ private slots:
     void reportProgress(const QString&, qint64, qint64);
 
     void bulkImportFinished();
-    void bulkImportError(std::exception& ex);
-    void bulkImportCompiling(const QString& filename, int pos, int max);
-    void bulkImportLoading(const QString& filename, int pos, int max);
-    void bulkImportUploading(const QString& filename, int pos, int max);
+    void bulkImportError(std::exception& ex, const QtC::BulkImportProgress&);
+    void bulkImportProgress(const QtC::BulkImportProgress& progress);
 
 private:
     Ui::MainWindow *ui;
     QtCacheToolSettings* conf;
     QtC::CacheConnectionDialog* dlg;
     bool abortTask = false;
+    bool bulk_import_active = false;
 
     QStringList loadFilters() const;
     void saveFilters(const QStringList&) const;

@@ -202,6 +202,7 @@ void MainWindow::on_importFiles_pressed()
         i->setToolTip("");
     }
     setBuisyUI();
+    bulk_import_active = true;
     try{
         preImportHook();
 
@@ -213,6 +214,9 @@ void MainWindow::on_importFiles_pressed()
         }
 
         QtC::BulkImport import(cache());
+        connect(&import, SIGNAL(finished()), this, SLOT(bulkImportFinished()));
+        connect(&import, SIGNAL(error(std::exception&, const QtC::BulkImportProgress&)), this, SLOT(bulkImportError(std::exception&, const QtC::BulkImportProgress&)));
+        connect(&import, SIGNAL(reportProgress(const QtC::BulkImportProgress&)), this, SLOT(bulkImportProgress(const QtC::BulkImportProgress&)));
         import.load(import_files, qspec);
 
         postImportHook();
@@ -220,7 +224,47 @@ void MainWindow::on_importFiles_pressed()
         ui->statusBar->showMessage(tr("Import failed!"));
         QMessageBox::critical(this, tr("Exception"), ex.what());
     }
+    bulk_import_active = false;
     setIdleUI();
+}
+
+void MainWindow::bulkImportFinished()
+{
+    ui->progressBar->setMaximum(100);
+    ui->progressBar->setValue(0);
+    ui->statusBar->showMessage(tr("Bulkimport finished!"));
+}
+
+void MainWindow::bulkImportError(std::exception& ex, const QtC::BulkImportProgress&)
+{
+    QMessageBox::warning(this, "Exception", ex.what());
+}
+
+void MainWindow::bulkImportProgress(const QtC::BulkImportProgress& progress)
+{
+    ui->progressBar->setMaximum(progress.max);
+    ui->progressBar->setValue(progress.pos);
+    switch (progress.step) {
+    case QtC::BulkImportProgress::READING:
+        ui->statusBar->showMessage(tr("Reading %1").arg(progress.filename));
+        break;
+    case QtC::BulkImportProgress::UPLOADING:
+        ui->statusBar->showMessage(tr("Uploading %1").arg(progress.filename));
+        break;
+    case QtC::BulkImportProgress::COMPILING:
+        ui->statusBar->showMessage(tr("Compiling %1").arg(progress.filename));
+        break;
+
+    }
+    QApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
+}
+
+void MainWindow::reportProgress(const QString& message, qint64 pos, qint64 end)
+{
+    ui->progressBar2->setMaximum(end);
+    ui->progressBar2->setValue(pos);
+    if (!bulk_import_active) ui->statusBar->showMessage(message);
+    QApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
 }
 
 void MainWindow::preImportHook()
@@ -342,29 +386,6 @@ void MainWindow::on_removeCurrentFilter_pressed()
         saveFilters(QStringList() << *ui->includeFilter);
     }
 }
-
-void MainWindow::reportProgress(const QString& message, qint64 pos, qint64 end)
-{
-    ui->progressBar2->setMaximum(end);
-    ui->progressBar2->setValue(pos);
-    ui->statusBar->showMessage(message);
-    QApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
-}
-
-void MainWindow::bulkImportFinished()
-{}
-
-void MainWindow::bulkImportError(std::exception& ex)
-{}
-
-void MainWindow::bulkImportCompiling(const QString& filename, int pos, int max)
-{}
-
-void MainWindow::bulkImportLoading(const QString& filename, int pos, int max)
-{}
-
-void MainWindow::bulkImportUploading(const QString& filename, int pos, int max)
-{}
 
 QStringList MainWindow::loadFilters() const
 {
