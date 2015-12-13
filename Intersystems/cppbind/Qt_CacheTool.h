@@ -62,7 +62,7 @@ public:
 
    static d_int _IsA(Database* __db, const d_string& isclass);
 
-   virtual d_status CompileList(const d_string& objectNames, const d_string& qspec);
+   virtual d_status CompileList(const d_string& uci, const d_string& objectNames, const d_string& qspec);
 
    static d_string ErrorLogDisplayToLogical(Database* __db, const d_string& _val);
 

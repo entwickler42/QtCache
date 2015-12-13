@@ -43,15 +43,17 @@
 <ReturnType>%Boolean</ReturnType>
 <Implementation><![CDATA[
     I filter="" Q 1
-    
-    S RVAL=0
-    #dim RE as %Regex.Matcher
-               
-    F I=1:1:$L(filter,";") {
-        S RE = ##class(%Regex.Matcher).%New($P(filter,";",I))
-        I RE.Match(object) S RVAL=1 Q
+
+    S RVAL=0    
+    I $SYSTEM.Version.GetMajor() > 2008 {
+        F I=1:1:$L(filter,";") {
+            S RE = ##class(%Regex.Matcher).%New($P(filter,";",I))
+            I RE.Match(object) S RVAL=1 Q
+        }
+    }ELSE{
+        Q 1          
+
     }
-    
     Q RVAL
 ]]></Implementation>
 </Method>
@@ -207,7 +209,7 @@
 </Class>
 
 
-<Project name="QtCache" Target="ST^ySBR" TargetType="2">
+<Project name="QtCache" LastModified="2015-12-13 15:12:19.664807" Target="ST^ySBR" TargetType="2">
   <Items>
     <ProjectItem name="Qt.CacheTool" type="CLS"></ProjectItem>
   </Items>
