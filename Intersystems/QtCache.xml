@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Export generator="Cache" version="25">
+<Export generator="Cache" version="22">
 <Class name="Qt.CacheTool">
 <Super>%RegisteredObject</Super>
 <TimeCreated>63850,61720.151703</TimeCreated>
@@ -16,7 +16,7 @@
 <FormalSpec>initvalue</FormalSpec>
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
-    S ..LastStatus = $$$OK
+    S ..LastStatus=$$$OK
     Q $$$OK
 ]]></Implementation>
 </Method>
@@ -26,11 +26,11 @@
 <Private>1</Private>
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
-    S i%LastStatus = status
+    S i%LastStatus=status
     I $$$ISERR(..LastStatus) {
-        S i%ErrorLog = $SYSTEM.Status.GetErrorText(..LastStatus)
+        S i%ErrorLog=$SYSTEM.Status.GetErrorText(..LastStatus)
     }ELSE{
-        S i%ErrorLog = ""
+        S i%ErrorLog=""
     }
     
     Q $$$OK
@@ -45,9 +45,9 @@
     I filter="" Q 1
 
     S RVAL=0    
-    I $SYSTEM.Version.GetMajor() > 2008 {
+    I $SYSTEM.Version.GetMajor()>2008 {
         F I=1:1:$L(filter,";") {
-            S RE = ##class(%Regex.Matcher).%New($P(filter,";",I))
+            S RE=##class(%Regex.Matcher).%New($P(filter,";",I))
             I RE.Match(object) S RVAL=1 Q
         }
     }ELSE{
@@ -65,13 +65,13 @@
     
     try{    
         S RS=##class(%ResultSet).%New("%SYS.Namespace:List")
-        S SC=RS.Execute(0,0) 
+        S sc=RS.Execute(0,0) 
         
         WHILE RS.%Next() { 
             S LS=LS_$LB(RS.Data("Nsp"))
         }
     }catch ex{
-        S ..LastStatus = ex.AsStatus()
+        S ..LastStatus=ex.AsStatus()
     }
     
     Q LS
@@ -82,10 +82,12 @@
 <FormalSpec>uci:%String,filter:%String</FormalSpec>
 <ReturnType>%Stream.GlobalCharacter</ReturnType>
 <Implementation><![CDATA[
+    S sc=$$$OK
+    
     try{ 
         ZN uci                               
         
-        S STREAM = ##class(%Stream.GlobalCharacter).%New()
+        S STREAM=##class(%Stream.GlobalCharacter).%New()
                         
         // collect routine names
         S rs=##class(%ResultSet).%New()
@@ -116,11 +118,11 @@
             I ..Filter(filter, NAME_".gbl") D STREAM.WriteLine(NAME_".gbl")     
         }                
     }catch ex{
-        S ..LastStatus = ex.AsStatus()
+        S sc=ex.AsStatus()
     }
     
     ZN "%SYS"
-    
+    S ..LastStatus=sc
     Q STREAM
 ]]></Implementation>
 </Method>
@@ -129,17 +131,19 @@
 <FormalSpec>uci:%String,xml:%Stream.GlobalBinary,qspec:%String</FormalSpec>
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
+    S sc=$$$OK
+    
     try{
         ZN uci
                                     
-        S ..LastStatus = $SYSTEM.OBJ.LoadStream(xml, qspec)
+        S sc=$SYSTEM.OBJ.LoadStream(xml, qspec)
     }catch ex{
-        S ..LastStatus = ex.AsStatus()        
+        S sc=ex.AsStatus()        
     }
         
     ZN "%SYS"
-        
-    Q ..LastStatus
+    S ..LastStatus=sc    
+    Q sc
 ]]></Implementation>
 </Method>
 
@@ -147,9 +151,9 @@
 <FormalSpec>uci:%String,object:%String</FormalSpec>
 <ReturnType>%Stream.GlobalBinary</ReturnType>
 <Implementation><![CDATA[
+    S STREAM=$$$NULLOREF
+    S sc=$$$OK
     
-    S STREAM = $$$NULLOREF
-
     try{        
         ZN uci
         
@@ -157,13 +161,14 @@
         S QSPECC="/diffexport=1"
         S STREAM=##class(%Stream.GlobalBinary).%New()
                 
-        D $SYSTEM.OBJ.ExportPatternToStream(object,.STREAM,QSPECC,.ERRLOG)          
+        S sc=$SYSTEM.OBJ.ExportPatternToStream(object,.STREAM,QSPECC,.ERRLOG)          
         D STREAM.Rewind()     
     }catch ex{
-        S ..LastStatus = ex.AsStatus()        
+        S sc=ex.AsStatus()        
     }
     
     ZN "%SYS"
+    S ..LastStatus=sc
     Q STREAM
 ]]></Implementation>
 </Method>
@@ -172,17 +177,20 @@
 <FormalSpec>uci:%String,objectNames:%String,qspec:%String</FormalSpec>
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
+    S sc=$$$OK
+    
     try{
         ZN uci
+        
         S errlog=""              
-        S ..LastStatus = $SYSTEM.OBJ.CompileList(objectNames, qspec, .errlog)
+        S sc=$SYSTEM.OBJ.CompileList(objectNames, qspec, .errlog)
     }catch ex{
-        S ..LastStatus = ex.AsStatus()        
+        S sc=ex.AsStatus()        
     }
         
     ZN "%SYS"
-        
-    Q ..LastStatus
+    S ..LastStatus=sc
+    Q sc
 ]]></Implementation>
 </Method>
 
@@ -190,28 +198,27 @@
 <FormalSpec>uci:%String,code:%String</FormalSpec>
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
-    S SC=$$$OK
+    S sc=$$$OK
     
     TRY{
         ZN uci
         
         X code
     }CATCH EX{
-        #dim ex as %Exception.AbstractException
-        S SC=EX.AsStatus()
-        S ..LastStatus = SC
+        S sc=EX.AsStatus()        
     }
     
     ZN "%SYS"
-    Q SC
+    S ..LastStatus=sc
+    Q sc
 ]]></Implementation>
 </Method>
 </Class>
 
 
-<Project name="QtCache" LastModified="2015-12-14 12:50:30.764043" TargetType="2" HttpServer="http://localhost:57772">
+<Project name="QtCache" TargetType="2">
   <Items>
-    <ProjectItem name="Qt.CacheTool" type="CLS"></ProjectItem>
+    <ProjectItem name="Qt.CacheTool" type="CLS"/>
   </Items>
 </Project>
 </Export>

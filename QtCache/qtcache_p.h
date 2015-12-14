@@ -252,6 +252,7 @@ private:
 
     void installCacheBackend()
     {
+#if 0
         try{
             QFile xml(":/src/QtCache.xml");
             if (!xml.open(QFile::ReadOnly)){
@@ -269,6 +270,7 @@ private:
         }catch(...){
             std::cerr << "unknown error during backend installation" << std::endl;
         }
+#endif
     }
 
 };
