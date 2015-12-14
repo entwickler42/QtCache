@@ -66,13 +66,13 @@ void QtCache::setTargetUci(const QString& uci)
 QString QtCache::lastStatus() const
 {
     d_status sc = d->tool()->getLastStatus();
-    return QString::fromStdString(sc.get_msg().value());
+    return QString::fromStdString((std::string)sc.get_msg());
 }
 
 QString QtCache::errorLog() const
 {
     d_string err = d->tool()->getErrorLog();
-    return QString::fromStdString(err.value());
+    return QString::fromStdString((std::string)err);
 }
 
 long QtCache::jobId() const

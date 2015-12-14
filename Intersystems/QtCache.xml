@@ -209,7 +209,7 @@
 </Class>
 
 
-<Project name="QtCache" LastModified="2015-12-13 16:37:21.178756" Target="ST^ySBR" TargetType="2">
+<Project name="QtCache" LastModified="2015-12-14 12:50:30.764043" TargetType="2" HttpServer="http://localhost:57772">
   <Items>
     <ProjectItem name="Qt.CacheTool" type="CLS"></ProjectItem>
   </Items>

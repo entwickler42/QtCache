@@ -18,7 +18,7 @@
 QTCACHENAMESPACEUSE
 
 QtCacheException::QtCacheException(const d_string& msg)
-    : QtCacheException(msg.value())
+    : QtCacheException((std::string)msg)
 {}
 
 QtCacheException::QtCacheException(const d_status& sc)
