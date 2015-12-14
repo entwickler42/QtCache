@@ -1,4 +1,4 @@
-CONFIG += cppbind exceptions rtti
+CONFIG += cppbind exceptions rtti cache2008
 
 INCLUDEPATH += $$PWD
 
@@ -8,18 +8,30 @@ RESOURCES += \
 OTHER_FILES += $$PWD/QtCache.xml
 
 cppbind{
-    CONFIG(debug, debug|release){
-        win32:LIBS += "-Lc:/InterSystems/Cache/dev/cpp/lib/" -lcppbind_msvc120d
-        win64:LIBS += "-Lc:/InterSystems/Cache/dev/cpp/lib/" -lcppbind_msvc120d64
-        linux-g++:LIBS += "-L/usr/cachesys/bin" -lcppbind
+    cache2008{
+        win32:CACHEDIR=c:/InterSystems/Cache2008
+        linux-g++:CACHEDIR=/usr/cachesys
+        CONFIG(debug, debug|release){
+            CACHELIB=cppbind_msvc80
+        }else{
+            CACHELIB=cppbind_msvc80d
+        }
+        DEFINES += CACHE2008
     }else{
-        win32:LIBS += "-Lc:/InterSystems/Cache/dev/cpp/lib/" -lcppbind_msvc120
-        win64:LIBS += "-Lc:/InterSystems/Cache/dev/cpp/lib/" -lcppbind_msvc120r64
-        linux-g++:LIBS += "-L/usr/cachesys/bin" -lcppbind
+        win32:CACHEDIR=c:/InterSystems/Cache
+        linux-g++:CACHEDIR=/usr/cachesys
+        CONFIG(debug, debug|release){
+            win32:CACHELIB=cppbind_msvc120
+            linux-g++:CACHELIB=cppbind
+        }else{
+            win32:CACHELIB=cppbind_msvc120d
+            linux-g++:CACHELIB=cppbind
+        }
     }
-    win32:INCLUDEPATH *= "c:/InterSystems/Cache/dev/cpp/include/"
-    win64:INCLUDEPATH *= "c:/InterSystems/Cache/dev/cpp/include/"
-    linux-g++:INCLUDEPATH *= "/usr/cachesys/dev/cpp/include/"
+    win32:LIBS += "-L$$CACHEDIR/dev/cpp/lib" -l$$CACHELIB
+    linux-g++:LIBS += "-L$$CACHEDIR/bin" -lcppbind
+
+    INCLUDEPATH *= "$$CACHEDIR/dev/cpp/include/"
     INCLUDEPATH += $$PWD/cppbind/
     DEFINES += CACHECPPBIND
     SOURCES += $$PWD/cppbind/Qt_CacheTool.cpp
