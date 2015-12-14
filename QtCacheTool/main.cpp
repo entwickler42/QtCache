@@ -46,7 +46,7 @@ int main(int argc, char *argv[])
     int sc = -1;
     try{
         PML::LOG << QObject::tr("===> QtCacheTool started: %1").arg(
-                         QDateTime::currentDateTime().toString(Qt::ISODate));
+                        QDateTime::currentDateTime().toString(Qt::ISODate));
 
         QCoreApplication::setApplicationName(VER_FILEDESCRIPTION_STR);
         QCoreApplication::setOrganizationName(VER_COMPANYNAME_STR);
@@ -61,15 +61,15 @@ int main(int argc, char *argv[])
         sc = app.exec();
 
         PML::LOG << QObject::tr("<=== QtCacheTool finished: %1", "QtCacheTool").arg(
-                         QDateTime::currentDateTime().toString(Qt::ISODate));
+                        QDateTime::currentDateTime().toString(Qt::ISODate));
     }catch(std::exception& ex){
-        PML::LOG << QObject::tr("<=== QtCacheTool terminated: %1\nwhat: %1", "QtCacheTool").arg(
-                         QDateTime::currentDateTime().toString(Qt::ISODate),
-                         ex.what());
+        PML::LOG << QObject::tr("<=== QtCacheTool terminated: %1\nwhat: %2", "QtCacheTool").arg(
+                        QDateTime::currentDateTime().toString(Qt::ISODate),
+                        ex.what());
     }catch(...){
-        PML::LOG << QObject::tr("<=== QtCacheTool terminated: %1\nwhat: ", "QtCacheTool").arg(
-                         QDateTime::currentDateTime().toString(Qt::ISODate),
-                         "unknown error");
+        PML::LOG << QObject::tr("<=== QtCacheTool terminated: %1\nwhat: %2", "QtCacheTool").arg(
+                        QDateTime::currentDateTime().toString(Qt::ISODate),
+                        "unknown error");
     }
 
     return sc;

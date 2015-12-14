@@ -46,6 +46,8 @@ void BulkImport::load(const QStringList& filepaths, const QString& qspec)
             m_cache->importXmlFile(filepath);
         }catch(std::exception& ex){
             emit error(ex, m_last_progress);
+        }catch(...){
+            emit error(std::runtime_error("Unknown error!"), m_last_progress);
         }
     }
     if (!qspec.isEmpty()){
@@ -59,6 +61,8 @@ void BulkImport::load(const QStringList& filepaths, const QString& qspec)
                     m_cache->compileObjects(obj.name(), qspec);
                 }catch(std::exception& ex){
                     emit error(ex, m_last_progress);
+                }catch(...){
+                    emit error(std::runtime_error("Unknown error!"), m_last_progress);
                 }
             }
     }
