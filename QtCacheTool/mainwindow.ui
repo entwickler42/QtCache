@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>640</width>
-    <height>480</height>
+    <width>436</width>
+    <height>535</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -42,7 +42,14 @@
           </widget>
          </item>
          <item>
-          <widget class="QComboBox" name="targetUCI"/>
+          <widget class="QComboBox" name="targetUCI">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+          </widget>
          </item>
          <item>
           <widget class="QPushButton" name="selectServer">
