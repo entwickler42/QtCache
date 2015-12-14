@@ -203,9 +203,6 @@
     <ProjectItem name="Qt.CacheTool" type="CLS"></ProjectItem>
     <ProjectItem name="ySBR.MAC" type="MAC"></ProjectItem>
   </Items>
-  <WatchVariables>
-    <WatchVariable Variable="errlog" Pane="1"></WatchVariable>
-  </WatchVariables>
 </Project>
 
 
