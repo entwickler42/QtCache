@@ -136,8 +136,6 @@ void MainWindow::on_selectServer_pressed()
             ui->connectionString->setToolTip(tr("JobId: %1").arg(cache()->jobId()));
         }catch(std::exception& ex){
             QMessageBox::critical(this, tr("Exception"), ex.what());
-        }catch(...){
-            QMessageBox::critical(this, tr("Exception"), tr("Unknown exception occured!"));
         }
     }
 }
@@ -157,8 +155,6 @@ void MainWindow::on_addFiles_pressed()
         }
     }catch(std::exception &ex){
         QMessageBox::critical(this, tr("Exception"), ex.what());
-    }catch(...){
-        QMessageBox::critical(this, tr("Exception"), tr("Unknown exception occured!"));
     }
 }
 
@@ -345,7 +341,9 @@ void MainWindow::on_exportFiles_pressed()
     try{
         ui->statusBar->showMessage(tr("Receiving list of cachè objects..."));
         QString filter = ui->includeFilterEnabled->isChecked() ? ui->includeFilter->currentText() : "";
-        QStringList ls = cache()->listObjects(filter);
+        QtC::QtCache::ObjectFilterType filterType =
+                ui->regularExpression->isChecked() ? QtC::QtCache::REGEXP : QtC::QtCache::PATTERN;
+        QStringList ls = cache()->listObjects(filter, filterType);
         ui->progressBar->setMaximum(ls.count());
         abortTask = false;
         for(int i=0; !abortTask && i<ls.count(); i++){

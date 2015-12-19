@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Export generator="Cache" version="22">
+<Export generator="Cache" version="25">
 <Class name="Qt.CacheTool">
 <Super>%RegisteredObject</Super>
 <TimeCreated>63850,61720.151703</TimeCreated>
@@ -37,24 +37,45 @@
 ]]></Implementation>
 </Method>
 
-<Method name="Filter">
+<Method name="FilterByPattern">
 <FormalSpec>filter:%String,object:%String</FormalSpec>
 <Private>1</Private>
 <ReturnType>%Boolean</ReturnType>
 <Implementation><![CDATA[
     I filter="" Q 1
-
-    S RVAL=0    
-    I $SYSTEM.Version.GetMajor()>2008 {
-        F I=1:1:$L(filter,";") {
-            S RE=##class(%Regex.Matcher).%New($P(filter,";",I))
-            I RE.Match(object) S RVAL=1 Q
+    S RVAL=0   
+    F I=1:1:$L(filter,";") {
+        S pattern=$P(filter,";",I)
+        I $ZCVT(object,"U")?@pattern {
+            S RVAL=1 Q 
         }
-    }ELSE{
-        Q 1          
+    }    
+    Q RVAL
+]]></Implementation>
+</Method>
 
+<Method name="FilterByRegExp">
+<FormalSpec>filter:%String,object:%String</FormalSpec>
+<Private>1</Private>
+<ReturnType>%Boolean</ReturnType>
+<Implementation><![CDATA[
+    I filter="" Q 1
+    S RVAL=0        
+    F I=1:1:$L(filter,";") {
+        S RE=##class(%Regex.Matcher).%New($P(filter,";",I))
+        I RE.Match(object) S RVAL=1 Q
     }
     Q RVAL
+]]></Implementation>
+</Method>
+
+<Method name="Filter">
+<FormalSpec>filter:%String,object:%String,filterType:%Integer</FormalSpec>
+<Implementation><![CDATA[
+    S filterType=$G(filterType,1)
+    Q:filterType=0 ..FilterByRegExp(filter, object)
+    Q:filterType=1 ..FilterByPattern(filter, object)
+    Q 0
 ]]></Implementation>
 </Method>
 
@@ -79,7 +100,7 @@
 </Method>
 
 <Method name="ListObjects">
-<FormalSpec>uci:%String,filter:%String</FormalSpec>
+<FormalSpec>uci:%String,filter:%String,filterType:%Integer</FormalSpec>
 <ReturnType>%Stream.GlobalCharacter</ReturnType>
 <Implementation><![CDATA[
     S sc=$$$OK
@@ -98,14 +119,14 @@
         while rs.%Next() {
             S NAME=rs.Data("Name")
             S ROUTINE=##class(%Library.Routine).%OpenId(NAME)               
-            I ROUTINE.Generated=0,(..Filter(filter, NAME)) D STREAM.WriteLine(NAME)     
+            I ROUTINE.Generated=0,(..Filter(filter,NAME,filterType)) D STREAM.WriteLine(NAME)     
         }            
         
         // collect class names
         S LSC=""
         S QSPECC="/diffexport=1/unicode=1"
         D $SYSTEM.OBJ.GetClassList(.LSC, QSPECC)
-        S I="" F  S I=$O(LSC(I)) Q:I=""  I ..Filter(filter, I_".cls") D STREAM.WriteLine(I_".cls")                   
+        S I="" F  S I=$O(LSC(I)) Q:I=""  I ..Filter(filter,I_".cls",filterType) D STREAM.WriteLine(I_".cls")                   
         
         // collect global names
         S rs=##class(%ResultSet).%New()
@@ -115,7 +136,7 @@
         I $$$ISERR(sc) throw ##class(%Exception.StatusException).CreateFromStatus(sc)        
         while rs.%Next() {
             S NAME=rs.Data("Name")
-            I ..Filter(filter, NAME_".gbl") D STREAM.WriteLine(NAME_".gbl")     
+            I ..Filter(filter,NAME_".gbl",filterType) D STREAM.WriteLine(NAME_".gbl")     
         }                
     }catch ex{
         S sc=ex.AsStatus()
@@ -216,9 +237,13 @@
 </Class>
 
 
-<Project name="QtCache" TargetType="2">
+<Project name="QtCache" LastModified="2015-12-19 21:55:17.671193" Target="ST^ySBR" TargetType="2">
   <Items>
-    <ProjectItem name="Qt.CacheTool" type="CLS"/>
+    <ProjectItem name="Qt.CacheTool" type="CLS"></ProjectItem>
   </Items>
+  <BreakPoints>
+    <BreakPoint Routine="Qt.CacheTool.CLS" Offset="FilterByPattern+5"></BreakPoint>
+    <BreakPoint Routine="ySBR.MAC" Offset="1"></BreakPoint>
+  </BreakPoints>
 </Project>
 </Export>

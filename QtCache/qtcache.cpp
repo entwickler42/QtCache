@@ -80,9 +80,9 @@ long QtCache::jobId() const
     return d->jobId();
 }
 
-QStringList QtCache::listObjects(const QString& filter = "") const
+QStringList QtCache::listObjects(const QString& filter, ObjectFilterType filterType) const
 {
-    return d->listObjects(filter);
+    return d->listObjects(filter, filterType);
 }
 
 QStringList QtCache::listNamespaces(bool excludePercent) const

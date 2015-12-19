@@ -22,12 +22,23 @@
 #include <QFile>
 #include <QTextStream>
 #include <Qt_CacheTool.h>
+#include "poormanslogger.h"
 
 #ifdef CACHEVISM
 #include <vismocx.h>
 #endif
 
 QTCACHENAMESPACEBEGIN
+
+#define CACHE_TRY try
+#define CACHE_CATCH \
+    catch(std::exception& ex){ \
+    PML::LOG << ex.what(); \
+    throw QtCacheException(ex.what()); \
+    }catch(...){ \
+    PML::LOG << "Unknown Exception"; \
+    throw QtCacheException("Unknown Exception"); \
+    }
 
 typedef d_ref<Qt_CacheTool> QtCacheToolType;
 
@@ -51,198 +62,220 @@ public:
 
     QtCacheToolType tool()
     {
-        if (!isConnected()){
-            throw QtCacheException(QObject::tr("Cachè connection has not been established yet!", "QtCachePrivate"));
-        }
-        if (Qt_CacheTool.is_null()) {
-            Db_err err;
-            Qt_CacheTool = Qt_CacheTool::create_new(db,0,&err);
-            if (err.get_code()){
-                throw QtCacheException(err);
+        CACHE_TRY{
+            if (!isConnected()){
+                throw QtCacheException(QObject::tr("Cachè connection has not been established yet!", "QtCachePrivate"));
             }
-        }
+            if (Qt_CacheTool.is_null()) {
+                Db_err err;
+                Qt_CacheTool = Qt_CacheTool::create_new(db,0,&err);
+                if (err.get_code()){
+                    throw QtCacheException(err);
+                }
+            }
+        }CACHE_CATCH;
         return Qt_CacheTool;
     }
 
     long jobId() const
     {
-        if (connected && NULL != db){
-            return db->get_job_id();
-        }
+        CACHE_TRY{
+            if (connected && NULL != db){
+                return db->get_job_id();
+            }
+        }CACHE_CATCH;
         return 0;
     }
 
     void connect(const QString& cn, const QString& user, const QString& passwd, bool forceNew = false)
     {
-        Db_err conn_err;
+        CACHE_TRY{
+            Db_err conn_err;
 
-        forceNew = (
-                cn != this->cn ||
-                user != this->user ||
-                passwd != this->passwd
-        );
-        if (forceNew && connected){
-            disconnect();
-        }
-        if (forceNew || !connected) {
-            d_connection conn = tcp_conn::connect(
-                        cn.toStdString(),
-                        user.toStdString(),
-                        passwd.toStdString(),
-                        0,
-                        &conn_err
-                        );
-            if (conn_err.get_code()){
-                throw QtCacheException(conn_err);
-            }else if (conn->is_connected()){
-                this->cn = cn;
-                this->user = user;
-                this->passwd = passwd;
-                this->connected = true;
-                db = new Database(conn);
-                installCacheBackend();
+            forceNew = (
+                        cn != this->cn ||
+                    user != this->user ||
+                    passwd != this->passwd
+                    );
+            if (forceNew && connected){
+                disconnect();
             }
-        }
+            if (forceNew || !connected) {
+                d_connection conn = tcp_conn::connect(
+                            cn.toStdString(),
+                            user.toStdString(),
+                            passwd.toStdString(),
+                            0,
+                            &conn_err
+                            );
+                if (conn_err.get_code()){
+                    throw QtCacheException(conn_err);
+                }else if (conn->is_connected()){
+                    this->cn = cn;
+                    this->user = user;
+                    this->passwd = passwd;
+                    this->connected = true;
+                    db = new Database(conn);
+                    installCacheBackend();
+                }
+            }
+        }CACHE_CATCH;
     }
 
     void disconnect()
     {
-        delete db; db = NULL;
-        connected = false;
+        CACHE_TRY{
+            delete db; db = NULL;
+            connected = false;
+        }CACHE_CATCH;
     }
 
     bool isConnected() const
     {
-        return connected;
+        CACHE_TRY{
+            return connected;
+        }CACHE_CATCH;
     }
 
     void execute(const QString& code)
     {
-        QtCacheToolType qct = tool();
-        d_status sc = qct->Execute(
-                    d_string(uci.toStdString()),
-                    d_string(code.toStdString()));
-        if (sc.get_code()){
-            sc.get_msg(db);
-            throw QtCacheException(sc);
-        }
+        CACHE_TRY{
+            QtCacheToolType qct = tool();
+            d_status sc = qct->Execute(
+                        d_string(uci.toStdString()),
+                        d_string(code.toStdString()));
+            if (sc.get_code()){
+                sc.get_msg(db);
+                throw QtCacheException(sc);
+            }
+        }CACHE_CATCH;
     }
 
     QStringList listNamespaces(bool excludePercent)
     {
         QStringList q_ls;
-        if (isConnected()){
-            d_wstring s;
-            d_list c_ls = tool()->ListNamespaces();
-            while (!c_ls.at_end()){
-                c_ls.get_elem(s);
-                QString uci = QString::fromStdWString(s.value());
-                if (uci.startsWith('%') && excludePercent){
+        CACHE_TRY{
+            if (isConnected()){
+                d_wstring s;
+                d_list c_ls = tool()->ListNamespaces();
+                while (!c_ls.at_end()){
+                    c_ls.get_elem(s);
+                    QString uci = QString::fromStdWString(s.value());
+                    if (uci.startsWith('%') && excludePercent){
+                        c_ls.next();
+                        continue;
+                    }
+                    q_ls << uci;
                     c_ls.next();
-                    continue;
                 }
-                q_ls << uci;
-                c_ls.next();
             }
-        }
+        }CACHE_CATCH;
         return q_ls;
     }
 
-    QStringList listObjects(const QString& filter)
+    QStringList listObjects(const QString& filter, QtCache::ObjectFilterType filterType)
     {
-        d_string _uci(uci.toStdString());
-        d_string _filter = filter.toStdString();
-        d_ref<d_char_stream> bstream = tool()->ListObjects(_uci, _filter);
-        d_status sc = tool()->getLastStatus();
-        if (sc.get_code()){
-            sc.get_msg(db);
-            throw QtCacheException(sc);
-        }
-        d_iostream io(bstream);
         QStringList objects;
-        std::string line;
-        io.rewind();
-        while (std::getline(io, line)){
-            objects << QString::fromStdString(line).remove('\r');
-        }
+        CACHE_TRY{
+            d_string _uci(uci.toStdString());
+            d_string _filter = filter.toStdString();
+            d_ref<d_char_stream> bstream = tool()->ListObjects(_uci, _filter, filterType);
+            d_status sc = tool()->getLastStatus();
+            if (sc.get_code()){
+                sc.get_msg(db);
+                throw QtCacheException(sc);
+            }
+            d_iostream io(bstream);
+            std::string line;
+            io.rewind();
+            while (std::getline(io, line)){
+                objects << QString::fromStdString(line).remove('\r');
+            }
+        }CACHE_CATCH;
         return objects;
     }
 
     void importXmlFile(const QString& filepath, const QString& qspec = "")
     {
-        QFile f(filepath);
+        CACHE_TRY{
+            QFile f(filepath);
 
-        if (!f.exists()){
-            throw QtCacheException(QObject::tr("Input file does not exists:\n%1", "QtCachePrivate").arg(filepath));
-        }
-        if(!f.open(QFile::ReadOnly)){
-            throw QtCacheException(QObject::tr("Could not open file for reading:\n%1", "QtCachePrivate").arg(filepath));
-        }
+            if (!f.exists()){
+                throw QtCacheException(QObject::tr("Input file does not exists:\n%1", "QtCachePrivate").arg(filepath));
+            }
+            if(!f.open(QFile::ReadOnly)){
+                throw QtCacheException(QObject::tr("Could not open file for reading:\n%1", "QtCachePrivate").arg(filepath));
+            }
 
-        d_ref<d_bin_stream> bstream = d_bin_stream::create_new(db);
-        d_iostream io(bstream);
+            d_ref<d_bin_stream> bstream = d_bin_stream::create_new(db);
+            d_iostream io(bstream);
 
-        qint64 file_pos = 0;
-        qint64 file_size = f.size();
-        const qint64 chunk_size = 512;
-        char buf[chunk_size];
-        while (!f.atEnd()){
-            qint64 s = f.read(buf, chunk_size);
-            io.write(buf, s);
-            file_pos += s;
-            emit i_ptr->reportProgress(filepath, file_pos, file_size);
-        }
-        io.rewind();
+            qint64 file_pos = 0;
+            qint64 file_size = f.size();
+            const qint64 chunk_size = 512;
+            char buf[chunk_size];
+            while (!f.atEnd()){
+                qint64 s = f.read(buf, chunk_size);
+                io.write(buf, s);
+                file_pos += s;
+                emit i_ptr->reportProgress(filepath, file_pos, file_size);
+            }
+            io.rewind();
 
-        emit i_ptr->reportProgress(QObject::tr("Cachè is processing the input now. Please be patient...", "QtCachePrivate"), 0, 100);
-        d_string _uci(uci.toStdString());
-        d_string _qspec(qspec.toStdString());
-        d_status sc = tool()->ImportXML(_uci, bstream, _qspec);
-        if (sc.get_code()){
-            sc.get_msg(db);
-            throw QtCacheException(sc);
-        }
+            emit i_ptr->reportProgress(QObject::tr("Cachè is processing the input now. Please be patient...", "QtCachePrivate"), 0, 100);
+            d_string _uci(uci.toStdString());
+            d_string _qspec(qspec.toStdString());
+            d_status sc = tool()->ImportXML(_uci, bstream, _qspec);
+            if (sc.get_code()){
+                sc.get_msg(db);
+                throw QtCacheException(sc);
+            }
+        }CACHE_CATCH;
     }
 
     void exportXmlFile(const QString& directoryPath, const QString& objectName)
     {
-        d_string _objectName = objectName.toStdString();
-        d_string _uci = uci.toStdString();
-        d_ref<d_bin_stream> bstream = tool()->ExportXML(_uci, _objectName);
-        d_status sc = tool()->getLastStatus();
-        if (sc.get_code()){
-            sc.get_msg(db);
-            throw QtCacheException(sc);
-        }
-        QDir out_dir(directoryPath);
-        if(!out_dir.mkpath(".")){
-            throw QtCacheException(QObject::tr("Output directory does not exists!"));
-        }
-        QFile f(out_dir.absoluteFilePath(objectName));
-        if (!f.open(QFile::WriteOnly|QFile::Truncate)){
-            throw QtCacheException(QObject::tr("Can't open output file:\n%1", "QtCachePrivate").arg(objectName));
-        }
-        std::string buf;
-        QTextStream ofstream(&f);
-        ofstream.setCodec("UTF-8");
-        ofstream.setGenerateByteOrderMark(true);
-        d_iostream io(bstream);
-        io.rewind();
-        while (std::getline(io,buf)){
-            ofstream << QString::fromStdString(buf) << "\n";
-        }
+        CACHE_TRY{
+            d_string _objectName = objectName.toStdString();
+            d_string _uci = uci.toStdString();
+            d_ref<d_bin_stream> bstream = tool()->ExportXML(_uci, _objectName);
+            d_status sc = tool()->getLastStatus();
+            if (sc.get_code()){
+                sc.get_msg(db);
+                throw QtCacheException(sc);
+            }
+            QDir out_dir(directoryPath);
+            if(!out_dir.mkpath(".")){
+                throw QtCacheException(QObject::tr("Output directory does not exists!"));
+            }
+            QFile f(out_dir.absoluteFilePath(objectName));
+            if (!f.open(QFile::WriteOnly|QFile::Truncate)){
+                throw QtCacheException(QObject::tr("Can't open output file:\n%1", "QtCachePrivate").arg(objectName));
+            }
+            std::string buf;
+            QTextStream ofstream(&f);
+            ofstream.setCodec("UTF-8");
+            ofstream.setGenerateByteOrderMark(true);
+            d_iostream io(bstream);
+            io.rewind();
+            while (std::getline(io,buf)){
+                ofstream << QString::fromStdString(buf) << "\n";
+            }
+        }CACHE_CATCH;
     }
 
     void compileObjects(const QString& objectNames, const QString& qspec)
     {
-        d_string _objectNames(objectNames.toStdString());
-        d_string _qspec(qspec.toStdString());
-        d_string _uci = uci.toStdString();
-        d_status sc = tool()->CompileList(_uci, _objectNames, _qspec);
-        if (sc.get_code()){
-            sc.get_msg(db);
-            throw QtCacheException(tool()->getErrorLog());
-        }
+        CACHE_TRY{
+            d_string _objectNames(objectNames.toStdString());
+            d_string _qspec(qspec.toStdString());
+            d_string _uci = uci.toStdString();
+            d_status sc = tool()->CompileList(_uci, _objectNames, _qspec);
+            if (sc.get_code()){
+                sc.get_msg(db);
+                throw QtCacheException(tool()->getErrorLog());
+            }
+        }CACHE_CATCH;
     }
 
 private:
@@ -252,8 +285,8 @@ private:
 
     void installCacheBackend()
     {
-#if 0
-        try{
+#if 1
+        CACHE_TRY{
             QFile xml(":/src/QtCache.xml");
             if (!xml.open(QFile::ReadOnly)){
                 throw QtCacheException("can not open QtCache.xml from resources");
@@ -265,11 +298,7 @@ private:
             d_string qspec = "cf";
             D_type* args[2] = { &bstream, &qspec };
             Dyn_obj::run_class_method(db, L"%SYSTEM.OBJ", L"LoadStream", args, 2);
-        }catch(std::exception& ex){
-            std::cerr << ex.what() << std::endl;
-        }catch(...){
-            std::cerr << "unknown error during backend installation" << std::endl;
-        }
+        }CACHE_CATCH;;
 #endif
     }
 

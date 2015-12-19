@@ -34,6 +34,12 @@ signals:
     void reportProgress(const QString& message, qint64 pos, qint64 end);
 
 public:
+    enum ObjectFilterType
+    {
+        REGEXP,
+        PATTERN
+    };
+
     static QtCache* instance();
     virtual ~QtCache();
 
@@ -49,7 +55,7 @@ public:
 
     long jobId() const;
 
-    QStringList listObjects(const QString& filter) const;
+    QStringList listObjects(const QString& filter = "", ObjectFilterType filterType = PATTERN) const;
     QStringList listNamespaces(bool excludePercent = false) const;
     void execute(const QString&);
 

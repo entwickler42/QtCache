@@ -74,6 +74,8 @@ public:
 
    virtual d_ref<d_bin_stream> ExportXML(const d_string& uci, const d_string& object);
 
+   virtual void Filter(const d_string& filter, const d_string& object, const d_int& filterType);
+
    virtual d_status ImportXML(const d_string& uci, const d_ref<d_bin_stream>& xml, const d_string& qspec);
 
    static d_status LastStatusIsValid(Database* __db, const d_string& value);
@@ -83,7 +85,7 @@ public:
 
    virtual d_list ListNamespaces();
 
-   virtual d_ref<d_char_stream> ListObjects(const d_string& uci, const d_string& filter);
+   virtual d_ref<d_char_stream> ListObjects(const d_string& uci, const d_string& filter, const d_int& filterType);
 
    // Queries
 };
