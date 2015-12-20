@@ -46,7 +46,7 @@
     S RVAL=0   
     F I=1:1:$L(filter,";") {
         S pattern=$P(filter,";",I)
-        I $ZCVT(object,"U")?@pattern {
+        I $ZCVT(object,"U")?@$ZCVT(pattern,"U") {
             S RVAL=1 Q 
         }
     }    
@@ -71,8 +71,8 @@
 
 <Method name="Filter">
 <FormalSpec>filter:%String,object:%String,filterType:%Integer</FormalSpec>
+<Private>1</Private>
 <Implementation><![CDATA[
-    S filterType=$G(filterType,1)
     Q:filterType=0 ..FilterByRegExp(filter, object)
     Q:filterType=1 ..FilterByPattern(filter, object)
     Q 0
@@ -237,13 +237,9 @@
 </Class>
 
 
-<Project name="QtCache" LastModified="2015-12-19 21:55:17.671193" Target="ST^ySBR" TargetType="2">
+<Project name="QtCache" LastModified="2015-12-20 09:54:15.141784" Target="ST^ySBR" TargetType="2" HttpServer="http://localhost:57772">
   <Items>
     <ProjectItem name="Qt.CacheTool" type="CLS"></ProjectItem>
   </Items>
-  <BreakPoints>
-    <BreakPoint Routine="Qt.CacheTool.CLS" Offset="FilterByPattern+5"></BreakPoint>
-    <BreakPoint Routine="ySBR.MAC" Offset="1"></BreakPoint>
-  </BreakPoints>
 </Project>
 </Export>
