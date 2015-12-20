@@ -87,6 +87,8 @@ private:
     void preImportHook();
     void postImportHook();
 
+    void setListViewItem(const QString& filename, const QString& iconpath, const QString& toolTip = "");
+
     void saveSettings();
 };
 

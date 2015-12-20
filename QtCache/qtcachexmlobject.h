@@ -58,8 +58,19 @@ public:
     static Type fromString(QStringRef typeString);
     static List select(const List& source, Types types);
 
+    const QString& sourceName() const
+    {
+        return m_source_name;
+    }
+
+    void setSourceName(const QString& name)
+    {
+        m_source_name = name;
+    }
+
 private:
     Type m_type;
+    QString m_source_name;
     QString m_name;
     mutable QString m_name_with_suffix;
     QString m_timeCreated;

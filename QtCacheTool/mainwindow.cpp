@@ -168,7 +168,7 @@ void MainWindow::loadImportDirectory(const QString& path)
 void MainWindow::loadImportFile(const QString& filepath)
 {
     QListWidgetItem *item = new QListWidgetItem(ui->listWidget);
-    item->setIcon(QIcon(":/QtCacheTool/ImportFile"));
+    item->setIcon(QIcon(":/QtCacheTool/FILE_IDLE"));
     item->setText(filepath);
 }
 
@@ -194,7 +194,7 @@ void MainWindow::on_importFiles_pressed()
         return;
     }
     foreach(QListWidgetItem* i, ui->listWidget->findItems("*", Qt::MatchWildcard)){
-        i->setIcon(QIcon(":/QtCacheTool/ImportFile"));
+        i->setIcon(QIcon(":/QtCacheTool/FILE_IDLE"));
         i->setToolTip("");
     }
     setBuisyUI();
@@ -241,6 +241,7 @@ void MainWindow::bulkImportFinished()
 void MainWindow::bulkImportError(std::exception& ex, const QtC::BulkImportProgress& progress)
 {
     bulkImportProgress(progress);
+    setListViewItem(progress.sourceName, ":/QtCacheTool/FILE_ERROR", ex.what());
     if (!ui->ignoreImportErrors->isChecked()){
         int rval = QMessageBox::warning(this, tr("Exception"), ex.what(),
                                         QMessageBox::Cancel|QMessageBox::Ignore,
@@ -255,15 +256,17 @@ void MainWindow::bulkImportProgress(const QtC::BulkImportProgress& progress)
     ui->progressBar->setValue(progress.pos);
     switch (progress.step) {
     case QtC::BulkImportProgress::READING:
-        ui->statusBar->showMessage(tr("Reading %1").arg(progress.filename));
+        setListViewItem(progress.sourceName, ":/QtCacheTool/FILE_OK");
+        ui->statusBar->showMessage(tr("Reading %1").arg(progress.sourceName));
         break;
     case QtC::BulkImportProgress::UPLOADING:
-        ui->statusBar->showMessage(tr("Uploading %1").arg(progress.filename));
+        setListViewItem(progress.sourceName, ":/QtCacheTool/FILE_OK");
+        ui->statusBar->showMessage(tr("Uploading %1").arg(progress.sourceName));
         break;
     case QtC::BulkImportProgress::COMPILING:
-        ui->statusBar->showMessage(tr("Compiling %1").arg(progress.filename));
+        setListViewItem(progress.sourceName, ":/QtCacheTool/FILE_OK");
+        ui->statusBar->showMessage(tr("Compiling %1").arg(progress.objectName));
         break;
-
     }
     if(abortTask){
         QtC::BulkImport* import = dynamic_cast<QtC::BulkImport*>(sender());
@@ -280,6 +283,15 @@ void MainWindow::reportProgress(const QString& message, qint64 pos, qint64 end)
         ui->statusBar->showMessage(message);
     }
     QApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
+}
+
+void MainWindow::setListViewItem(const QString& filename, const QString& iconpath, const QString& toolTip)
+{
+    QList<QListWidgetItem*> items = ui->listWidget->findItems(filename, Qt::MatchExactly);
+    foreach(QListWidgetItem* i, items) {
+        i->setToolTip(toolTip);
+        i->setIcon(QIcon(iconpath));
+    }
 }
 
 void MainWindow::preImportHook()

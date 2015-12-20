@@ -41,7 +41,7 @@ XmlObjectReader::~XmlObjectReader()
 
 void XmlObjectReader::readRoutineHeaders(QXmlStreamReader* stream, XmlObjectReader* document)
 {
-    XmlObject xobj;
+    XmlObject xobj = createXmlObject();
     foreach(const QXmlStreamAttribute &i, stream->attributes()){
         if (i.name().compare("name", Qt::CaseInsensitive) == 0) xobj.setName(i.value().toString());
         else if (i.name().compare("type", Qt::CaseInsensitive) == 0) xobj.setType(XmlObject::fromString(i.value()));
@@ -55,7 +55,7 @@ void XmlObjectReader::readRoutineHeaders(QXmlStreamReader* stream, XmlObjectRead
 
 void XmlObjectReader::readClassHeaders(QXmlStreamReader* stream, XmlObjectReader* document)
 {
-    XmlObject xobj;
+    XmlObject xobj = createXmlObject();
     foreach(const QXmlStreamAttribute &i, stream->attributes()){
         if (i.name().compare("name", Qt::CaseInsensitive) == 0) xobj.setName(i.value().toString());
     }
@@ -75,7 +75,7 @@ void XmlObjectReader::readClassHeaders(QXmlStreamReader* stream, XmlObjectReader
 
 void XmlObjectReader::loadGlobalHeaders(QXmlStreamReader* stream, XmlObjectReader* document)
 {
-    XmlObject xobj;
+    XmlObject xobj = createXmlObject();
     xobj.setTimeChanged(document->timeStamp());
     xobj.setTimeCreated(document->timeStamp());
     xobj.setType(XmlObject::GBL);
@@ -133,5 +133,6 @@ void XmlObjectReader::read(const QString& filepath)
     if (!f.open(QFile::ReadOnly)){
         throw QtCacheException(tr("Can not open input file:\n%1").arg(filepath));
     }
+    m_source_name = filepath;
     read(&f);
 }

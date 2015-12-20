@@ -20,7 +20,7 @@ QTCACHENAMESPACEUSE
 
 BulkImport::BulkImport(QtCache* cache, QObject *parent)
     : QObject(parent),
-      m_last_progress(BulkImportProgress::IDLE, "", 0, 0),
+      m_last_progress(BulkImportProgress::IDLE, "", "", 0, 0),
       m_cache(cache)
 {
     if (NULL == m_cache) throw new std::invalid_argument("QtCache* cache must not be NULL");
@@ -38,11 +38,11 @@ void BulkImport::load(const QStringList& filepaths, const QString& qspec)
     for(int i=0; i<filepaths.length() && !m_abort_import; i++){
         const QString& filepath = filepaths.at(i);
         try{
-            setCurrentProgress(BulkImportProgress(BulkImportProgress::READING, filepath, i+1, filepaths.count()));
+            setCurrentProgress(BulkImportProgress(BulkImportProgress::READING, filepath, filepath, i+1, filepaths.count()));
             XmlObjectReader r(filepath);
             object_list[ROUTINES] += r.routines();
             object_list[CLASSES] += r.classes();
-            setCurrentProgress(BulkImportProgress(BulkImportProgress::UPLOADING, filepath, i+1, filepaths.count()));
+            setCurrentProgress(BulkImportProgress(BulkImportProgress::UPLOADING, filepath, filepath, i+1, filepaths.count()));
             m_cache->importXmlFile(filepath);
         }catch(std::exception& ex){
             emit error(ex, m_last_progress);
@@ -56,7 +56,7 @@ void BulkImport::load(const QStringList& filepaths, const QString& qspec)
         for(int i=0; i<MAXORDER; i++)
             for(int j=0; j<object_list[i].count() && !m_abort_import; j++){
                 const XmlObject& obj = object_list[i].at(j);
-                setCurrentProgress(BulkImportProgress(BulkImportProgress::COMPILING, obj.name(), total-remain--, total));
+                setCurrentProgress(BulkImportProgress(BulkImportProgress::COMPILING, obj.name(), obj.sourceName(), total-remain--, total));
                 try{
                     m_cache->compileObjects(obj.name(), qspec);
                 }catch(std::exception& ex){
@@ -66,7 +66,7 @@ void BulkImport::load(const QStringList& filepaths, const QString& qspec)
                 }
             }
     }
-    setCurrentProgress(BulkImportProgress(BulkImportProgress::IDLE, "", 0, 0));
+    setCurrentProgress(BulkImportProgress(BulkImportProgress::IDLE, "", "", 0, 0));
     if (m_abort_import) emit aborted();
     else emit finished();
 }

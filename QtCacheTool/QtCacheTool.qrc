@@ -1,9 +1,9 @@
 <RCC>
     <qresource prefix="/QtCacheTool">
         <file>img/application.png</file>
-        <file alias="ImportFile">img/binary.png</file>
-        <file alias="ImportFileOk">img/binary_green.png</file>
-        <file alias="ImportFileError">img/binary_red.png</file>
+        <file alias="FILE_IDLE">img/binary.png</file>
+        <file alias="FILE_OK">img/binary_green.png</file>
+        <file alias="FILE_ERROR">img/binary_red.png</file>
         <file>img/14_layer_deletelayer.png</file>
         <file>img/filesave.png</file>
         <file>img/folder.png</file>

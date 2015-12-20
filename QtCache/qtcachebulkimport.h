@@ -32,15 +32,25 @@ public:
         COMPILING
     };
 
-    BulkImportProgress(ImportStep step, const QString& filename, int pos, int max)
+    BulkImportProgress(ImportStep step, const QString& sourceName, int pos, int max)
         : step(step),
-          filename(filename),
+          objectName(sourceName),
+          sourceName(sourceName),
+          pos(pos),
+          max(max)
+    {}
+
+    BulkImportProgress(ImportStep step, const QString& objectName, const QString& sourceName, int pos, int max)
+        : step(step),
+          objectName(objectName),
+          sourceName(sourceName),
           pos(pos),
           max(max)
     {}
 
     ImportStep step = IDLE;
-    QString filename;
+    QString objectName;
+    QString sourceName;
     int pos;
     int max;
 };

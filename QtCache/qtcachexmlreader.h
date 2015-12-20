@@ -50,6 +50,7 @@ public:
         m_zv = other.m_zv;
         m_version = other.m_version;
         m_objects = other.m_objects;
+        m_source_name = other.m_source_name;
         return *this;
     }
 
@@ -80,16 +81,24 @@ public:
     void setVersion(const QString& version) { m_time_stamp = version;}
 
 private:
+    QString m_source_name;
     QString m_time_stamp;
     QString m_generator;
     QString m_zv;
     QString m_version;
     XmlObject::List m_objects;
 
-    static void readRoutineHeaders(QXmlStreamReader* stream, XmlObjectReader* document);
-    static void readClassHeaders(QXmlStreamReader* stream, XmlObjectReader* document);
-    static void loadGlobalHeaders(QXmlStreamReader* stream, XmlObjectReader* document);
-    static void readExportHeaders(QXmlStreamReader* stream, XmlObjectReader* document);
+    void readRoutineHeaders(QXmlStreamReader* stream, XmlObjectReader* document);
+    void readClassHeaders(QXmlStreamReader* stream, XmlObjectReader* document);
+    void loadGlobalHeaders(QXmlStreamReader* stream, XmlObjectReader* document);
+    void readExportHeaders(QXmlStreamReader* stream, XmlObjectReader* document);
+
+    XmlObject createXmlObject()
+    {
+        XmlObject o;
+        o.setSourceName(this->m_source_name);
+        return o;
+    }
 };
 
 QTCACHENAMESPACEEND
