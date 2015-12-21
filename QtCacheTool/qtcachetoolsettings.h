@@ -59,6 +59,47 @@ public:
         conf->setValue("PreImportHook", value);
     }
 
+    QString server() const
+    {
+        return conf->value("Server").toString();
+    }
+
+    void setServer(const QString& value)
+    {
+        conf->setValue("Server", value);
+    }
+
+
+    QString port() const
+    {
+        return conf->value("Port").toString();
+    }
+
+    void setPort(const QString& value)
+    {
+        conf->setValue("Port", value);
+    }
+
+    QString username() const
+    {
+        return conf->value("user").toString();
+    }
+
+    QString password() const
+    {
+        return conf->value("passwd").toString();
+    }
+
+    bool autoConnect() const
+    {
+        return conf->value("autoConnect", true).toBool();
+    }
+
+    void setAutoConnect(bool value)
+    {
+        conf->setValue("autoConnect", value);
+    }
+
 private:
     QSettings* conf;
 };

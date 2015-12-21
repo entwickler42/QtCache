@@ -62,6 +62,18 @@ MainWindow::MainWindow(QWidget *parent) :
 
     parseCommandlineOptions();
     connect(QtC::QtCache::instance(), SIGNAL(reportProgress(QString,qint64,qint64)), this, SLOT(reportProgress(QString,qint64,qint64)));
+
+    if(conf->autoConnect()){
+        try{
+            cache()->connect(
+                        dlg->connectionString(),
+                        dlg->username(),
+                        dlg->password());
+            onServerConnected();
+        }catch(std::exception& ex){
+            QMessageBox::critical(this, tr("Exception"), ex.what());
+        }
+    }
 }
 
 MainWindow::~MainWindow()
@@ -84,6 +96,9 @@ void MainWindow::showEvent(QShowEvent*)
 {
     restoreGeometry(conf->config()->value("MainWindow/Geometry").toByteArray());
     ui->statusBar->showMessage(tr("Welcome to the Qt Caché Tool"));
+    if (cache()->isConnected()){
+        ui->statusBar->showMessage(tr("Connection established!"));
+    }
 }
 
 void MainWindow::closeEvent(QCloseEvent *)
@@ -102,38 +117,47 @@ void MainWindow::on_qspec_editingFinished()
     conf->config()->setValue("QSPEC", ui->qspec->text());
 }
 
+
+void MainWindow::onServerConnected()
+{
+    try{
+        ui->connectionString->setText(dlg->connectionString());
+        ui->targetUCI->clear();
+        dlg->save(conf->config());
+        QStringList ls = cache()->listNamespaces(
+                    conf->config()->value("ExcludePercentUCI", true).toBool());
+        if (ls.count()){
+            ui->targetUCI->clear();
+            ui->targetUCI->addItems(ls);
+            if (!conf->preferedUCI().isEmpty()){
+                int idx = ui->targetUCI->findText(conf->preferedUCI());
+                if(idx > -1) {
+                    ui->targetUCI->setCurrentIndex(idx);
+                }
+            }
+        }else{
+            throw QtC::QtCacheException(cache()->lastStatus());
+        }
+        ui->statusBar->showMessage(
+                    cache()->isConnected() ?
+                        tr("Sucessfully connected to %1").arg(dlg->server()) :
+                        tr("Failed to connected to %1").arg(dlg->server())
+                        );
+        ui->connectionString->setToolTip(tr("JobId: %1").arg(cache()->jobId()));
+    }catch(std::exception& ex){
+        QMessageBox::critical(this, tr("Exception"), ex.what());
+    }
+}
+
 void MainWindow::on_selectServer_pressed()
 {
     if (dlg->exec() == QDialog::Accepted){
-        ui->connectionString->setText(dlg->connectionString());
-        ui->targetUCI->clear();
-
         try{
             cache()->connect(
                         dlg->connectionString(),
                         dlg->username(),
                         dlg->password());
-            dlg->save(conf->config());
-            QStringList ls = cache()->listNamespaces(
-                        conf->config()->value("ExcludePercentUCI", true).toBool());
-            if (ls.count()){
-                ui->targetUCI->clear();
-                ui->targetUCI->addItems(ls);
-                if (!conf->preferedUCI().isEmpty()){
-                    int idx = ui->targetUCI->findText(conf->preferedUCI());
-                    if(idx > -1) {
-                        ui->targetUCI->setCurrentIndex(idx);
-                    }
-                }
-            }else{
-                throw QtC::QtCacheException(cache()->lastStatus());
-            }
-            ui->statusBar->showMessage(
-                        cache()->isConnected() ?
-                            tr("Sucessfully connected to %1").arg(dlg->server()) :
-                            tr("Failed to connected to %1").arg(dlg->server())
-                            );
-            ui->connectionString->setToolTip(tr("JobId: %1").arg(cache()->jobId()));
+            onServerConnected();
         }catch(std::exception& ex){
             QMessageBox::critical(this, tr("Exception"), ex.what());
         }
@@ -454,6 +478,8 @@ void MainWindow::parseCommandlineOptions()
     p.addOption(username);
     QCommandLineOption password("p", tr("Password used for authentication"), "Password");
     p.addOption(password);
+    QCommandLineOption autoConnect("a", tr("Automatically connect during startup"));
+    p.addOption(autoConnect);
     QCommandLineOption compile("c", tr("Compile imported objects"));
     p.addOption(compile);
     QCommandLineOption compileFlags("cf", tr("Compile flags"), "flags");
@@ -495,6 +521,9 @@ void MainWindow::parseCommandlineOptions()
     if(p.isSet(postImportHook)){
         ui->postImportHook->setText(p.value(postImportHook));
         ui->enablePostImportHook->setChecked(true);
+    }
+    if(p.isSet(autoConnect)){
+        conf->setAutoConnect(true);
     }
 }
 
