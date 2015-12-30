@@ -545,16 +545,18 @@ void MainWindow::setBuisyUI()
     ui->targetUCI->setEnabled(false);
     ui->addFiles->setEnabled(false);
     ui->removeFiles->setEnabled(false);
+    ui->importFiles->setEnabled(false);
     ui->selectServer->setEnabled(false);
     ui->tabExport->setEnabled(false);
-    ui->tabImport->setEnabled(false);
     ui->abortTask->setEnabled(true);
     ui->listWidget->setEnabled(true);
 }
 
 void MainWindow::setIdleUI() {
     ui->targetUCI->setEnabled(true);
-    ui->addFiles->setEnabled(true); ui->removeFiles->setEnabled(true);
+    ui->addFiles->setEnabled(true);
+    ui->removeFiles->setEnabled(true);
+    ui->importFiles->setEnabled(true);
     ui->selectServer->setEnabled(true); ui->tabExport->setEnabled(true);
     ui->tabImport->setEnabled(true); ui->abortTask->setEnabled(false);
 }
