@@ -28,6 +28,36 @@ BulkImport::BulkImport(QtCache* cache, QObject *parent)
 
 void BulkImport::load(const QStringList& filepaths, const QString& qspec)
 {
+    if (compileEarly){
+        loadCompileEarly(filepaths, qspec);
+    }else{
+        loadCompileLate(filepaths, qspec);
+    }
+}
+
+void BulkImport::loadCompileEarly(const QStringList& filepaths, const QString& qspec)
+{
+    m_abort_import = false;
+
+    for(int i=0; i<filepaths.length() && !m_abort_import; i++){
+        const QString& filepath = filepaths.at(i);
+        try{
+            setCurrentProgress(BulkImportProgress(BulkImportProgress::UPLOADING, filepath, filepath, i+1, filepaths.count()));
+            m_cache->importXmlFile(filepath, qspec);
+        }catch(std::exception& ex){
+            emit error(ex, m_last_progress);
+        }catch(...){
+            emit error(std::runtime_error("Unknown error!"), m_last_progress);
+        }
+    }
+    setCurrentProgress(BulkImportProgress(BulkImportProgress::IDLE, "", "", 0, 0));
+    if (m_abort_import) emit aborted();
+    else emit finished();
+}
+
+
+void BulkImport::loadCompileLate(const QStringList& filepaths, const QString& qspec)
+{
     m_abort_import = false;
 
     const int ROUTINES=0;
@@ -50,6 +80,7 @@ void BulkImport::load(const QStringList& filepaths, const QString& qspec)
             emit error(std::runtime_error("Unknown error!"), m_last_progress);
         }
     }
+
     if (!qspec.isEmpty()){
         int total = object_list[ROUTINES].count() + object_list[CLASSES].count();
         int remain = total;
@@ -70,3 +101,4 @@ void BulkImport::load(const QStringList& filepaths, const QString& qspec)
     if (m_abort_import) emit aborted();
     else emit finished();
 }
+

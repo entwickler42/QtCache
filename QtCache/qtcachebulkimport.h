@@ -61,6 +61,8 @@ class QTCACHESHARED_EXPORT BulkImport
     Q_OBJECT
 
 public:
+    bool compileEarly = false;
+
     explicit BulkImport(QtCache* cache, QObject *parent = 0);
 
     const BulkImportProgress& currentProgress() const
@@ -85,6 +87,9 @@ private:
     BulkImportProgress m_last_progress;
     QtCache* m_cache = NULL;
     bool m_abort_import = false;
+
+    void loadCompileEarly(const QStringList& filepaths, const QString& qspec = "");
+    void loadCompileLate(const QStringList& filepaths, const QString& qspec = "");
 
     void setCurrentProgress(const BulkImportProgress& progress)
     {
