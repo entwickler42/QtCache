@@ -1,7 +1,7 @@
 #ifndef QTCACHETOOLSETTINGS_H
 #define QTCACHETOOLSETTINGS_H
 
-#include <QObject>
+#include <QDir>
 #include <QString>
 #include <QSettings>
 
@@ -98,6 +98,36 @@ public:
     void setAutoConnect(bool value)
     {
         conf->setValue("autoConnect", value);
+    }
+
+    bool compile() const
+    {
+        return conf->value("compile", false).toBool();
+    }
+
+    void setCompile(bool value)
+    {
+        conf->setValue("compile", value);
+    }
+
+    bool compileEarly() const
+    {
+        return conf->value("compileEarly", false).toBool();
+    }
+
+    void setCompileEarly(bool value)
+    {
+        conf->setValue("compileEarly", value);
+    }
+
+    QString defaultExportDirectory() const
+    {
+        return conf->value("DefaultExportDirectory", QDir::currentPath()).toString();
+    }
+
+    void setDefaultExportDirectory(const QString& value)
+    {
+        conf->setValue("DefaultExportDirectory", value);
     }
 
 private:
