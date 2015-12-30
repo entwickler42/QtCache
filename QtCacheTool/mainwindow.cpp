@@ -42,25 +42,16 @@ MainWindow::MainWindow(QWidget *parent) :
     dlg(new QtC::CacheConnectionDialog(this))
 {
     ui->setupUi(this);
-    ui->qspec->setText(conf->QSPEC());
     dlg->setUci(QStringList() << "%SYS");
     dlg->setUciEnabled(false);
     dlg->setFormat(QtC::CacheConnectionDialog::NAMESPACE_FLAG);
-    dlg->load(conf->config());
-    QString outputDirectory = conf->config()->value("DefaultExportDirectory", QDir::currentPath()).toString();
-    if (!QDir(outputDirectory).exists()){
-        outputDirectory = QDir::currentPath();
-    }
-    ui->outputDirectory->setText(outputDirectory);
+
+    ui->outputDirectory->setText(conf->defaultExportDirectory());
     ui->includeFilter->addItems(loadFilters());
 
-    ui->preImportHook->setText(conf->preImportHook());
-    ui->enablePreImportHook->setChecked(!conf->preImportHook().isEmpty());
-
-    ui->postImportHook->setText(conf->postImportHook());
-    ui->enablePostImportHook->setChecked(!conf->postImportHook().isEmpty());
-
+    loadSettings();
     parseCommandlineOptions();
+
     connect(QtC::QtCache::instance(), SIGNAL(reportProgress(QString,qint64,qint64)), this, SLOT(reportProgress(QString,qint64,qint64)));
 
     if(conf->autoConnect()){
@@ -83,13 +74,34 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+void MainWindow::loadSettings()
+{
+    ui->compileEarly->setChecked(conf->compileEarly());
+    ui->compile->setChecked(conf->compile());
+    ui->qspec->setText(conf->QSPEC());
+    QString outputDirectory = conf->defaultExportDirectory();
+    if (!QDir(outputDirectory).exists()){
+        conf->setDefaultExportDirectory(QDir::currentPath());
+    }
+    ui->preImportHook->setText(conf->preImportHook());
+    ui->enablePreImportHook->setChecked(!conf->preImportHook().isEmpty());
+    ui->postImportHook->setText(conf->postImportHook());
+    ui->enablePostImportHook->setChecked(!conf->postImportHook().isEmpty());
+    dlg->load(conf->config());
+}
+
 void MainWindow::saveSettings()
 {
+    conf->setCompileEarly(ui->compileEarly->isChecked());
+    conf->setCompile(ui->compile->isChecked());
+    conf->setQSPEC(ui->qspec->text());
     conf->setPreImportHook(ui->enablePreImportHook->isChecked() ? ui->preImportHook->text() : "");
     conf->setPostImportHook(ui->enablePostImportHook->isChecked() ? ui->postImportHook->text() : "");
     if (!ui->targetUCI->currentText().isEmpty()){
         conf->setPreferedUCI(ui->targetUCI->currentText());
     }
+    conf->setPostImportHook(ui->postImportHook->text());
+    conf->setPreImportHook(ui->preImportHook->text());
 }
 
 void MainWindow::showEvent(QShowEvent*)
@@ -116,7 +128,6 @@ void MainWindow::on_qspec_editingFinished()
 {
     conf->config()->setValue("QSPEC", ui->qspec->text());
 }
-
 
 void MainWindow::onServerConnected()
 {
@@ -239,6 +250,7 @@ void MainWindow::on_importFiles_pressed()
         connect(&import, SIGNAL(finished()), this, SLOT(bulkImportFinished()));
         connect(&import, SIGNAL(error(std::exception&, const QtC::BulkImportProgress&)), this, SLOT(bulkImportError(std::exception&, const QtC::BulkImportProgress&)));
         connect(&import, SIGNAL(reportProgress(const QtC::BulkImportProgress&)), this, SLOT(bulkImportProgress(const QtC::BulkImportProgress&)));
+        import.compileEarly = ui->compileEarly->isChecked();
         import.load(import_files, qspec);
 
         postImportHook();
@@ -293,7 +305,7 @@ void MainWindow::bulkImportProgress(const QtC::BulkImportProgress& progress)
         break;
     }
     if(abortTask){
-        QtC::BulkImport* import = dynamic_cast<QtC::BulkImport*>(sender());
+        QtC::BulkImport* import = static_cast<QtC::BulkImport*>(sender());
         import->abort();
     }
     QApplication::processEvents();
@@ -315,6 +327,7 @@ void MainWindow::setListViewItem(const QString& filename, const QString& iconpat
     foreach(QListWidgetItem* i, items) {
         i->setToolTip(toolTip);
         i->setIcon(QIcon(iconpath));
+        ui->listWidget->scrollToItem(i);
     }
 }
 
@@ -358,12 +371,12 @@ void MainWindow::on_abortTask_pressed()
 void MainWindow::on_selectOutputDirectory_pressed()
 {
     QFileDialog dlg;
-    dlg.setDirectory(conf->config()->value("DefaultExportDirectory", QDir::currentPath()).toString());
+    dlg.setDirectory(conf->defaultExportDirectory());
     dlg.setOption(QFileDialog::ShowDirsOnly);
     dlg.setFileMode(QFileDialog::Directory);
     if (dlg.exec() == QDialog::Accepted){
         ui->outputDirectory->setText(dlg.directory().absolutePath());
-        conf->config()->setValue("DefaultExportDirectory", dlg.directory().absolutePath());
+        conf->setDefaultExportDirectory(dlg.directory().absolutePath());
     }
 }
 
@@ -425,7 +438,7 @@ void MainWindow::on_removeCurrentFilter_pressed()
 {
     int index = ui->includeFilter->currentIndex();
     if (QMessageBox::question(this,
-                              tr("conf->config()irm delete"),
+                              tr("conf->config() delete"),
                               tr("Do you really want to remove this filter from the list?\n\n%1").arg(
                                   ui->includeFilter->currentText()
                                   )
@@ -536,6 +549,7 @@ void MainWindow::setBuisyUI()
     ui->tabExport->setEnabled(false);
     ui->tabImport->setEnabled(false);
     ui->abortTask->setEnabled(true);
+    ui->listWidget->setEnabled(true);
 }
 
 void MainWindow::setIdleUI() {

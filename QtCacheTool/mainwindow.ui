@@ -155,14 +155,25 @@
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_10">
                <item>
-                <widget class="QCheckBox" name="ignoreImportErrors">
-                 <property name="text">
-                  <string>&amp;Ignore Errors</string>
-                 </property>
-                 <property name="checked">
-                  <bool>true</bool>
-                 </property>
-                </widget>
+                <layout class="QHBoxLayout" name="horizontalLayout_10">
+                 <item>
+                  <widget class="QCheckBox" name="ignoreImportErrors">
+                   <property name="text">
+                    <string>&amp;Ignore Errors</string>
+                   </property>
+                   <property name="checked">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QCheckBox" name="compileEarly">
+                   <property name="text">
+                    <string>Compile Early</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
                </item>
                <item>
                 <widget class="QCheckBox" name="compile">
