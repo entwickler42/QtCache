@@ -218,11 +218,11 @@ public:
                 qint64 s = f.read(buf, chunk_size);
                 io.write(buf, s);
                 file_pos += s;
-                emit i_ptr->reportProgress(filepath, file_pos, file_size);
+                i_ptr->reportProgress(QtCacheProgress(QtCacheProgress::XMLFILE_IMPORT, file_size, file_pos));
             }
             io.rewind();
 
-            emit i_ptr->reportProgress(QObject::tr("Cachè is processing the input now. Please be patient...", "QtCachePrivate"), 0, 100);
+            i_ptr->reportProgress(QtCacheProgress(QtCacheProgress::XMLFILE_IMPORT, 100, 100));
             d_string _uci(uci.toStdString());
             d_string _qspec(qspec.toStdString());
             d_status sc = tool()->ImportXML(_uci, bstream, _qspec);

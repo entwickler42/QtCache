@@ -109,3 +109,18 @@ void QtCache::compileObjects(const QString& objectNames, const QString& qspec)
 {
     d->compileObjects(objectNames, qspec);
 }
+
+
+void QtCache::reportBeginProcess(const QtCacheProgress& p)
+{
+}
+
+void QtCache::reportProgress(const QtCacheProgress& p)
+{
+    emit progress(p);
+}
+
+void QtCache::reportEndProcess(const QtCacheProgress& p)
+{
+}
+

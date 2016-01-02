@@ -67,7 +67,7 @@ private slots:
     void on_saveCurrentFilter_pressed();
     void on_removeCurrentFilter_pressed();
 
-    void reportProgress(const QString&, qint64, qint64);
+    void reportProgress(QtC::QtCacheProgress& progress);
 
     void bulkImportAborted();
     void bulkImportFinished();

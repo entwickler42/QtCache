@@ -42,7 +42,7 @@ void BulkImport::loadCompileEarly(const QStringList& filepaths, const QString& q
     for(int i=0; i<filepaths.length() && !m_abort_import; i++){
         const QString& filepath = filepaths.at(i);
         try{
-            setCurrentProgress(BulkImportProgress(BulkImportProgress::UPLOADING, filepath, filepath, i+1, filepaths.count()));
+            reportProgress(BulkImportProgress(BulkImportProgress::UPLOADING, filepath, filepath, i+1, filepaths.count()));
             m_cache->importXmlFile(filepath, qspec);
         }catch(std::exception& ex){
             emit error(ex, m_last_progress);
@@ -50,7 +50,7 @@ void BulkImport::loadCompileEarly(const QStringList& filepaths, const QString& q
             emit error(std::runtime_error("Unknown error!"), m_last_progress);
         }
     }
-    setCurrentProgress(BulkImportProgress(BulkImportProgress::IDLE, "", "", 0, 0));
+    reportProgress(BulkImportProgress(BulkImportProgress::IDLE, "", "", 0, 0));
     if (m_abort_import) emit aborted();
     else emit finished();
 }
@@ -68,11 +68,11 @@ void BulkImport::loadCompileLate(const QStringList& filepaths, const QString& qs
     for(int i=0; i<filepaths.length() && !m_abort_import; i++){
         const QString& filepath = filepaths.at(i);
         try{
-            setCurrentProgress(BulkImportProgress(BulkImportProgress::READING, filepath, filepath, i+1, filepaths.count()));
+            reportProgress(BulkImportProgress(BulkImportProgress::READING, filepath, filepath, i+1, filepaths.count()));
             XmlObjectReader r(filepath);
             object_list[ROUTINES] += r.routines();
             object_list[CLASSES] += r.classes();
-            setCurrentProgress(BulkImportProgress(BulkImportProgress::UPLOADING, filepath, filepath, i+1, filepaths.count()));
+            reportProgress(BulkImportProgress(BulkImportProgress::UPLOADING, filepath, filepath, i+1, filepaths.count()));
             m_cache->importXmlFile(filepath);
         }catch(std::exception& ex){
             emit error(ex, m_last_progress);
@@ -87,7 +87,7 @@ void BulkImport::loadCompileLate(const QStringList& filepaths, const QString& qs
         for(int i=0; i<MAXORDER; i++)
             for(int j=0; j<object_list[i].count() && !m_abort_import; j++){
                 const XmlObject& obj = object_list[i].at(j);
-                setCurrentProgress(BulkImportProgress(BulkImportProgress::COMPILING, obj.name(), obj.sourceName(), total-remain--, total));
+                reportProgress(BulkImportProgress(BulkImportProgress::COMPILING, obj.name(), obj.sourceName(), total-remain--, total));
                 try{
                     m_cache->compileObjects(obj.name(), qspec);
                 }catch(std::exception& ex){
@@ -97,7 +97,7 @@ void BulkImport::loadCompileLate(const QStringList& filepaths, const QString& qs
                 }
             }
     }
-    setCurrentProgress(BulkImportProgress(BulkImportProgress::IDLE, "", "", 0, 0));
+    reportProgress(BulkImportProgress(BulkImportProgress::IDLE, "", "", 0, 0));
     if (m_abort_import) emit aborted();
     else emit finished();
 }

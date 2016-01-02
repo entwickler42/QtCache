@@ -15,7 +15,7 @@
 #ifndef QTCACHE_H
 #define QTCACHE_H
 
-#include "qtcache_global.h"
+#include "qtcacheprogress.h"
 #include "poormanslogger.h"
 #include <QObject>
 
@@ -29,9 +29,10 @@ class QTCACHESHARED_EXPORT QtCache
         : public QObject
 {
     Q_OBJECT
+    friend class QtCachePrivate;
 
 signals:
-    void reportProgress(const QString& message, qint64 pos, qint64 end);
+    void progress(const QtCacheProgress& progress);
 
 public:
     enum ObjectFilterType
@@ -68,6 +69,10 @@ protected:
 
 private:
     QtCachePrivate* d;
+
+    void reportBeginProcess(const QtCacheProgress& p);
+    void reportProgress(const QtCacheProgress& p);
+    void reportEndProcess(const QtCacheProgress& p);
 };
 
 QTCACHENAMESPACEEND

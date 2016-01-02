@@ -52,7 +52,7 @@ MainWindow::MainWindow(QWidget *parent) :
     loadSettings();
     parseCommandlineOptions();
 
-    connect(QtC::QtCache::instance(), SIGNAL(reportProgress(QString,qint64,qint64)), this, SLOT(reportProgress(QString,qint64,qint64)));
+    connect(QtC::QtCache::instance(), SIGNAL(progress(QtC::QtCacheProgress&)), this, SLOT(reportProgress(QtC::QtCacheProgress&)));
 
     if(conf->autoConnect()){
         try{
@@ -311,13 +311,39 @@ void MainWindow::bulkImportProgress(const QtC::BulkImportProgress& progress)
     QApplication::processEvents();
 }
 
-void MainWindow::reportProgress(const QString& message, qint64 pos, qint64 end)
+void MainWindow::reportProgress(QtC::QtCacheProgress& progress)
 {
-    ui->progressBar->setMaximum(end);
-    ui->progressBar->setValue(pos);
-    if (!bulk_import_active) {
-        ui->statusBar->showMessage(message);
+    ui->progressBar->setMaximum(100);
+    ui->progressBar->setValue(progress.percent());
+    if (!bulk_import_active){
+        switch(progress.type()){
+        case QtC::QtCacheProgress::CONNECT:
+            ui->statusBar->showMessage(tr("Connecting Caché"));
+            break;
+        case QtC::QtCacheProgress::DISCONNECT:
+            ui->statusBar->showMessage("Disconnecting Caché");
+            break;
+        case QtC::QtCacheProgress::XMLFILE_IMPORT:
+            ui->statusBar->showMessage(tr("Importing XML File"));
+            break;
+        case QtC::QtCacheProgress::XMLFILE_EXPORT:
+            ui->statusBar->showMessage(tr("Exporting XML File"));
+            break;
+        case QtC::QtCacheProgress::OBJECT_COMPILE:
+            ui->statusBar->showMessage(tr("Compiling object"));
+            break;
+        case QtC::QtCacheProgress::QUERY_NS:
+            ui->statusBar->showMessage(tr("Receiving namespace list"));
+            break;
+        case QtC::QtCacheProgress::QUERY_OBJECTS:
+            ui->statusBar->showMessage(tr("Receiving object list"));
+            break;
+        default:
+            ui->statusBar->showMessage(tr("Idle"));
+            break;
+        }
     }
+
     QApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
 }
 

@@ -24,7 +24,9 @@ HEADERS += poormanslogger.h \
     qtcachexmlobject.h \
     qtcachexmlreader.h \
     qtcachebulkimport.h \
-    qtcache_config.h
+    qtcache_config.h \
+    qtcachebulkimportprogress.h \
+    qtcacheprogress.h
 
 TRANSLATIONS = qtcache_de_DE.ts
 
