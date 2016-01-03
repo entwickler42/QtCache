@@ -14,14 +14,9 @@ SOURCES += \
     qtcacheui.cpp
 
 HEADERS +=\
-        qtcacheui_global.h \
+    qtcacheui_global.h \
     cacheconnectiondialog.h \
     qtcacheui.h
-
-unix {
-    target.path = /usr/lib
-    INSTALLS += target
-}
 
 INCLUDEPATH += ../QtCache
 

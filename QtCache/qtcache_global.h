@@ -10,4 +10,7 @@
 #  define QTCACHESHARED_EXPORT Q_DECL_IMPORT
 #endif
 
+#define LOG_EXCEPTION(EX) PML::LOG << __FILE__ << " " << __FUNCTION__ << " Line " << __LINE__ << " " << EX.what();
+#define LOG_UNKNOWN_EXCEPTION PML::LOG << __FILE__ << " " << __FUNCTION__ << " Line " << __LINE__ << " unknown exception";
+
 #endif // QTCACHE_GLOBAL_H

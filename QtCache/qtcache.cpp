@@ -111,16 +111,26 @@ void QtCache::compileObjects(const QString& objectNames, const QString& qspec)
 }
 
 
-void QtCache::reportBeginProcess(const QtCacheProgress& p)
+void QtCache::reportProcessBegin(QtCacheProgress& p)
 {
+    pluginObserver()->progressBegin(p);
 }
 
-void QtCache::reportProgress(const QtCacheProgress& p)
+void QtCache::reportProgress(QtCacheProgress& p)
 {
-    emit progress(p);
+    pluginObserver()->progress(p);
+    if (!p.isAborted()){
+        emit progress(p);
+    }
 }
 
-void QtCache::reportEndProcess(const QtCacheProgress& p)
+void QtCache::reportProcessEnd(QtCacheProgress& p)
 {
+    pluginObserver()->progressEnd(p);
+}
+
+QtCachePluginObserver* QtCache::pluginObserver() const
+{
+    return d->plugin_observer;
 }
 

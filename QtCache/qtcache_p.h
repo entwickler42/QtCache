@@ -17,6 +17,7 @@
 
 #include "qtcache.h"
 #include "qtcacheexception.h"
+#include "qtcachepluginobserver.h"
 #include <ios>
 #include <QDir>
 #include <QFile>
@@ -45,6 +46,7 @@ typedef d_ref<Qt_CacheTool> QtCacheToolType;
 class QtCachePrivate
 {
 public:
+    mutable QtCachePluginObserver* plugin_observer;
     QString cn = "";
     QString uci = "%SYS";
     QString user = "";
@@ -52,11 +54,21 @@ public:
     QtCache *i_ptr;
 
     QtCachePrivate(QtCache* qtcache)
-        : i_ptr(qtcache)
-    {}
+        : i_ptr(qtcache),
+          plugin_observer(NULL)
+    {
+        try{
+            plugin_observer = new QtCachePluginObserver();
+        }catch(std::exception& ex){
+            PML::LOG << ex.what();
+        }catch(...){
+            PML::LOG << "Unknown exception occured during PluginObserver instantiation";
+        }
+    }
 
     virtual ~QtCachePrivate()
     {
+        delete plugin_observer;
         disconnect();
     }
 

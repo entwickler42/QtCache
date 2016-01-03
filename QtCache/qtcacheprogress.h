@@ -3,10 +3,11 @@
 
 #include "qtcache_global.h"
 #include <QString>
+#include <QVariant>
 
 QTCACHENAMESPACEBEGIN
 
-class QtCacheProgress
+class QTCACHESHARED_EXPORT QtCacheProgress
 {
 public:
     enum Type
@@ -21,10 +22,15 @@ public:
         OBJECT_COMPILE
     };
 
-    QtCacheProgress(Type type, int max = 0, int cur = 0)
+    QtCacheProgress(Type type, QVariant tag, int max = 0, int cur = 0)
         : m_type(type),
+          m_tag(tag),
           m_max(max),
           m_cur(cur)
+    {}
+
+    QtCacheProgress(Type type, int max = 0, int cur = 0)
+        : QtCacheProgress(type, 0, max, cur)
     {}
 
     Type type() const { return m_type; }
@@ -38,9 +44,13 @@ public:
         return 100.0f * m_cur / m_max;
     }
 
+    void setTag(const QVariant& tag) { m_tag = tag; }
+    const QVariant& tag() const { return m_tag; }
+
 private:
     bool m_abort = false;
     Type m_type = UNKNOWN;
+    QVariant m_tag;
 
     int m_max = 0;
     int m_cur = 0;

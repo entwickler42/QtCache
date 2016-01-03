@@ -23,7 +23,6 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
-
 using namespace PML;
 
 PoorMansLogger PML::LOG("error.log");

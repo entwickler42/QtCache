@@ -24,15 +24,17 @@ class QTranslator;
 QTCACHENAMESPACEBEGIN
 
 class QtCachePrivate;
+class QtCachePluginObserver;
 
 class QTCACHESHARED_EXPORT QtCache
         : public QObject
 {
     Q_OBJECT
+
     friend class QtCachePrivate;
 
 signals:
-    void progress(const QtCacheProgress& progress);
+    void progress(QtC::QtCacheProgress&);
 
 public:
     enum ObjectFilterType
@@ -42,7 +44,7 @@ public:
     };
 
     static QtCache* instance();
-    virtual ~QtCache();
+    ~QtCache();
 
     void connect(const QString& cn, const QString& user, const QString& passwd);
     void disconnect();
@@ -64,15 +66,17 @@ public:
     void exportXmlFile(const QString& directoryPath, const QString& objectName);
     void compileObjects(const QString& objectNames, const QString& qspec = "cf");
 
+    QtCachePluginObserver* pluginObserver() const;
+
 protected:
     QtCache();
 
 private:
     QtCachePrivate* d;
 
-    void reportBeginProcess(const QtCacheProgress& p);
-    void reportProgress(const QtCacheProgress& p);
-    void reportEndProcess(const QtCacheProgress& p);
+    void reportProcessBegin(QtCacheProgress& p);
+    void reportProgress(QtCacheProgress& p);
+    void reportProcessEnd(QtCacheProgress& p);
 };
 
 QTCACHENAMESPACEEND

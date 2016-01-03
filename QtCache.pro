@@ -1,8 +1,10 @@
 TEMPLATE = subdirs
 
-SUBDIRS = QtCache \
-          QtCacheUi \
-          QtCacheTool
+SUBDIRS = \
+    QtCache \
+    QtCacheUi \
+    QtCacheTool \
+    QtCachePluginSample
 
 CONFIG += ordered
 

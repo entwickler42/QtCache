@@ -33,6 +33,11 @@ public:
         std::cerr << qPrintable(s) << std::endl;
         return *this;
     }
+
+    const PoorMansLogger& operator << (int i) const
+    {
+        return *this << QString::number(i);
+    }
 };
 
 extern QTCACHESHARED_EXPORT PoorMansLogger LOG;
