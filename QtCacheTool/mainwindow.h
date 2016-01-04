@@ -90,6 +90,8 @@ private:
     void setListViewItem(const QString& filename, const QString& iconpath, const QString& toolTip = "");
     void saveSettings();
     void loadSettings();
+
+    void createPluginTable();
 };
 
 #endif // MAINWINDOW_H

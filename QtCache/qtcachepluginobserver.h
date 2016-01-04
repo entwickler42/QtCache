@@ -15,6 +15,8 @@ public:
     explicit QtCachePluginObserver(QObject *parent = 0);
     ~QtCachePluginObserver();
 
+    QList<Plugin*> plugins() const { return m_plugins; }
+
 public slots:
     void initialize();
     void deinitialize();
@@ -30,7 +32,7 @@ protected:
 private:
     QList<Plugin*> m_plugins;
 
-    void QtCachePluginObserver::foreachPlugin(QtCacheProgress& progress, void (*fn)(Plugin*, QtCacheProgress&));
+    void QtCachePluginObserver::foreachPlugin(QtCacheProgress& progress, void (Plugin::*fn)(QtCacheProgress&));
     template<class T> QList<T*> loadDirectory(const QString& path, QObject* parent);
 };
 

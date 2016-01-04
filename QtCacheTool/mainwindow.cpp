@@ -20,6 +20,7 @@
 #include <qtcacheexception.h>
 #include <cacheconnectiondialog.h>
 #include <qtcachebulkimport.h>
+#include <qtcachepluginobserver.h>
 #include <QCommandLineParser>
 #include <QStringList>
 #include <QMessageBox>
@@ -65,6 +66,8 @@ MainWindow::MainWindow(QWidget *parent) :
             QMessageBox::critical(this, tr("Exception"), ex.what());
         }
     }
+
+    createPluginTable();
 }
 
 MainWindow::~MainWindow()
@@ -72,6 +75,32 @@ MainWindow::~MainWindow()
     saveSettings();
     delete dlg;
     delete ui;
+}
+
+void MainWindow::createPluginTable()
+{
+    const int ColumnName = 0;
+    const int ColumnDesc = 1;
+
+    ui->tablePlugins->insertColumn(ColumnName);
+    ui->tablePlugins->insertColumn(ColumnDesc);
+
+    ui->tablePlugins->setHorizontalHeaderItem(ColumnName, new QTableWidgetItem("Name"));
+    ui->tablePlugins->setHorizontalHeaderItem(ColumnDesc, new QTableWidgetItem("Beschreibung"));
+
+    for(int i=0; i<cache()->pluginObserver()->plugins().count(); i++){
+        QtC::Plugin* plugin = cache()->pluginObserver()->plugins().at(i);
+        ui->tablePlugins->insertRow(i);
+        QTableWidgetItem* nameItem = new QTableWidgetItem(plugin->name());
+        QTableWidgetItem* descItem = new QTableWidgetItem(plugin->description());
+        nameItem->setCheckState(Qt::Checked);
+        nameItem->setFlags(nameItem->flags() ^ Qt::ItemIsEditable);
+        descItem->setFlags(descItem->flags() ^ Qt::ItemIsEditable);
+        ui->tablePlugins->setItem(i, ColumnName, nameItem);
+        ui->tablePlugins->setItem(i, ColumnDesc, descItem);
+    }
+    ui->tablePlugins->resizeColumnsToContents();
+    ui->tablePlugins->horizontalHeader()->setStretchLastSection(true);
 }
 
 void MainWindow::loadSettings()

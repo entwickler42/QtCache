@@ -492,6 +492,16 @@
         </item>
        </layout>
       </widget>
+      <widget class="QWidget" name="tabPlugins">
+       <attribute name="title">
+        <string>Plugins</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_11">
+        <item>
+         <widget class="QTableWidget" name="tablePlugins"/>
+        </item>
+       </layout>
+      </widget>
      </widget>
     </item>
     <item>

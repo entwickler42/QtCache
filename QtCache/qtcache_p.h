@@ -60,9 +60,9 @@ public:
         try{
             plugin_observer = new QtCachePluginObserver();
         }catch(std::exception& ex){
-            PML::LOG << ex.what();
+            LOG_EXCEPTION(ex)
         }catch(...){
-            PML::LOG << "Unknown exception occured during PluginObserver instantiation";
+            LOG_UNKNOWN_EXCEPTION
         }
     }
 

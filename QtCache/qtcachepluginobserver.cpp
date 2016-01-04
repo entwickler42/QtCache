@@ -18,12 +18,14 @@ QtCachePluginObserver::QtCachePluginObserver(QObject *parent)
         try {
             i->initialize();
         }catch(std::exception& ex){
-            LOG_EXCEPTION(ex)
+            LOG_EXCEPTION(ex);
+            m_plugins.removeAll(i);
+            delete i;
         }catch(...){
-            LOG_UNKNOWN_EXCEPTION
+            LOG_UNKNOWN_EXCEPTION;
+            m_plugins.removeAll(i);
+            delete i;
         }
-        m_plugins.removeAll(i);
-        delete i;
     }
 }
 
@@ -50,23 +52,23 @@ void QtCachePluginObserver::deinitialize()
 
 void QtCachePluginObserver::progressBegin(QtCacheProgress& progress)
 {
-    foreachPlugin(progress, [](Plugin* p, QtCacheProgress& pp) { p->progressBegin(pp); });
+    foreachPlugin(progress, &Plugin::progressBegin);
 }
 
 void QtCachePluginObserver::progress(QtCacheProgress& progress)
 {
-    foreachPlugin(progress, [](Plugin* p, QtCacheProgress& pp) { p->progress(pp); });
+    foreachPlugin(progress, &Plugin::progress);
 }
 
 void QtCachePluginObserver::progressEnd(QtCacheProgress& progress)
 {
-    foreachPlugin(progress, [](Plugin* p, QtCacheProgress& pp) { p->progressEnd(pp); });
+    foreachPlugin(progress, &Plugin::progressEnd);
 }
 
-void QtCachePluginObserver::foreachPlugin(QtCacheProgress& progress, void (*fn)(Plugin*, QtCacheProgress&))
+void QtCachePluginObserver::foreachPlugin(QtCacheProgress& progress, void (Plugin::*fn)(QtCacheProgress&))
 {
     foreach(Plugin* i, m_plugins){
-        fn(i, progress);
+        (i->*fn)(progress);
         if (progress.isAborted()) { break; }
     }
 }
