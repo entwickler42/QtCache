@@ -34,10 +34,10 @@ QTCACHENAMESPACEBEGIN
 #define CACHE_TRY try
 #define CACHE_CATCH \
     catch(std::exception& ex){ \
-    PML::LOG << ex.what(); \
+    LOG_EXCEPTION(ex) \
     throw QtCacheException(ex.what()); \
     }catch(...){ \
-    PML::LOG << "Unknown Exception"; \
+    LOG_UNKNOWN_EXCEPTION \
     throw QtCacheException("Unknown Exception"); \
     }
 
@@ -167,12 +167,21 @@ public:
     {
         QStringList q_ls;
         CACHE_TRY{
+            QtCacheProgress progress(QtCacheProgress::QUERY_NS, 0, 0);
+            progress.setTag(QStringList() << QString::number(excludePercent));
+            i_ptr->reportProcessBegin(progress);
+            if (progress.isAborted()){ return q_ls; }
+
             if (isConnected()){
+                int cur = 0;
                 d_wstring s;
                 d_list c_ls = tool()->ListNamespaces();
                 while (!c_ls.at_end()){
                     c_ls.get_elem(s);
                     QString uci = QString::fromStdWString(s.value());
+                    progress.setTag(uci);
+                    i_ptr->reportProgress(progress(c_ls.count(),cur++));
+                    if (progress.isAborted()) { break; }
                     if (uci.startsWith('%') && excludePercent){
                         c_ls.next();
                         continue;
@@ -181,6 +190,7 @@ public:
                     c_ls.next();
                 }
             }
+            i_ptr->reportProcessEnd(progress);
         }CACHE_CATCH;
         return q_ls;
     }
@@ -189,6 +199,11 @@ public:
     {
         QStringList objects;
         CACHE_TRY{
+            QtCacheProgress progress(QtCacheProgress::QUERY_OBJECTS, 0, 0);
+            progress.setTag(QStringList() << filter << QString::number(filterType));
+            i_ptr->reportProcessBegin(progress);
+            if (progress.isAborted()){ return objects; }
+
             d_string _uci(uci.toStdString());
             d_string _filter = filter.toStdString();
             d_ref<d_char_stream> bstream = tool()->ListObjects(_uci, _filter, filterType);
@@ -201,8 +216,12 @@ public:
             std::string line;
             io.rewind();
             while (std::getline(io, line)){
-                objects << QString::fromStdString(line).remove('\r');
+                progress.setTag(QString::fromStdString(line).remove('\r'));
+                i_ptr->reportProgress(progress(100,-1));
+                objects << progress.tag().toString();
+                if (progress.isAborted()) { break; }
             }
+            i_ptr->reportProcessEnd(progress);
         }CACHE_CATCH;
         return objects;
     }
@@ -210,6 +229,11 @@ public:
     void importXmlFile(const QString& filepath, const QString& qspec = "")
     {
         CACHE_TRY{
+            QtCacheProgress progress(QtCacheProgress::XMLFILE_IMPORT, 0, 0);
+            progress.setTag(QStringList() << filepath << qspec);
+            i_ptr->reportProcessBegin(progress);
+            if (progress.isAborted()){ return; }
+
             QFile f(filepath);
 
             if (!f.exists()){
@@ -230,24 +254,32 @@ public:
                 qint64 s = f.read(buf, chunk_size);
                 io.write(buf, s);
                 file_pos += s;
-                i_ptr->reportProgress(QtCacheProgress(QtCacheProgress::XMLFILE_IMPORT, file_size, file_pos));
+                i_ptr->reportProgress(progress(file_size, file_pos));
+                if (progress.isAborted()){ break; }
             }
             io.rewind();
-
-            i_ptr->reportProgress(QtCacheProgress(QtCacheProgress::XMLFILE_IMPORT, 100, 100));
-            d_string _uci(uci.toStdString());
-            d_string _qspec(qspec.toStdString());
-            d_status sc = tool()->ImportXML(_uci, bstream, _qspec);
-            if (sc.get_code()){
-                sc.get_msg(db);
-                throw QtCacheException(sc);
+            if (!progress.isAborted()){
+                i_ptr->reportProgress(progress(100, 100));
+                d_string _uci(uci.toStdString());
+                d_string _qspec(qspec.toStdString());
+                d_status sc = tool()->ImportXML(_uci, bstream, _qspec);
+                if (sc.get_code()){
+                    sc.get_msg(db);
+                    throw QtCacheException(sc);
+                }
             }
+            i_ptr->reportProcessEnd(progress);
         }CACHE_CATCH;
     }
 
     void exportXmlFile(const QString& directoryPath, const QString& objectName)
     {
         CACHE_TRY{
+            QtCacheProgress progress(QtCacheProgress::XMLFILE_EXPORT, 0, 0);
+            progress.setTag(QStringList() << directoryPath << objectName);
+            i_ptr->reportProcessBegin(progress);
+            if (progress.isAborted()){ return; }
+
             d_string _objectName = objectName.toStdString();
             d_string _uci = uci.toStdString();
             d_ref<d_bin_stream> bstream = tool()->ExportXML(_uci, _objectName);
@@ -271,22 +303,34 @@ public:
             d_iostream io(bstream);
             io.rewind();
             while (std::getline(io,buf)){
-                ofstream << QString::fromStdString(buf) << "\n";
+                progress.setTag(QString::fromStdString(buf));
+                i_ptr->reportProgress(progress(100, -1));
+                if (progress.isAborted()) { break; }
+                ofstream << progress.tag().toString() << "\n";
             }
+            i_ptr->reportProcessEnd(progress(100,100));
         }CACHE_CATCH;
     }
 
     void compileObjects(const QString& objectNames, const QString& qspec)
     {
         CACHE_TRY{
+            QtCacheProgress progress(QtCacheProgress::OBJECT_COMPILE, 0, 0);
+            progress.setTag(QStringList() << objectNames << qspec);
+            i_ptr->reportProcessBegin(progress);
+            if (progress.isAborted()){ return; }
+
             d_string _objectNames(objectNames.toStdString());
             d_string _qspec(qspec.toStdString());
             d_string _uci = uci.toStdString();
+            i_ptr->reportProgress(progress(100, 100));
             d_status sc = tool()->CompileList(_uci, _objectNames, _qspec);
             if (sc.get_code()){
                 sc.get_msg(db);
                 throw QtCacheException(tool()->getErrorLog());
             }
+
+            i_ptr->reportProcessEnd(progress);
         }CACHE_CATCH;
     }
 
