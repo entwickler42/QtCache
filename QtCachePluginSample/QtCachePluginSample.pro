@@ -12,6 +12,4 @@ HEADERS += \
     qtcachepluginsample_global.h \
     qtcachepluginsample.h
 
-INCLUDEPATH += "../QtCache"
-
-win32:LIBS += "-L../build" -lQtCache
+include(../QtCache/QtCache.pri)

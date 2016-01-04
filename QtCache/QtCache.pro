@@ -39,7 +39,7 @@ TRANSLATIONS = qtcache_de_DE.ts
 RESOURCES += \
     QtCache.qrc
 
-OTHER_FILES += qtcache_de_DE.ts
+OTHER_FILES += qtcache_de_DE.ts QtCache.pri
 
 CONFIG(release, debug|release){
 #    system(lupdate -no-obsolete QtCache.pro)
