@@ -170,17 +170,17 @@ public:
             QtCacheProgress progress(QtCacheProgress::QUERY_NS, 0, 0);
             progress.setTag(QStringList() << QString::number(excludePercent));
             i_ptr->reportProcessBegin(progress);
-            if (progress.isAborted()){ return q_ls; }
-
+            if (progress.isAborted()){
+                return q_ls;
+            }
             if (isConnected()){
-                int cur = 0;
                 d_wstring s;
                 d_list c_ls = tool()->ListNamespaces();
                 while (!c_ls.at_end()){
                     c_ls.get_elem(s);
                     QString uci = QString::fromStdWString(s.value());
                     progress.setTag(uci);
-                    i_ptr->reportProgress(progress(c_ls.count(),cur++));
+                    i_ptr->reportProgress(progress);
                     if (progress.isAborted()) { break; }
                     if (uci.startsWith('%') && excludePercent){
                         c_ls.next();

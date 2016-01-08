@@ -176,19 +176,6 @@ d_ref<d_bin_stream> Qt_CacheTool::ExportXML(const d_string& uci, const d_string&
    return __res;
 }
 
-void Qt_CacheTool::Filter(const d_string& filter, const d_string& object, const d_int& filterType)
-{
-   GEN_DECLARE_ARGS_AND_DB();
-   wchar_t __mtd_name[] = L"Filter";
-
-   __args_mgr.set_next(&filter);
-   __args_mgr.set_next(&object);
-   __args_mgr.set_next(&filterType);
-
-   Critical_section cs(__db->get_cs_handle());
-   __db->run_method(get_ref(), __srv_cl_name, __mtd_name, __args_mgr);
-}
-
 d_status Qt_CacheTool::ImportXML(const d_string& uci, const d_ref<d_bin_stream>& xml, const d_string& qspec)
 {
    GEN_DECLARE_ARGS_AND_DB();
