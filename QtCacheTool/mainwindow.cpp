@@ -278,7 +278,7 @@ void MainWindow::on_importFiles_pressed()
         connect(&import, SIGNAL(aborted()), this, SLOT(bulkImportAborted()));
         connect(&import, SIGNAL(finished()), this, SLOT(bulkImportFinished()));
         connect(&import, SIGNAL(error(std::exception&, const QtC::BulkImportProgress&)), this, SLOT(bulkImportError(std::exception&, const QtC::BulkImportProgress&)));
-        connect(&import, SIGNAL(reportProgress(const QtC::BulkImportProgress&)), this, SLOT(bulkImportProgress(const QtC::BulkImportProgress&)));
+        connect(&import, SIGNAL(progress(const QtC::BulkImportProgress&)), this, SLOT(bulkImportProgress(const QtC::BulkImportProgress&)));
         import.compileEarly = ui->compileEarly->isChecked();
         import.load(import_files, qspec);
 
