@@ -92,7 +92,7 @@ public:
 
     bool autoConnect() const
     {
-        return conf->value("autoConnect", true).toBool();
+        return conf->value("autoConnect", false).toBool();
     }
 
     void setAutoConnect(bool value)
