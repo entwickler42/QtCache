@@ -41,9 +41,10 @@ RESOURCES += \
 
 OTHER_FILES += qtcache_de_DE.ts QtCache.pri
 
-CONFIG(release, debug|release){
-#    system(lupdate -no-obsolete QtCache.pro)
-#    system(lrelease QtCache.pro)
+CONFIG(debug, debug|release){
+}else{
+    #system(lupdate -no-obsolete QtCache.pro)
+    #system(lrelease QtCache.pro)
 }
 
 include(../Intersystems/Intersystems.pri)

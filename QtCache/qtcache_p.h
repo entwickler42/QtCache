@@ -25,10 +25,6 @@
 #include <Qt_CacheTool.h>
 #include "poormanslogger.h"
 
-#ifdef CACHEVISM
-#include <vismocx.h>
-#endif
-
 QTCACHENAMESPACEBEGIN
 
 #define CACHE_TRY try

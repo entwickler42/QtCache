@@ -32,9 +32,11 @@ RESOURCES += \
 
 OTHER_FILES += qtcacheui_de_DE.ts
 
-CONFIG(release, debug|release){
+CONFIG(debug, debug|release){
+}else{
     #system(lupdate -no-obsolete QtCacheUi.pro)
     #system(lrelease QtCacheUi.pro)
 }
+
 
 include(../Intersystems/Intersystems.pri)

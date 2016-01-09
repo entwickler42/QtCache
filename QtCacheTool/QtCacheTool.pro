@@ -35,11 +35,10 @@ linux-g++:LIBS += "-L$(DESTDIR)" -lQtCache -lQtCacheUi
 
 QMAKE_LFLAGS_WINDOWS = /SUBSYSTEM:WINDOWS,5.01
 
-CONFIG(release, debug|release){
-#    system(lupdate -no-obsolete QtCacheTool.pro)
-#    system(lrelease QtCacheTool.pro)
+CONFIG(debug, debug|release){
+}else{
+    #system(lupdate -no-obsolete QtCacheTool.pro)
+    #system(lrelease QtCacheTool.pro)
 }
-
-#linux-g++:include(../Intersystems/Intersystems.pri)
 
 include(../Intersystems/Intersystems.pri)
