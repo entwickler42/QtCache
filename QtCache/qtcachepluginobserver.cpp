@@ -50,7 +50,7 @@ void QtCachePluginObserver::initialize()
 void QtCachePluginObserver::deinitialize()
 {}
 
-void QtCachePluginObserver::foreachPlugin(QtCacheProgress& progress, void (Plugin::*fn)(QtCacheProgress&))
+void QtCachePluginObserver::foreachPlugin(Progress& progress, void (Plugin::*fn)(Progress&))
 {
     foreach(Plugin* i, m_plugins){
         (i->*fn)(progress);

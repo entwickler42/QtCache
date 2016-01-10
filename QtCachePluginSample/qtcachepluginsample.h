@@ -26,37 +26,37 @@ public:
         PML::LOG << __FUNCTION__;
     }
 
-    void progressBegin(QtC::QtCacheProgress& progress)
+    void progressBegin(QtC::Progress& progress)
     {
         Q_UNUSED(progress);
         PML::LOG << __FUNCTION__;
     }
 
-    void progress(QtC::QtCacheProgress& progress)
+    void progress(QtC::Progress& progress)
     {
         Q_UNUSED(progress);
         PML::LOG << __FUNCTION__;
     }
 
-    void progressEnd(QtC::QtCacheProgress& progress)
+    void progressEnd(QtC::Progress& progress)
     {
         Q_UNUSED(progress);
         PML::LOG << __FUNCTION__;
     }
 
-    void bulkProgressBegin(QtC::QtCacheProgress& progress)
+    void bulkProgressBegin(QtC::Progress& progress)
     {
         Q_UNUSED(progress);
         PML::LOG << __FUNCTION__;
     }
 
-    void bulkProgress(QtC::QtCacheProgress& progress)
+    void bulkProgress(QtC::Progress& progress)
     {
         Q_UNUSED(progress);
         PML::LOG << __FUNCTION__;
     }
 
-    void bulkProgressEnd(QtC::QtCacheProgress& progress)
+    void bulkProgressEnd(QtC::Progress& progress)
     {
         Q_UNUSED(progress);
         PML::LOG << __FUNCTION__;

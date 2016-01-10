@@ -34,7 +34,7 @@ class QTCACHESHARED_EXPORT QtCache
     friend class QtCachePrivate;
 
 signals:
-    void progress(QtC::QtCacheProgress&);
+    void progress(QtC::Progress&);
 
 public:
     enum ObjectFilterType
@@ -74,9 +74,9 @@ protected:
 private:
     QtCachePrivate* d;
 
-    void reportProcessBegin(QtCacheProgress& p);
-    void reportProgress(QtCacheProgress& p);
-    void reportProcessEnd(QtCacheProgress& p);
+    void reportProcessBegin(Progress& p);
+    void reportProgress(Progress& p);
+    void reportProcessEnd(Progress& p);
 };
 
 QTCACHENAMESPACEEND

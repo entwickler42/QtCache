@@ -29,7 +29,7 @@ public:
 
     explicit BulkImport(QtCache* cache, QObject *parent = 0);
 
-    const QtCacheProgress& currentProgress() const
+    const Progress& currentProgress() const
     {
         return m_last_progress;
     }
@@ -37,8 +37,8 @@ public:
 signals:
     void aborted();
     void finished();
-    void error(std::exception& ex, const QtC::QtCacheProgress& progress);
-    void progress(const QtC::QtCacheProgress& progress);
+    void error(std::exception& ex, QtC::Progress& progress);
+    void progress(QtC::Progress& progress);
 
 public slots:
     void load(const QStringList& filepaths, const QString& qspec = "");
@@ -48,16 +48,16 @@ public slots:
     }
 
 private:
-    QtCacheProgress m_last_progress;
+    Progress m_last_progress;
     QtCache* m_cache = NULL;
     bool m_abort_import = false;
 
     void loadCompileEarly(const QStringList& filepaths, const QString& qspec = "");
     void loadCompileLate(const QStringList& filepaths, const QString& qspec = "");
 
-    void reportProcessBegin(QtCacheProgress& p);
-    void reportProgress(QtCacheProgress& p);
-    void reportProcessEnd(QtCacheProgress& p);
+    void reportProcessBegin(Progress& p);
+    void reportProgress(Progress& p);
+    void reportProcessEnd(Progress& p);
 };
 
 QTCACHENAMESPACEEND

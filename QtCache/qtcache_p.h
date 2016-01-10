@@ -163,7 +163,7 @@ public:
     {
         QStringList q_ls;
         CACHE_TRY{
-            QtCacheProgress progress(QtCacheProgress::QUERY_NS, 0, 0);
+            Progress progress(Progress::QUERY_NS, 0, 0);
             progress.setTag(QStringList() << QString::number(excludePercent));
             i_ptr->reportProcessBegin(progress);
             if (progress.isAborted()){
@@ -195,7 +195,7 @@ public:
     {
         QStringList objects;
         CACHE_TRY{
-            QtCacheProgress progress(QtCacheProgress::QUERY_OBJECTS, 0, 0);
+            Progress progress(Progress::QUERY_OBJECTS, 0, 0);
             progress.setTag(QStringList() << filter << QString::number(filterType));
             i_ptr->reportProcessBegin(progress);
             if (progress.isAborted()){ return objects; }
@@ -225,7 +225,7 @@ public:
     void importXmlFile(const QString& filepath, const QString& qspec = "")
     {
         CACHE_TRY{
-            QtCacheProgress progress(QtCacheProgress::XMLFILE_IMPORT, 0, 0);
+            Progress progress(Progress::XMLFILE_IMPORT, 0, 0);
             progress.setTag(QStringList() << filepath << qspec);
             i_ptr->reportProcessBegin(progress);
             if (progress.isAborted()){ return; }
@@ -271,7 +271,7 @@ public:
     void exportXmlFile(const QString& directoryPath, const QString& objectName)
     {
         CACHE_TRY{
-            QtCacheProgress progress(QtCacheProgress::XMLFILE_EXPORT, 0, 0);
+            Progress progress(Progress::XMLFILE_EXPORT, 0, 0);
             progress.setTag(QStringList() << directoryPath << objectName);
             i_ptr->reportProcessBegin(progress);
             if (progress.isAborted()){ return; }
@@ -311,7 +311,7 @@ public:
     void compileObjects(const QString& objectNames, const QString& qspec)
     {
         CACHE_TRY{
-            QtCacheProgress progress(QtCacheProgress::OBJECT_COMPILE, 0, 0);
+            Progress progress(Progress::OBJECT_COMPILE, 0, 0);
             progress.setTag(QStringList() << objectNames << qspec);
             i_ptr->reportProcessBegin(progress);
             if (progress.isAborted()){ return; }

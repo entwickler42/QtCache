@@ -7,7 +7,7 @@
 
 QTCACHENAMESPACEBEGIN
 
-class QTCACHESHARED_EXPORT QtCacheProgress
+class QTCACHESHARED_EXPORT Progress
 {
 public:
     enum Type
@@ -26,23 +26,23 @@ public:
         BULK_COMPILE
     };
 
-    QtCacheProgress(Type type, QVariant tag, int max = 0, int cur = 0)
+    Progress(Type type, QVariant tag, int max = 0, int cur = 0)
         : m_type(type),
           m_tag(tag),
           m_max(max),
           m_cur(cur)
     {}
 
-    QtCacheProgress(Type type, int max = 0, int cur = 0)
-        : QtCacheProgress(type, QVariant(), max, cur)
+    Progress(Type type, int max = 0, int cur = 0)
+        : Progress(type, QVariant(), max, cur)
     {}
 
-    QtCacheProgress& operator ()(int max, int cur, QVariant tag = QVariant())
+    Progress& operator ()(int max, int cur, QVariant tag = QVariant())
     {
         return this->operator ()(max, cur, this->type(), tag);
     }
 
-    QtCacheProgress& operator ()(int max, int cur, Type type, QVariant tag = QVariant())
+    Progress& operator ()(int max, int cur, Type type, QVariant tag = QVariant())
     {
         m_type = type;
         setTag(tag);

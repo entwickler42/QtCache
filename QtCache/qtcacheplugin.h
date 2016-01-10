@@ -30,13 +30,13 @@ public:
     virtual void initialize() {}
     virtual void deinitialize() {}
 
-    virtual void progressBegin(QtCacheProgress& progress) = 0;
-    virtual void progress(QtCacheProgress& progress) = 0;
-    virtual void progressEnd(QtCacheProgress& progress) = 0;
+    virtual void progressBegin(Progress& progress) = 0;
+    virtual void progress(Progress& progress) = 0;
+    virtual void progressEnd(Progress& progress) = 0;
 
-    virtual void bulkProgressBegin(QtCacheProgress& progress) = 0;
-    virtual void bulkProgress(QtCacheProgress& progress) = 0;
-    virtual void bulkProgressEnd(QtCacheProgress& progress) = 0;
+    virtual void bulkProgressBegin(Progress& progress) = 0;
+    virtual void bulkProgress(Progress& progress) = 0;
+    virtual void bulkProgressEnd(Progress& progress) = 0;
 };
 
 template<class T>

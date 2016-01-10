@@ -53,7 +53,7 @@ MainWindow::MainWindow(QWidget *parent) :
     loadSettings();
     parseCommandlineOptions();
 
-    connect(QtC::QtCache::instance(), SIGNAL(progress(QtC::QtCacheProgress&)), this, SLOT(reportProgress(QtC::QtCacheProgress&)));
+    connect(QtC::QtCache::instance(), SIGNAL(progress(QtC::Progress&)), this, SLOT(reportProgress(QtC::Progress&)));
 
     if(conf->autoConnect()){
         try{
@@ -303,7 +303,7 @@ void MainWindow::bulkImportFinished()
     ui->statusBar->showMessage(tr("Bulkimport has finished!"));
 }
 
-void MainWindow::bulkImportError(std::exception& ex, const QtC::QtCacheProgress& progress)
+void MainWindow::bulkImportError(std::exception& ex, const QtC::Progress& progress)
 {
     bulkImportProgress(progress);
     setListViewItem(progress.tag().toString(), ":/QtCacheTool/FILE_ERROR", ex.what());
@@ -315,20 +315,20 @@ void MainWindow::bulkImportError(std::exception& ex, const QtC::QtCacheProgress&
     }
 }
 
-void MainWindow::bulkImportProgress(const QtC::QtCacheProgress& progress)
+void MainWindow::bulkImportProgress(const QtC::Progress& progress)
 {
     ui->progressBar->setMaximum(100);
     ui->progressBar->setValue(progress.percent());
     switch (progress.type()) {
-    case QtC::QtCacheProgress::BULK_READ:
+    case QtC::Progress::BULK_READ:
         setListViewItem(progress.tag().toString(), ":/QtCacheTool/FILE_OK");
         ui->statusBar->showMessage(tr("Reading %1").arg(progress.tag().toString()));
         break;
-    case QtC::QtCacheProgress::BULK_UPLOAD:
+    case QtC::Progress::BULK_UPLOAD:
         setListViewItem(progress.tag().toString(), ":/QtCacheTool/FILE_OK");
         ui->statusBar->showMessage(tr("Uploading %1").arg(progress.tag().toString()));
         break;
-    case QtC::QtCacheProgress::BULK_COMPILE:
+    case QtC::Progress::BULK_COMPILE:
         setListViewItem(progress.tag().toString(), ":/QtCacheTool/FILE_OK");
         ui->statusBar->showMessage(tr("Compiling %1").arg(progress.tag().toString()));
         break;
@@ -340,31 +340,31 @@ void MainWindow::bulkImportProgress(const QtC::QtCacheProgress& progress)
     QApplication::processEvents();
 }
 
-void MainWindow::reportProgress(QtC::QtCacheProgress& progress)
+void MainWindow::reportProgress(QtC::Progress& progress)
 {
     ui->progressBar->setMaximum(100);
     ui->progressBar->setValue(progress.percent());
     if (!bulk_import_active){
         switch(progress.type()){
-        case QtC::QtCacheProgress::CONNECT:
+        case QtC::Progress::CONNECT:
             ui->statusBar->showMessage(tr("Connecting Caché"));
             break;
-        case QtC::QtCacheProgress::DISCONNECT:
+        case QtC::Progress::DISCONNECT:
             ui->statusBar->showMessage("Disconnecting Caché");
             break;
-        case QtC::QtCacheProgress::XMLFILE_IMPORT:
+        case QtC::Progress::XMLFILE_IMPORT:
             ui->statusBar->showMessage(tr("Importing XML File"));
             break;
-        case QtC::QtCacheProgress::XMLFILE_EXPORT:
+        case QtC::Progress::XMLFILE_EXPORT:
             ui->statusBar->showMessage(tr("Exporting XML File"));
             break;
-        case QtC::QtCacheProgress::OBJECT_COMPILE:
+        case QtC::Progress::OBJECT_COMPILE:
             ui->statusBar->showMessage(tr("Compiling object"));
             break;
-        case QtC::QtCacheProgress::QUERY_NS:
+        case QtC::Progress::QUERY_NS:
             ui->statusBar->showMessage(tr("Receiving namespace list"));
             break;
-        case QtC::QtCacheProgress::QUERY_OBJECTS:
+        case QtC::Progress::QUERY_OBJECTS:
             ui->statusBar->showMessage(tr("Receiving object list"));
             break;
         default:
