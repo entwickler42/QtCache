@@ -122,22 +122,6 @@ QString CacheConnectionDialog::connectionString() const
     return cn;
 }
 
-void CacheConnectionDialog::save(QSettings* conf)
-{
-    conf->setValue("user", username());
-    conf->setValue("passwd", password());
-    conf->setValue("server", server());
-    conf->setValue("port", port());
-}
-
-void CacheConnectionDialog::load(QSettings* conf)
-{
-    setUsername(conf->value("user").toString());
-    setPassword(conf->value("passwd").toString());
-    setServer(conf->value("server", "127.0.0.1").toString());
-    setPort(conf->value("port", "1972").toString());
-}
-
 void CacheConnectionDialog::on_showPassword_toggled(bool checked)
 {
     ui->password->setEchoMode(checked ? QLineEdit::Normal : QLineEdit::Password);

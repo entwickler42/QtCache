@@ -117,7 +117,7 @@ void MainWindow::loadSettings()
     ui->enablePreImportHook->setChecked(!conf->PreImportHook().isEmpty());
     ui->postImportHook->setText(conf->PostImportHook());
     ui->enablePostImportHook->setChecked(!conf->PostImportHook().isEmpty());
-    dlg->load(conf->config());
+    dlg->load(conf);
 }
 
 void MainWindow::saveSettings()
@@ -164,7 +164,7 @@ void MainWindow::onServerConnected()
     try{
         ui->connectionString->setText(dlg->connectionString());
         ui->targetUCI->clear();
-        dlg->save(conf->config());
+        dlg->save(conf);
         QStringList ls = cache()->listNamespaces(
                     conf->config()->value("ExcludePercentUCI", true).toBool());
         if (ls.count()){

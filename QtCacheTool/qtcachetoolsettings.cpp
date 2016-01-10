@@ -18,6 +18,12 @@ QtCacheToolSettings::QtCacheToolSettings(QObject* parent, const QString& filenam
     : QObject(parent),
       conf(new QSettings(filename, QSettings::IniFormat, this))
 {
+    QMutableListIterator<init_property*> i(g_init_property);
+    while (i.hasNext()){
+        init_property* p = i.next();
+        (*p)(this);
+        i.remove();
+    }
 }
 
 QtCacheToolSettings::~QtCacheToolSettings()
@@ -25,3 +31,4 @@ QtCacheToolSettings::~QtCacheToolSettings()
     conf->sync();
 }
 
+QList<QtCacheToolSettings::init_property*> QtCacheToolSettings::g_init_property;

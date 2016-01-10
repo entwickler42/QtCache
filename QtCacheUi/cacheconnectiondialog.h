@@ -60,8 +60,21 @@ public:
     void setFormat(int format);
     int format() const;
 
-    void save(QSettings*);
-    void load(QSettings*);
+    template <class T> void save(T* conf)
+    {
+        conf->setUser(username());
+        conf->setPasswd(password());
+        conf->setServer(server());
+        conf->setPort(port());
+    }
+
+    template <class T> void load(T* conf)
+    {
+        setUsername(conf->User());
+        setPassword(conf->Passwd());
+        setServer(conf->Server());
+        setPort(conf->Port());
+    }
 
 protected:
     virtual void showEvent(QShowEvent* ev);
