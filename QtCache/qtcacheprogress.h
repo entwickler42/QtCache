@@ -39,15 +39,20 @@ public:
 
     Progress& operator ()(Type type)
     {
-        return this->operator ()(0, 0, type, QVariant());
+        return this->operator ()(m_max, m_cur, type, m_tag);
     }
 
-    Progress& operator ()(int max, int cur, QVariant tag = QVariant())
+    Progress& operator ()(int max, int cur)
     {
-        return this->operator ()(max, cur, this->type(), tag);
+        return this->operator ()(max, cur, m_type, m_tag);
     }
 
-    Progress& operator ()(int max, int cur, Type type, QVariant tag = QVariant())
+    Progress& operator ()(int max, int cur, QVariant tag)
+    {
+        return this->operator ()(max, cur, m_type, tag);
+    }
+
+    Progress& operator ()(int max, int cur, Type type, QVariant tag)
     {
         m_type = type;
         setTag(tag);

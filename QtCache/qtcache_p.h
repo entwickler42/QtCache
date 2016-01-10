@@ -211,11 +211,12 @@ public:
             d_iostream io(bstream);
             std::string line;
             io.rewind();
-            while (std::getline(io, line)){
+
+            i_ptr->reportProgress(progress(0,0));
+            while (std::getline(io, line) && !progress.isAborted()){
                 progress.setTag(QString::fromStdString(line).remove('\r'));
-                i_ptr->reportProgress(progress(100,-1));
                 objects << progress.tag().toString();
-                if (progress.isAborted()) { break; }
+                i_ptr->reportProgress(progress(100,-1));
             }
             i_ptr->reportProcessEnd(progress);
         }CACHE_CATCH;
@@ -225,9 +226,8 @@ public:
     void importXmlFile(const QString& filepath, const QString& qspec = "")
     {
         CACHE_TRY{
-            Progress progress(Progress::XMLFILE_IMPORT, 0, 0);
-            progress.setTag(QStringList() << filepath << qspec);
-            i_ptr->reportProcessBegin(progress);
+            Progress progress(Progress::XMLFILE_IMPORT);
+            i_ptr->reportProcessBegin(progress(0, 0, QStringList() << filepath << qspec));
             if (progress.isAborted()){ return; }
 
             QFile f(filepath);
@@ -246,6 +246,7 @@ public:
             qint64 file_size = f.size();
             const qint64 chunk_size = 512;
             char buf[chunk_size];
+            i_ptr->reportProgress(progress(file_size, file_pos));
             while (!f.atEnd()){
                 qint64 s = f.read(buf, chunk_size);
                 io.write(buf, s);
@@ -271,9 +272,8 @@ public:
     void exportXmlFile(const QString& directoryPath, const QString& objectName)
     {
         CACHE_TRY{
-            Progress progress(Progress::XMLFILE_EXPORT, 0, 0);
-            progress.setTag(QStringList() << directoryPath << objectName);
-            i_ptr->reportProcessBegin(progress);
+            Progress progress(Progress::XMLFILE_EXPORT);
+            i_ptr->reportProcessBegin(progress(0, 0, QStringList() << directoryPath << objectName));
             if (progress.isAborted()){ return; }
 
             d_string _objectName = objectName.toStdString();
@@ -298,7 +298,9 @@ public:
             ofstream.setGenerateByteOrderMark(true);
             d_iostream io(bstream);
             io.rewind();
-            while (std::getline(io,buf)){
+
+            i_ptr->reportProgress(progress(0, 0));
+            while (std::getline(io,buf) && !progress.isAborted()){
                 progress.setTag(QString::fromStdString(buf));
                 i_ptr->reportProgress(progress(100, -1));
                 if (progress.isAborted()) { break; }
@@ -311,9 +313,8 @@ public:
     void compileObjects(const QString& objectNames, const QString& qspec)
     {
         CACHE_TRY{
-            Progress progress(Progress::OBJECT_COMPILE, 0, 0);
-            progress.setTag(QStringList() << objectNames << qspec);
-            i_ptr->reportProcessBegin(progress);
+            Progress progress(Progress::OBJECT_COMPILE);
+            i_ptr->reportProcessBegin(progress(0, 0, QStringList() << objectNames << qspec));
             if (progress.isAborted()){ return; }
 
             d_string _objectNames(objectNames.toStdString());

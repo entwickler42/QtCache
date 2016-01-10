@@ -37,8 +37,8 @@ public:
 signals:
     void aborted();
     void finished();
-    void error(std::exception& ex, QtC::Progress& progress);
-    void progress(QtC::Progress& progress);
+    void error(std::exception& ex, QtC::Progress&);
+    void progress(QtC::Progress&);
 
 public slots:
     void load(const QStringList& filepaths, const QString& qspec = "");
