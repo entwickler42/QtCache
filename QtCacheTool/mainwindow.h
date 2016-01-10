@@ -67,12 +67,12 @@ private slots:
     void on_saveCurrentFilter_pressed();
     void on_removeCurrentFilter_pressed();
 
-    void reportProgress(QtC::Progress& progress);
+    void cacheProgress(QtC::Progress& progress);
 
     void bulkImportAborted();
     void bulkImportFinished();
-    void bulkImportError(std::exception& ex, const QtC::Progress&);
-    void bulkImportProgress(const QtC::Progress& progress);
+    void bulkImportError(std::exception& ex, QtC::Progress&);
+    void bulkImportProgress(QtC::Progress& progress);
 
 private:
     Ui::MainWindow *ui;

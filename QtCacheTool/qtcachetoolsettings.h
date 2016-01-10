@@ -5,6 +5,10 @@
 #include <QString>
 #include <QSettings>
 
+#define DECL_PROPERTY(TYPE,NAME,DEFAULT) \
+    TYPE NAME() { return get(#NAME, DEFAULT); } \
+    void set##NAME(const TYPE& value) { set(#NAME, value); } \
+
 class QtCacheToolSettings
         : public QObject
 {
@@ -14,124 +18,38 @@ public:
     QtCacheToolSettings(QObject* parent = 0, const QString& filename = "QtCacheTool.ini");
     ~QtCacheToolSettings();
 
-    QSettings* config() const
-    {
-        return conf;
-    }
+    QSettings* config() const { return conf; }
 
-    QString preferedUCI() const
-    {
-        return conf->value("PreferedUCI").toString();
-    }
+    DECL_PROPERTY(QString, PreferedUCI, QString(""))
+    DECL_PROPERTY(QString, QSPEC, QString("cfkb"))
+    DECL_PROPERTY(QString, PostImportHook, QString(""))
+    DECL_PROPERTY(QString, PreImportHook, QString(""))
+    DECL_PROPERTY(QString, Server, QString("127.0.0.1"))
+    DECL_PROPERTY(QString, Port, QString("1972"))
+    DECL_PROPERTY(QString, User, QString("_system"))
+    DECL_PROPERTY(QString, Passwd, QString(""))
+    DECL_PROPERTY(QString, DefaultExportDirectory, QDir::currentPath())
 
-    void setPreferedUCI(const QString& value) const
-    {
-        conf->setValue("PreferedUCI", value);
-    }
-
-    QString QSPEC() const
-    {
-        return conf->value("QSPEC", "cfkb").toString();
-    }
-
-    void setQSPEC(const QString& value)
-    {
-        return conf->setValue("QSPEC", value);
-    }
-
-    QString postImportHook() const
-    {
-        return conf->value("PostImportHook").toString();
-    }
-
-    void setPostImportHook(const QString& value)
-    {
-        conf->setValue("PostImportHook", value);
-    }
-
-    QString preImportHook() const
-    {
-        return conf->value("PreImportHook").toString();
-    }
-
-    void setPreImportHook(const QString& value)
-    {
-        conf->setValue("PreImportHook", value);
-    }
-
-    QString server() const
-    {
-        return conf->value("Server").toString();
-    }
-
-    void setServer(const QString& value)
-    {
-        conf->setValue("Server", value);
-    }
-
-
-    QString port() const
-    {
-        return conf->value("Port").toString();
-    }
-
-    void setPort(const QString& value)
-    {
-        conf->setValue("Port", value);
-    }
-
-    QString username() const
-    {
-        return conf->value("user").toString();
-    }
-
-    QString password() const
-    {
-        return conf->value("passwd").toString();
-    }
-
-    bool autoConnect() const
-    {
-        return conf->value("autoConnect", false).toBool();
-    }
-
-    void setAutoConnect(bool value)
-    {
-        conf->setValue("autoConnect", value);
-    }
-
-    bool compile() const
-    {
-        return conf->value("compile", false).toBool();
-    }
-
-    void setCompile(bool value)
-    {
-        conf->setValue("compile", value);
-    }
-
-    bool compileEarly() const
-    {
-        return conf->value("compileEarly", false).toBool();
-    }
-
-    void setCompileEarly(bool value)
-    {
-        conf->setValue("compileEarly", value);
-    }
-
-    QString defaultExportDirectory() const
-    {
-        return conf->value("DefaultExportDirectory", QDir::currentPath()).toString();
-    }
-
-    void setDefaultExportDirectory(const QString& value)
-    {
-        conf->setValue("DefaultExportDirectory", value);
-    }
+    DECL_PROPERTY(bool, AutoConnect, false)
+    DECL_PROPERTY(bool, Compile, true)
+    DECL_PROPERTY(bool, CompileEarly, true)
 
 private:
     QSettings* conf;
+
+    template<class T> T get(const QString& key, T defaultValue = T())
+    {
+        if(!conf->allKeys().contains(key)){
+            set(key, defaultValue);
+        }
+        return conf->value(key, defaultValue).value<T>();
+    }
+
+    template<class T> void set(const QString& key, const T& value)
+    {
+        conf->setValue(key, value);
+        conf->sync();
+    }
 };
 
 #endif // QTCACHETOOLSETTINGS_H

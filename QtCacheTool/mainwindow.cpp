@@ -47,15 +47,15 @@ MainWindow::MainWindow(QWidget *parent) :
     dlg->setUciEnabled(false);
     dlg->setFormat(QtC::CacheConnectionDialog::NAMESPACE_FLAG);
 
-    ui->outputDirectory->setText(conf->defaultExportDirectory());
+    ui->outputDirectory->setText(conf->DefaultExportDirectory());
     ui->includeFilter->addItems(loadFilters());
 
     loadSettings();
     parseCommandlineOptions();
 
-    connect(QtC::QtCache::instance(), SIGNAL(progress(QtC::Progress&)), this, SLOT(reportProgress(QtC::Progress&)));
+    connect(QtC::QtCache::instance(), SIGNAL(progress(QtC::Progress&)), this, SLOT(cacheProgress(QtC::Progress&)));
 
-    if(conf->autoConnect()){
+    if(conf->AutoConnect()){
         try{
             cache()->connect(
                         dlg->connectionString(),
@@ -105,17 +105,17 @@ void MainWindow::createPluginTable()
 
 void MainWindow::loadSettings()
 {
-    ui->compileEarly->setChecked(conf->compileEarly());
-    ui->compile->setChecked(conf->compile());
+    ui->compileEarly->setChecked(conf->CompileEarly());
+    ui->compile->setChecked(conf->Compile());
     ui->qspec->setText(conf->QSPEC());
-    QString outputDirectory = conf->defaultExportDirectory();
+    QString outputDirectory = conf->DefaultExportDirectory();
     if (!QDir(outputDirectory).exists()){
         conf->setDefaultExportDirectory(QDir::currentPath());
     }
-    ui->preImportHook->setText(conf->preImportHook());
-    ui->enablePreImportHook->setChecked(!conf->preImportHook().isEmpty());
-    ui->postImportHook->setText(conf->postImportHook());
-    ui->enablePostImportHook->setChecked(!conf->postImportHook().isEmpty());
+    ui->preImportHook->setText(conf->PreImportHook());
+    ui->enablePreImportHook->setChecked(!conf->PreImportHook().isEmpty());
+    ui->postImportHook->setText(conf->PostImportHook());
+    ui->enablePostImportHook->setChecked(!conf->PostImportHook().isEmpty());
     dlg->load(conf->config());
 }
 
@@ -169,8 +169,8 @@ void MainWindow::onServerConnected()
         if (ls.count()){
             ui->targetUCI->clear();
             ui->targetUCI->addItems(ls);
-            if (!conf->preferedUCI().isEmpty()){
-                int idx = ui->targetUCI->findText(conf->preferedUCI());
+            if (!conf->PreferedUCI().isEmpty()){
+                int idx = ui->targetUCI->findText(conf->PreferedUCI());
                 if(idx > -1) {
                     ui->targetUCI->setCurrentIndex(idx);
                 }
@@ -278,7 +278,7 @@ void MainWindow::on_importFiles_pressed()
         connect(&import, SIGNAL(aborted()), this, SLOT(bulkImportAborted()));
         connect(&import, SIGNAL(finished()), this, SLOT(bulkImportFinished()));
         connect(&import, SIGNAL(error(std::exception&, QtC::Progress&)), this, SLOT(bulkImportError(std::exception&, QtC::Progress&)));
-        connect(&import, SIGNAL(progress(QtC::Progress&)), this, SLOT(Progress(QtC::Progress&)));
+        connect(&import, SIGNAL(progress(QtC::Progress&)), this, SLOT(cacheProgress(QtC::Progress&)));
         import.compileEarly = ui->compileEarly->isChecked();
         import.load(import_files, qspec);
 
@@ -303,7 +303,7 @@ void MainWindow::bulkImportFinished()
     ui->statusBar->showMessage(tr("Bulkimport has finished!"));
 }
 
-void MainWindow::bulkImportError(std::exception& ex, const QtC::Progress& progress)
+void MainWindow::bulkImportError(std::exception& ex, QtC::Progress& progress)
 {
     bulkImportProgress(progress);
     setListViewItem(progress.tag().toString(), ":/QtCacheTool/FILE_ERROR", ex.what());
@@ -315,7 +315,7 @@ void MainWindow::bulkImportError(std::exception& ex, const QtC::Progress& progre
     }
 }
 
-void MainWindow::bulkImportProgress(const QtC::Progress& progress)
+void MainWindow::bulkImportProgress(QtC::Progress& progress)
 {
     ui->progressBar->setMaximum(100);
     ui->progressBar->setValue(progress.percent());
@@ -340,7 +340,7 @@ void MainWindow::bulkImportProgress(const QtC::Progress& progress)
     QApplication::processEvents();
 }
 
-void MainWindow::reportProgress(QtC::Progress& progress)
+void MainWindow::cacheProgress(QtC::Progress& progress)
 {
     ui->progressBar->setMaximum(100);
     ui->progressBar->setValue(progress.percent());
@@ -425,7 +425,7 @@ void MainWindow::on_abortTask_pressed()
 void MainWindow::on_selectOutputDirectory_pressed()
 {
     QFileDialog dlg;
-    dlg.setDirectory(conf->defaultExportDirectory());
+    dlg.setDirectory(conf->DefaultExportDirectory());
     dlg.setOption(QFileDialog::ShowDirsOnly);
     dlg.setFileMode(QFileDialog::Directory);
     if (dlg.exec() == QDialog::Accepted){
