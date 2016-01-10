@@ -277,8 +277,8 @@ void MainWindow::on_importFiles_pressed()
         QtC::BulkImport import(cache());
         connect(&import, SIGNAL(aborted()), this, SLOT(bulkImportAborted()));
         connect(&import, SIGNAL(finished()), this, SLOT(bulkImportFinished()));
-        connect(&import, SIGNAL(error(std::exception&, const QtC::BulkImportProgress&)), this, SLOT(bulkImportError(std::exception&, const QtC::BulkImportProgress&)));
-        connect(&import, SIGNAL(progress(const QtC::BulkImportProgress&)), this, SLOT(bulkImportProgress(const QtC::BulkImportProgress&)));
+        connect(&import, SIGNAL(error(std::exception&, QtC::Progress&)), this, SLOT(bulkImportError(std::exception&, QtC::Progress&)));
+        connect(&import, SIGNAL(progress(QtC::Progress&)), this, SLOT(Progress(QtC::Progress&)));
         import.compileEarly = ui->compileEarly->isChecked();
         import.load(import_files, qspec);
 
@@ -372,7 +372,6 @@ void MainWindow::reportProgress(QtC::Progress& progress)
             break;
         }
     }
-
     QApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
 }
 
@@ -604,7 +603,6 @@ void MainWindow::setBuisyUI()
     ui->selectServer->setEnabled(false);
     ui->tabExport->setEnabled(false);
     ui->abortTask->setEnabled(true);
-    ui->listWidget->setEnabled(true);
 }
 
 void MainWindow::setIdleUI() {
@@ -612,7 +610,9 @@ void MainWindow::setIdleUI() {
     ui->addFiles->setEnabled(true);
     ui->removeFiles->setEnabled(true);
     ui->importFiles->setEnabled(true);
-    ui->selectServer->setEnabled(true); ui->tabExport->setEnabled(true);
-    ui->tabImport->setEnabled(true); ui->abortTask->setEnabled(false);
+    ui->selectServer->setEnabled(true);
+    ui->tabExport->setEnabled(true);
+    ui->abortTask->setEnabled(false);
+
 }
 

@@ -37,6 +37,11 @@ public:
         : Progress(type, QVariant(), max, cur)
     {}
 
+    Progress& operator ()(Type type)
+    {
+        return this->operator ()(0, 0, type, QVariant());
+    }
+
     Progress& operator ()(int max, int cur, QVariant tag = QVariant())
     {
         return this->operator ()(max, cur, this->type(), tag);

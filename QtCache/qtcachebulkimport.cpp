@@ -43,7 +43,8 @@ void BulkImport::loadCompileEarly(const QStringList& filepaths, const QString& q
     for(int i=0; i<filepaths.length() && !m_abort_import; i++){
         const QString& filepath = filepaths.at(i);
         try{
-            reportProgress(Progress(Progress::BULK_UPLOAD, filepath, filepaths.count(), i+1));
+            reportProgress(Progress(Progress::BULK_COMPILE, filepath, filepaths.count(), i+1));
+            if (m_abort_import) { continue; }
             m_cache->importXmlFile(filepath, qspec);
         }catch(std::exception& ex){
             emit error(ex, m_last_progress);
@@ -66,14 +67,34 @@ void BulkImport::loadCompileLate(const QStringList& filepaths, const QString& qs
     const int MAXORDER=2;
     XmlObject::List object_list[MAXORDER];
 
+    Progress progress(Progress::BULK_READ);
+    reportProcessBegin(progress);
+
     for(int i=0; i<filepaths.length() && !m_abort_import; i++){
         const QString& filepath = filepaths.at(i);
         try{
-            reportProgress(Progress(Progress::BULK_READ, filepath, filepaths.count(), i+1));
+            reportProgress(progress(filepaths.count(), i+1, Progress::BULK_READ, filepath));
             XmlObjectReader r(filepath);
             object_list[ROUTINES] += r.routines();
             object_list[CLASSES] += r.classes();
-            reportProgress(Progress(Progress::BULK_UPLOAD, filepath, filepaths.count(), i+1));
+        }catch(std::exception& ex){
+            emit error(ex, m_last_progress);
+        }catch(...){
+            emit error(std::runtime_error("Unknown error!"), m_last_progress);
+        }
+    }
+
+    if (!m_abort_import){
+        reportProcessEnd(progress(Progress::BULK_READ));
+    }
+    if (!m_abort_import){
+        reportProcessBegin(progress(Progress::BULK_UPLOAD));
+    }
+
+    for(int i=0; i<filepaths.length() && !m_abort_import; i++){
+        const QString& filepath = filepaths.at(i);
+        try{
+            reportProgress(progress(filepaths.count(), i+1, Progress::BULK_UPLOAD, filepath));
             m_cache->importXmlFile(filepath);
         }catch(std::exception& ex){
             emit error(ex, m_last_progress);
@@ -82,13 +103,21 @@ void BulkImport::loadCompileLate(const QStringList& filepaths, const QString& qs
         }
     }
 
-    if (!qspec.isEmpty()){
+    if (!m_abort_import){
+        reportProcessEnd(progress(Progress::BULK_UPLOAD));
+    }
+    if (!m_abort_import){
+        reportProcessBegin(progress(Progress::BULK_COMPILE));
+    }
+
+    if (!qspec.isEmpty() && !m_abort_import){
         int total = object_list[ROUTINES].count() + object_list[CLASSES].count();
         int remain = total;
-        for(int i=0; i<MAXORDER; i++)
+        for(int i=0; i<MAXORDER && !m_abort_import; i++)
             for(int j=0; j<object_list[i].count() && !m_abort_import; j++){
                 const XmlObject& obj = object_list[i].at(j);
-                reportProgress(Progress(Progress::BULK_COMPILE, obj.name() + obj.sourceName(), total, total-remain--));
+                reportProgress(progress(total, total-remain--, Progress::BULK_COMPILE, obj.name() + obj.sourceName()));
+                if (m_abort_import) { continue; }
                 try{
                     m_cache->compileObjects(obj.name(), qspec);
                 }catch(std::exception& ex){
@@ -98,27 +127,33 @@ void BulkImport::loadCompileLate(const QStringList& filepaths, const QString& qs
                 }
             }
     }
-    reportProgress(Progress(Progress::BULK_IDLE));
-    if (m_abort_import) emit aborted();
-    else emit finished();
+
+    if (!m_abort_import){
+        reportProcessEnd(progress(Progress::BULK_COMPILE));
+    }
+    if (!m_abort_import){
+        reportProgress(progress(Progress::BULK_IDLE));
+        emit finished();
+    }
+    if (m_abort_import) { emit aborted(); }
 }
 
 void BulkImport::reportProcessBegin(Progress& p)
 {
     m_cache->pluginObserver()->bulkProgressBegin(p);
-    if (p.isAborted()) { this->abort(); }
+    m_abort_import = p.isAborted();
 }
 
 void BulkImport::reportProgress(Progress& p)
 {
     m_last_progress = p;
     m_cache->pluginObserver()->bulkProgress(p);
-    if (p.isAborted()) { this->abort(); }
+    m_abort_import = p.isAborted();
     emit progress(p);
 }
 
 void BulkImport::reportProcessEnd(Progress& p)
 {
     m_cache->pluginObserver()->bulkProgressEnd(p);
-    if (p.isAborted()) { this->abort(); }
+    m_abort_import = p.isAborted();
 }
