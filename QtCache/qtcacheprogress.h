@@ -1,4 +1,4 @@
-#ifndef QTCACHEPROGRESS_H
+    #ifndef QTCACHEPROGRESS_H
 #define QTCACHEPROGRESS_H
 
 #include "qtcache_global.h"
@@ -13,14 +13,17 @@ public:
     enum Type
     {
         UNKNOWN,
-        KEEP_CURRENT_TYPE,
         CONNECT,
         DISCONNECT,
         QUERY_NS,
         QUERY_OBJECTS,
         XMLFILE_IMPORT,
         XMLFILE_EXPORT,
-        OBJECT_COMPILE
+        OBJECT_COMPILE,
+        BULK_IDLE,
+        BULK_READ,
+        BULK_UPLOAD,
+        BULK_COMPILE
     };
 
     QtCacheProgress(Type type, QVariant tag, int max = 0, int cur = 0)
@@ -31,14 +34,18 @@ public:
     {}
 
     QtCacheProgress(Type type, int max = 0, int cur = 0)
-        : QtCacheProgress(type, 0, max, cur)
+        : QtCacheProgress(type, QVariant(), max, cur)
     {}
 
-    QtCacheProgress& operator ()(int max, int cur, Type type = KEEP_CURRENT_TYPE)
+    QtCacheProgress& operator ()(int max, int cur, QVariant tag = QVariant())
     {
-        if (type != KEEP_CURRENT_TYPE){
-            m_type = type;
-        }
+        return this->operator ()(max, cur, this->type(), tag);
+    }
+
+    QtCacheProgress& operator ()(int max, int cur, Type type, QVariant tag = QVariant())
+    {
+        m_type = type;
+        setTag(tag);
         setMaximum(max);
         setPosition(cur);
         return *this;

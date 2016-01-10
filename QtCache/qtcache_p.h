@@ -34,7 +34,7 @@ QTCACHENAMESPACEBEGIN
     throw QtCacheException(ex.what()); \
     }catch(...){ \
     LOG_UNKNOWN_EXCEPTION \
-    throw QtCacheException("Unknown Exception"); \
+    throw QtCacheException(QString("File %2\nLine %3").arg(__FILE__,__LINE__)); \
     }
 
 typedef d_ref<Qt_CacheTool> QtCacheToolType;

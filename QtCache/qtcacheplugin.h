@@ -33,6 +33,10 @@ public:
     virtual void progressBegin(QtCacheProgress& progress) = 0;
     virtual void progress(QtCacheProgress& progress) = 0;
     virtual void progressEnd(QtCacheProgress& progress) = 0;
+
+    virtual void bulkProgressBegin(QtCacheProgress& progress) = 0;
+    virtual void bulkProgress(QtCacheProgress& progress) = 0;
+    virtual void bulkProgressEnd(QtCacheProgress& progress) = 0;
 };
 
 template<class T>

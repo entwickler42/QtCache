@@ -15,7 +15,6 @@
 #ifndef BULKIMPORT_H
 #define BULKIMPORT_H
 
-#include "qtcachebulkimportprogress.h"
 #include "qtcache.h"
 
 QTCACHENAMESPACEBEGIN
@@ -30,7 +29,7 @@ public:
 
     explicit BulkImport(QtCache* cache, QObject *parent = 0);
 
-    const BulkImportProgress& currentProgress() const
+    const QtCacheProgress& currentProgress() const
     {
         return m_last_progress;
     }
@@ -38,8 +37,8 @@ public:
 signals:
     void aborted();
     void finished();
-    void error(std::exception& ex, const QtC::BulkImportProgress& progress);
-    void progress(const QtC::BulkImportProgress& progress);
+    void error(std::exception& ex, const QtC::QtCacheProgress& progress);
+    void progress(const QtC::QtCacheProgress& progress);
 
 public slots:
     void load(const QStringList& filepaths, const QString& qspec = "");
@@ -49,18 +48,16 @@ public slots:
     }
 
 private:
-    BulkImportProgress m_last_progress;
+    QtCacheProgress m_last_progress;
     QtCache* m_cache = NULL;
     bool m_abort_import = false;
 
     void loadCompileEarly(const QStringList& filepaths, const QString& qspec = "");
     void loadCompileLate(const QStringList& filepaths, const QString& qspec = "");
 
-    void reportProgress(const BulkImportProgress& p)
-    {
-        m_last_progress = p;
-        emit progress(p);
-    }
+    void reportProcessBegin(QtCacheProgress& p);
+    void reportProgress(QtCacheProgress& p);
+    void reportProcessEnd(QtCacheProgress& p);
 };
 
 QTCACHENAMESPACEEND

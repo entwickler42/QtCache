@@ -31,7 +31,6 @@ HEADERS += \
     qtcachexmlobject.h \
     qtcachexmlreader.h \
     qtcachebulkimport.h \
-    qtcachebulkimportprogress.h \
     qtcacheprogress.h
 
 TRANSLATIONS = qtcache_de_DE.ts

@@ -71,8 +71,8 @@ private slots:
 
     void bulkImportAborted();
     void bulkImportFinished();
-    void bulkImportError(std::exception& ex, const QtC::BulkImportProgress&);
-    void bulkImportProgress(const QtC::BulkImportProgress& progress);
+    void bulkImportError(std::exception& ex, const QtC::QtCacheProgress&);
+    void bulkImportProgress(const QtC::QtCacheProgress& progress);
 
 private:
     Ui::MainWindow *ui;

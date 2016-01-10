@@ -303,10 +303,10 @@ void MainWindow::bulkImportFinished()
     ui->statusBar->showMessage(tr("Bulkimport has finished!"));
 }
 
-void MainWindow::bulkImportError(std::exception& ex, const QtC::BulkImportProgress& progress)
+void MainWindow::bulkImportError(std::exception& ex, const QtC::QtCacheProgress& progress)
 {
     bulkImportProgress(progress);
-    setListViewItem(progress.sourceName, ":/QtCacheTool/FILE_ERROR", ex.what());
+    setListViewItem(progress.tag().toString(), ":/QtCacheTool/FILE_ERROR", ex.what());
     if (!ui->ignoreImportErrors->isChecked()){
         int rval = QMessageBox::warning(this, tr("Exception"), ex.what(),
                                         QMessageBox::Cancel|QMessageBox::Ignore,
@@ -315,22 +315,22 @@ void MainWindow::bulkImportError(std::exception& ex, const QtC::BulkImportProgre
     }
 }
 
-void MainWindow::bulkImportProgress(const QtC::BulkImportProgress& progress)
+void MainWindow::bulkImportProgress(const QtC::QtCacheProgress& progress)
 {
-    ui->progressBar->setMaximum(progress.max);
-    ui->progressBar->setValue(progress.pos);
-    switch (progress.step) {
-    case QtC::BulkImportProgress::READING:
-        setListViewItem(progress.sourceName, ":/QtCacheTool/FILE_OK");
-        ui->statusBar->showMessage(tr("Reading %1").arg(progress.sourceName));
+    ui->progressBar->setMaximum(100);
+    ui->progressBar->setValue(progress.percent());
+    switch (progress.type()) {
+    case QtC::QtCacheProgress::BULK_READ:
+        setListViewItem(progress.tag().toString(), ":/QtCacheTool/FILE_OK");
+        ui->statusBar->showMessage(tr("Reading %1").arg(progress.tag().toString()));
         break;
-    case QtC::BulkImportProgress::UPLOADING:
-        setListViewItem(progress.sourceName, ":/QtCacheTool/FILE_OK");
-        ui->statusBar->showMessage(tr("Uploading %1").arg(progress.sourceName));
+    case QtC::QtCacheProgress::BULK_UPLOAD:
+        setListViewItem(progress.tag().toString(), ":/QtCacheTool/FILE_OK");
+        ui->statusBar->showMessage(tr("Uploading %1").arg(progress.tag().toString()));
         break;
-    case QtC::BulkImportProgress::COMPILING:
-        setListViewItem(progress.sourceName, ":/QtCacheTool/FILE_OK");
-        ui->statusBar->showMessage(tr("Compiling %1").arg(progress.objectName));
+    case QtC::QtCacheProgress::BULK_COMPILE:
+        setListViewItem(progress.tag().toString(), ":/QtCacheTool/FILE_OK");
+        ui->statusBar->showMessage(tr("Compiling %1").arg(progress.tag().toString()));
         break;
     }
     if(abortTask){

@@ -21,9 +21,13 @@ public slots:
     void initialize();
     void deinitialize();
 
-    void progressBegin(QtCacheProgress& progress);
-    void progress(QtCacheProgress& progress);
-    void progressEnd(QtCacheProgress& progress);
+    void progressBegin(QtCacheProgress& progress) { foreachPlugin(progress, &Plugin::progress); }
+    void progress(QtCacheProgress& progress) { foreachPlugin(progress, &Plugin::progress); }
+    void progressEnd(QtCacheProgress& progress) { foreachPlugin(progress, &Plugin::progress); }
+
+    void bulkProgressBegin(QtCacheProgress& progress) { foreachPlugin(progress, &Plugin::progress); }
+    void bulkProgress(QtCacheProgress& progress) { foreachPlugin(progress, &Plugin::progress); }
+    void bulkProgressEnd(QtCacheProgress& progress) { foreachPlugin(progress, &Plugin::progress); }
 
 protected:
     QString name() const { return "QtCachePluginObserver"; }
@@ -32,7 +36,7 @@ protected:
 private:
     QList<Plugin*> m_plugins;
 
-    void QtCachePluginObserver::foreachPlugin(QtCacheProgress& progress, void (Plugin::*fn)(QtCacheProgress&));
+    void foreachPlugin(QtCacheProgress& progress, void (Plugin::*fn)(QtCacheProgress&));
     template<class T> QList<T*> loadDirectory(const QString& path, QObject* parent);
 };
 
