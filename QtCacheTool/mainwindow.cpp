@@ -93,7 +93,8 @@ void MainWindow::createPluginTable()
         ui->tablePlugins->insertRow(i);
         QTableWidgetItem* nameItem = new QTableWidgetItem(plugin->name());
         QTableWidgetItem* descItem = new QTableWidgetItem(plugin->description());
-        nameItem->setCheckState(Qt::Checked);
+        //!\todo actually toggle plugins enabled
+        //  nameItem->setCheckState(Qt::Checked);
         nameItem->setFlags(nameItem->flags() ^ Qt::ItemIsEditable);
         descItem->setFlags(descItem->flags() ^ Qt::ItemIsEditable);
         ui->tablePlugins->setItem(i, ColumnName, nameItem);
