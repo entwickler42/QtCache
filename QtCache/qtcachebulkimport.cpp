@@ -40,29 +40,31 @@ void BulkImport::loadCompileEarly(const QStringList& filepaths, const QString& q
 {
     m_abort_import = false;
 
-    Progress progress(Progress::BULK_COMPILE);
-    reportProcessBegin(progress);
+    Progress prog(Progress::BULK_COMPILE);
+    reportProcessBegin(prog);
 
     for(int i=0; i<filepaths.length() && !m_abort_import; i++){
         const QString& filepath = filepaths.at(i);
         try{
-            reportProgress(progress(filepaths.count(), i+1, QStringList() << filepath << filepath));
+            reportProgress(prog(filepaths.count(), i+1, QStringList() << filepath << filepath));
             if (m_abort_import) { continue; }
             m_cache->importXmlFile(filepath, qspec);
         }catch(std::exception& ex){
-            emit error(ex, m_last_progress);
+            prog.setTag(filepath);
+            emit error(ex, prog);
         }catch(...){
-            emit error(std::runtime_error("Unknown error!"), m_last_progress);
+            prog.setTag(filepath);
+            emit error(std::runtime_error("Unknown error!"), prog);
         }
     }
 
     if (!m_abort_import){
-        reportProcessEnd(progress(Progress::BULK_COMPILE));
+        reportProcessEnd(prog(Progress::BULK_COMPILE));
     }
     if (m_abort_import){
         emit aborted();
     }else{
-        reportProgress(progress(Progress::BULK_COMPILE));
+        reportProgress(prog(Progress::BULK_COMPILE));
         emit finished();
     }
 }
@@ -77,47 +79,51 @@ void BulkImport::loadCompileLate(const QStringList& filepaths, const QString& qs
     const int MAXORDER=2;
     XmlObject::List object_list[MAXORDER];
 
-    Progress progress(Progress::BULK_READ);
-    reportProcessBegin(progress);
+    Progress prog(Progress::BULK_READ);
+    reportProcessBegin(prog);
 
     for(int i=0; i<filepaths.length() && !m_abort_import; i++){
         const QString& filepath = filepaths.at(i);
         try{
-            reportProgress(progress(filepaths.count(), i+1, filepath));
+            reportProgress(prog(filepaths.count(), i+1, filepath));
             XmlObjectReader r(filepath);
             object_list[ROUTINES] += r.routines();
             object_list[CLASSES] += r.classes();
         }catch(std::exception& ex){
-            emit error(ex, m_last_progress);
+            prog.setTag(filepath);
+            emit error(ex, prog);
         }catch(...){
-            emit error(std::runtime_error("Unknown error!"), m_last_progress);
+            prog.setTag(filepath);
+            emit error(std::runtime_error("Unknown error!"), prog);
         }
     }
 
     if (!m_abort_import){
-        reportProcessEnd(progress(Progress::BULK_READ));
+        reportProcessEnd(prog(Progress::BULK_READ));
     }
     if (!m_abort_import){
-        reportProcessBegin(progress(Progress::BULK_UPLOAD));
+        reportProcessBegin(prog(Progress::BULK_UPLOAD));
     }
 
     for(int i=0; i<filepaths.length() && !m_abort_import; i++){
         const QString& filepath = filepaths.at(i);
         try{
-            reportProgress(progress(filepaths.count(), i+1, filepath));
+            reportProgress(prog(filepaths.count(), i+1, filepath));
             m_cache->importXmlFile(filepath);
         }catch(std::exception& ex){
-            emit error(ex, m_last_progress);
+            prog.setTag(filepath);
+            emit error(ex, prog);
         }catch(...){
-            emit error(std::runtime_error("Unknown error!"), m_last_progress);
+            prog.setTag(filepath);
+            emit error(std::runtime_error("Unknown error!"), prog);
         }
     }
 
     if (!m_abort_import){
-        reportProcessEnd(progress(Progress::BULK_UPLOAD));
+        reportProcessEnd(prog(Progress::BULK_UPLOAD));
     }
     if (!m_abort_import){
-        reportProcessBegin(progress(Progress::BULK_COMPILE));
+        reportProcessBegin(prog(Progress::BULK_COMPILE));
     }
 
     if (!qspec.isEmpty() && !m_abort_import){
@@ -126,25 +132,27 @@ void BulkImport::loadCompileLate(const QStringList& filepaths, const QString& qs
         for(int i=0; i<MAXORDER && !m_abort_import; i++)
             for(int j=0; j<object_list[i].count() && !m_abort_import; j++){
                 const XmlObject& obj = object_list[i].at(j);
-                reportProgress(progress(total, total-remain--, QStringList() << obj.name() << obj.sourceName()));
+                reportProgress(prog(total, total-remain--, QStringList() << obj.name() << obj.sourceName()));
                 if (m_abort_import) { continue; }
                 try{
                     m_cache->compileObjects(obj.name(), qspec);
                 }catch(std::exception& ex){
-                    emit error(ex, m_last_progress);
+                    prog.setTag(obj.sourceName());
+                    emit error(ex, prog);
                 }catch(...){
-                    emit error(std::runtime_error("Unknown error!"), m_last_progress);
+                    prog.setTag(obj.sourceName());
+                    emit error(std::runtime_error("Unknown error!"), prog);
                 }
             }
     }
 
     if (!m_abort_import){
-        reportProcessEnd(progress(Progress::BULK_COMPILE));
+        reportProcessEnd(prog(Progress::BULK_COMPILE));
     }
     if (m_abort_import){
         emit aborted();
     }else{
-        reportProgress(progress(Progress::BULK_IDLE));
+        reportProgress(prog(Progress::BULK_IDLE));
         emit finished();
     }
 }

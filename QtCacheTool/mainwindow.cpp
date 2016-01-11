@@ -304,34 +304,35 @@ void MainWindow::bulkImportFinished()
     ui->statusBar->showMessage(tr("Bulkimport has finished!"));
 }
 
-void MainWindow::bulkImportError(std::exception& ex, QtC::Progress& p)
+void MainWindow::bulkImportError(std::exception& ex, QtC::Progress& prog)
 {
-    bulkImportProgress(p);
-    setListViewItem(p.tag().toString(), ":/QtCacheTool/FILE_ERROR", ex.what());
+    //bulkImportProgress(prog);
+    setListViewItem(prog.tag().toString(), ":/QtCacheTool/FILE_ERROR", ex.what());
     if (!ui->ignoreImportErrors->isChecked()){
         int rval = QMessageBox::warning(this, tr("Exception"), ex.what(),
                                         QMessageBox::Cancel|QMessageBox::Ignore,
                                         QMessageBox::Ignore);
         abortTask = rval == QMessageBox::Cancel;
     }
+    QApplication::processEvents();
 }
 
-void MainWindow::bulkImportProgress(QtC::Progress& p)
+void MainWindow::bulkImportProgress(QtC::Progress& prog)
 {
-    bool process_events = ui->progressBar->value() != p.percent();
+    bool process_events = ui->progressBar->value() != prog.percent();
 
     QStringList tags;
-    switch (p.type()) {
+    switch (prog.type()) {
     case QtC::Progress::BULK_READ:
-        setListViewItem(p.tag().toString(), ":/QtCacheTool/FILE_OK");
-        ui->statusBar->showMessage(tr("Reading %1").arg(p.tag().toString()));
+        setListViewItem(prog.tag().toString(), ":/QtCacheTool/FILE_OK");
+        ui->statusBar->showMessage(tr("Reading %1").arg(prog.tag().toString()));
         break;
     case QtC::Progress::BULK_UPLOAD:
-        setListViewItem(p.tag().toString(), ":/QtCacheTool/FILE_OK");
-        ui->statusBar->showMessage(tr("Uploading %1").arg(p.tag().toString()));
+        setListViewItem(prog.tag().toString(), ":/QtCacheTool/FILE_OK");
+        ui->statusBar->showMessage(tr("Uploading %1").arg(prog.tag().toString()));
         break;
     case QtC::Progress::BULK_COMPILE:
-        tags = p.tag().toStringList();
+        tags = prog.tag().toStringList();
         setListViewItem(tags.at(1), ":/QtCacheTool/FILE_OK");
         ui->statusBar->showMessage(tr("Compiling %1").arg(tags.at(0)));
         break;
@@ -343,18 +344,18 @@ void MainWindow::bulkImportProgress(QtC::Progress& p)
 
     if (process_events){
         ui->progressBar->setMaximum(100);
-        ui->progressBar->setValue(p.percent());
+        ui->progressBar->setValue(prog.percent());
         QApplication::processEvents();
     }
 }
 
-void MainWindow::cacheProgress(QtC::Progress& p)
+void MainWindow::cacheProgress(QtC::Progress& prog)
 {
-    bool process_events = ui->progressBar->value() != p.percent();
+    bool process_events = ui->progressBar->value() != prog.percent();
 
     if (!bulk_import_active){
         QStringList tags;
-        switch(p.type()){
+        switch(prog.type()){
         case QtC::Progress::CONNECT:
             ui->statusBar->showMessage(tr("Connecting Caché"));
             break;
@@ -368,20 +369,20 @@ void MainWindow::cacheProgress(QtC::Progress& p)
             ui->statusBar->showMessage(tr("Receiving object list"));
             break;
         case QtC::Progress::OBJECT_COMPILE:
-            tags = p.tag().toStringList();
+            tags = prog.tag().toStringList();
             setListViewItem(tags.at(0), ":/QtCacheTool/FILE_OK");
             ui->statusBar->showMessage(tr("Compiling %1").arg(tags.at(0)));
             break;
         case QtC::Progress::XMLFILE_IMPORT:
-            tags = p.tag().toStringList();
-            if (p.percent() == 0){
+            tags = prog.tag().toStringList();
+            if (prog.percent() == 0){
                 setListViewItem(tags.at(0), ":/QtCacheTool/FILE_OK");
             }
             ui->statusBar->showMessage(tr("Importing %1").arg(tags.at(0)));
             break;
         case QtC::Progress::XMLFILE_EXPORT:
-            tags = p.tag().toStringList();
-            if (p.percent() == 0){
+            tags = prog.tag().toStringList();
+            if (prog.percent() == 0){
                 setListViewItem(tags.at(0), ":/QtCacheTool/FILE_OK");
             }
             ui->statusBar->showMessage(tr("Exporting %1").arg(tags.at(0)));
@@ -395,7 +396,7 @@ void MainWindow::cacheProgress(QtC::Progress& p)
 
     if (process_events){
         ui->progressBar->setMaximum(100);
-        ui->progressBar->setValue(p.percent());
+        ui->progressBar->setValue(prog.percent());
         QApplication::processEvents();
     }
 }
