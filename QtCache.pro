@@ -7,8 +7,3 @@ SUBDIRS = \
     QtCachePluginSample
 
 CONFIG += ordered
-
-RESOURCES += \
-    QtCacheUi/resources.qrc \
-    QtCacheUi/resources.qrc \
-    QtCacheUi/resources.qrc
