@@ -4,6 +4,7 @@ SUBDIRS = \
     QtCache \
     QtCacheUi \
     QtCacheTool \
-    QtCachePluginSample
+    QtCachePluginSample \
+    QtCacheGitPlugin
 
 CONFIG += ordered
