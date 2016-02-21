@@ -15,5 +15,5 @@ HEADERS += \
 
 include(../QtCache/QtCache.pri)
 
-WIN32:INCLUDEPATH += $$PWD/deps/libgit2//include/
-WIN32:LIBS += "-L$$PWD/deps/libgit2/msvc2013.x86" -lgit2
+win32:INCLUDEPATH += $$PWD/deps/libgit2/include/
+win32:LIBS += "-L$$PWD/deps/libgit2/msvc2013.x86" -lgit2

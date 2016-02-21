@@ -66,7 +66,7 @@ public:
     void exportXmlFile(const QString& directoryPath, const QString& objectName);
     void compileObjects(const QString& objectNames, const QString& qspec = "cf");
 
-    QtCachePluginObserver* pluginObserver() const;
+    QtCachePluginObserver* plugins() const;
 
 protected:
     QtCache();

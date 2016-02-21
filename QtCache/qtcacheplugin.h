@@ -19,6 +19,9 @@
 #include <qtcache.h>
 #include <QObject>
 
+class QSettings;
+class QCommandLineParser;
+
 QTCACHENAMESPACEBEGIN
 
 class QTCACHESHARED_EXPORT Plugin
@@ -31,6 +34,7 @@ public:
     static const char* FactoryFunctionSymbol;
 
     explicit Plugin(QObject *parent = 0);
+    virtual ~Plugin();
 
     QtCache* cache() const
     {
@@ -41,16 +45,22 @@ public:
     virtual QString description() const { return ""; }
     virtual int version() const { return 0x000000; }
 
+protected:
+    friend class QtCachePluginObserver;
+
     virtual void initialize() {}
     virtual void deinitialize() {}
 
-    virtual void progressBegin(Progress& progress) = 0;
-    virtual void progress(Progress& progress) = 0;
-    virtual void progressEnd(Progress& progress) = 0;
+    virtual void progressBegin(Progress&) {}
+    virtual void progress(Progress&) {}
+    virtual void progressEnd(Progress&) {}
 
-    virtual void bulkProgressBegin(Progress& progress) = 0;
-    virtual void bulkProgress(Progress& progress) = 0;
-    virtual void bulkProgressEnd(Progress& progress) = 0;
+    virtual void parseCommandlineOptionsBegin(QCommandLineParser&) {}
+    virtual void parseCommandlineOptionsEnd(QCommandLineParser&) {}
+    virtual void loadApplicationSettingsBegin(QSettings&) {}
+    virtual void loadApplicationSettingsEnd(QSettings&) {}
+    virtual void saveApplicationSettingsBegin(QSettings&) {}
+    virtual void saveApplicationSettingsEnd(QSettings&) {}
 };
 
 template<class T>

@@ -44,19 +44,19 @@ public:
         PML::LOG << __FUNCTION__;
     }
 
-    void bulkProgressBegin(QtC::Progress& progress)
+    void progressBegin(QtC::Progress& progress)
     {
         Q_UNUSED(progress);
         PML::LOG << __FUNCTION__;
     }
 
-    void bulkProgress(QtC::Progress& progress)
+    void progress(QtC::Progress& progress)
     {
         Q_UNUSED(progress);
         PML::LOG << __FUNCTION__;
     }
 
-    void bulkProgressEnd(QtC::Progress& progress)
+    void progressEnd(QtC::Progress& progress)
     {
         Q_UNUSED(progress);
         PML::LOG << __FUNCTION__;

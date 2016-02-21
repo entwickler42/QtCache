@@ -88,8 +88,8 @@ void MainWindow::createPluginTable()
     ui->tablePlugins->setHorizontalHeaderItem(ColumnName, new QTableWidgetItem("Name"));
     ui->tablePlugins->setHorizontalHeaderItem(ColumnDesc, new QTableWidgetItem("Beschreibung"));
 
-    for(int i=0; i<cache()->pluginObserver()->plugins().count(); i++){
-        QtC::Plugin* plugin = cache()->pluginObserver()->plugins().at(i);
+    for(int i=0; i<cache()->plugins()->loaded().count(); i++){
+        QtC::Plugin* plugin = cache()->plugins()->loaded().at(i);
         ui->tablePlugins->insertRow(i);
         QTableWidgetItem* nameItem = new QTableWidgetItem(plugin->name());
         QTableWidgetItem* descItem = new QTableWidgetItem(plugin->description());
@@ -106,6 +106,7 @@ void MainWindow::createPluginTable()
 
 void MainWindow::loadSettings()
 {
+    cache()->plugins()->loadApplicationSettingsBegin(*conf->config());
     ui->compileEarly->setChecked(conf->CompileEarly());
     ui->compile->setChecked(conf->Compile());
     ui->qspec->setText(conf->QSPEC());
@@ -118,10 +119,12 @@ void MainWindow::loadSettings()
     ui->postImportHook->setText(conf->PostImportHook());
     ui->enablePostImportHook->setChecked(!conf->PostImportHook().isEmpty());
     dlg->load(conf);
+    cache()->plugins()->loadApplicationSettingsEnd(*conf->config());
 }
 
 void MainWindow::saveSettings()
 {
+    cache()->plugins()->saveApplicationSettingsBegin(*conf->config());
     conf->setCompileEarly(ui->compileEarly->isChecked());
     conf->setCompile(ui->compile->isChecked());
     conf->setQSPEC(ui->qspec->text());
@@ -132,6 +135,7 @@ void MainWindow::saveSettings()
     }
     conf->setPostImportHook(ui->postImportHook->text());
     conf->setPreImportHook(ui->preImportHook->text());
+    cache()->plugins()->saveApplicationSettingsEnd(*conf->config());
 }
 
 void MainWindow::showEvent(QShowEvent*)
@@ -559,6 +563,7 @@ void MainWindow::saveFilters(const QStringList& ls) const
 void MainWindow::parseCommandlineOptions()
 {
     QCommandLineParser p;
+
     p.addHelpOption();
     p.addVersionOption();
     QCommandLineOption server("s", tr("Cachè instance to connect to"), "Server", "127.0.0.1");
@@ -588,11 +593,17 @@ void MainWindow::parseCommandlineOptions()
     QCommandLineOption postImportHook("post-import-hook", tr("Cachè Object script to be executed after an import"), "COS");
     p.addOption(postImportHook);
 
+    cache()->plugins()->parseCommandlineOptionsBegin(p);
+
     p.process(QApplication::instance()->arguments());
 
     if (p.isSet(uci)){
         conf->setPreferedUCI(p.value(uci));
     }
+    if(p.isSet(autoConnect)){
+        conf->setAutoConnect(true);
+    }
+
     if (p.isSet(compile)){
         ui->compile->setChecked(true);
     }
@@ -615,9 +626,8 @@ void MainWindow::parseCommandlineOptions()
         ui->postImportHook->setText(p.value(postImportHook));
         ui->enablePostImportHook->setChecked(true);
     }
-    if(p.isSet(autoConnect)){
-        conf->setAutoConnect(true);
-    }
+
+    cache()->plugins()->parseCommandlineOptionsEnd(p);
 }
 
 void MainWindow::setBuisyUI()

@@ -1,8 +1,9 @@
 #ifndef QTCACHEPLUGINOBSERVER_H
 #define QTCACHEPLUGINOBSERVER_H
 
-#include <qtcacheplugin.h>
 #include "qtcache_global.h"
+#include "qtcacheexception.h"
+#include <qtcacheplugin.h>
 
 QTCACHENAMESPACEBEGIN
 
@@ -15,29 +16,40 @@ public:
     explicit QtCachePluginObserver(QObject *parent = 0);
     ~QtCachePluginObserver();
 
-    QList<Plugin*> plugins() const { return m_plugins; }
+    QList<Plugin*> loaded() const { return m_loaded_plugins; }
+
+signals:
+    void exception(std::exception& ex, Plugin* Plugin, bool& abort);
 
 public slots:
-    void initialize();
-    void deinitialize();
-
-    void progressBegin(Progress& progress) { foreachPlugin(progress, &Plugin::progress); }
-    void progress(Progress& progress) { foreachPlugin(progress, &Plugin::progress); }
-    void progressEnd(Progress& progress) { foreachPlugin(progress, &Plugin::progress); }
-
-    void bulkProgressBegin(Progress& progress) { foreachPlugin(progress, &Plugin::progress); }
-    void bulkProgress(Progress& progress) { foreachPlugin(progress, &Plugin::progress); }
-    void bulkProgressEnd(Progress& progress) { foreachPlugin(progress, &Plugin::progress); }
+    void progressBegin(Progress& progress);
+    void progress(Progress& progress);
+    void progressEnd(Progress& progress);
+    void parseCommandlineOptionsBegin(QCommandLineParser& commandLineParser);
+    void parseCommandlineOptionsEnd(QCommandLineParser& commandLineParser);
+    void loadApplicationSettingsBegin(QSettings& settings);
+    void loadApplicationSettingsEnd(QSettings& settings);
+    void saveApplicationSettingsBegin(QSettings& settings);
+    void saveApplicationSettingsEnd(QSettings& settings);
 
 protected:
     QString name() const { return "QtCachePluginObserver"; }
     QString description() const { return "QtCachePluginObserver"; }
 
 private:
-    QList<Plugin*> m_plugins;
+    typedef bool (QtCachePluginObserver::*ExceptionHandler)(std::exception&, Plugin* plugin);
 
-    void foreachPlugin(Progress& progress, void (Plugin::*fn)(Progress&));
-    template<class T> QList<T*> loadDirectory(const QString& path, QObject* parent);
+    QList<Plugin*> m_loaded_plugins;
+
+    void initialize();
+    void deinitialize();
+
+    bool emitException(std::exception& ex, Plugin* plugin);
+
+    void foreachPlugin(void (Plugin::*fn)(), ExceptionHandler exceptionHandler = &QtCachePluginObserver::emitException);
+    template<class T> void foreachPlugin(T& args, void (Plugin::*fn)(T&), ExceptionHandler exceptionHandler = &QtCachePluginObserver::emitException);
+
+    template<class T> QList<T*> loadDirectory(const QString& path, ExceptionHandler exceptionHandler = &QtCachePluginObserver::emitException);
 };
 
 QTCACHENAMESPACEEND

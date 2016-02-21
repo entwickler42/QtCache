@@ -159,20 +159,20 @@ void BulkImport::loadCompileLate(const QStringList& filepaths, const QString& qs
 
 void BulkImport::reportProcessBegin(Progress& p)
 {
-    m_cache->pluginObserver()->bulkProgressBegin(p);
+    m_cache->plugins()->progressBegin(p);
     m_abort_import = p.isAborted();
 }
 
 void BulkImport::reportProgress(Progress& p)
 {
     m_last_progress = p;
-    m_cache->pluginObserver()->bulkProgress(p);
+    m_cache->plugins()->progress(p);
     m_abort_import = p.isAborted();
     emit progress(p);
 }
 
 void BulkImport::reportProcessEnd(Progress& p)
 {
-    m_cache->pluginObserver()->bulkProgressEnd(p);
+    m_cache->plugins()->progressEnd(p);
     m_abort_import = p.isAborted();
 }
