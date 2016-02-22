@@ -20,11 +20,8 @@
 QTCACHENAMESPACEUSE
 
 BulkImport::BulkImport(QtCache* cache, QObject *parent)
-    : QObject(parent),
-      m_last_progress(Progress::BULK_IDLE, 0, 0),
-      m_cache(cache)
+    : BulkAction(cache, parent)
 {
-    if (NULL == m_cache) throw new std::invalid_argument("QtCache* cache must not be NULL");
 }
 
 void BulkImport::load(const QStringList& filepaths, const QString& qspec)
@@ -38,17 +35,15 @@ void BulkImport::load(const QStringList& filepaths, const QString& qspec)
 
 void BulkImport::loadCompileEarly(const QStringList& filepaths, const QString& qspec)
 {
-    m_abort_import = false;
-
     Progress prog(Progress::BULK_COMPILE);
     reportProcessBegin(prog);
 
-    for(int i=0; i<filepaths.length() && !m_abort_import; i++){
+    for(int i=0; i<filepaths.length() && !isAborted(); i++){
         const QString& filepath = filepaths.at(i);
         try{
             reportProgress(prog(filepaths.count(), i+1, QStringList() << filepath << filepath));
-            if (m_abort_import) { continue; }
-            m_cache->importXmlFile(filepath, qspec);
+            if (isAborted()) { continue; }
+            cache()->importXmlFile(filepath, qspec);
         }catch(std::exception& ex){
             prog.setTag(filepath);
             emit error(ex, prog);
@@ -58,13 +53,10 @@ void BulkImport::loadCompileEarly(const QStringList& filepaths, const QString& q
         }
     }
 
-    if (!m_abort_import){
-        reportProcessEnd(prog(Progress::BULK_COMPILE));
-    }
-    if (m_abort_import){
+    reportProcessEnd(prog(Progress::BULK_COMPILE));
+    if (isAborted()){
         emit aborted();
     }else{
-        reportProgress(prog(Progress::BULK_COMPILE));
         emit finished();
     }
 }
@@ -72,7 +64,7 @@ void BulkImport::loadCompileEarly(const QStringList& filepaths, const QString& q
 
 void BulkImport::loadCompileLate(const QStringList& filepaths, const QString& qspec)
 {
-    m_abort_import = false;
+    setAbort(false);
 
     const int ROUTINES=0;
     const int CLASSES=1;
@@ -82,7 +74,7 @@ void BulkImport::loadCompileLate(const QStringList& filepaths, const QString& qs
     Progress prog(Progress::BULK_READ);
     reportProcessBegin(prog);
 
-    for(int i=0; i<filepaths.length() && !m_abort_import; i++){
+    for(int i=0; i<filepaths.length() && !isAborted(); i++){
         const QString& filepath = filepaths.at(i);
         try{
             reportProgress(prog(filepaths.count(), i+1, filepath));
@@ -98,18 +90,18 @@ void BulkImport::loadCompileLate(const QStringList& filepaths, const QString& qs
         }
     }
 
-    if (!m_abort_import){
+    if (!isAborted()){
         reportProcessEnd(prog(Progress::BULK_READ));
     }
-    if (!m_abort_import){
+    if (!isAborted()){
         reportProcessBegin(prog(Progress::BULK_UPLOAD));
     }
 
-    for(int i=0; i<filepaths.length() && !m_abort_import; i++){
+    for(int i=0; i<filepaths.length() && !isAborted(); i++){
         const QString& filepath = filepaths.at(i);
         try{
             reportProgress(prog(filepaths.count(), i+1, filepath));
-            m_cache->importXmlFile(filepath);
+            cache()->importXmlFile(filepath);
         }catch(std::exception& ex){
             prog.setTag(filepath);
             emit error(ex, prog);
@@ -119,23 +111,23 @@ void BulkImport::loadCompileLate(const QStringList& filepaths, const QString& qs
         }
     }
 
-    if (!m_abort_import){
+    if (!isAborted()){
         reportProcessEnd(prog(Progress::BULK_UPLOAD));
     }
-    if (!m_abort_import){
+    if (!isAborted()){
         reportProcessBegin(prog(Progress::BULK_COMPILE));
     }
 
-    if (!qspec.isEmpty() && !m_abort_import){
+    if (!qspec.isEmpty() && !isAborted()){
         int total = object_list[ROUTINES].count() + object_list[CLASSES].count();
         int remain = total;
-        for(int i=0; i<MAXORDER && !m_abort_import; i++)
-            for(int j=0; j<object_list[i].count() && !m_abort_import; j++){
+        for(int i=0; i<MAXORDER && !isAborted(); i++)
+            for(int j=0; j<object_list[i].count() && !isAborted(); j++){
                 const XmlObject& obj = object_list[i].at(j);
                 reportProgress(prog(total, total-remain--, QStringList() << obj.name() << obj.sourceName()));
-                if (m_abort_import) { continue; }
+                if (isAborted()) { continue; }
                 try{
-                    m_cache->compileObjects(obj.name(), qspec);
+                    cache()->compileObjects(obj.name(), qspec);
                 }catch(std::exception& ex){
                     prog.setTag(obj.sourceName());
                     emit error(ex, prog);
@@ -146,10 +138,10 @@ void BulkImport::loadCompileLate(const QStringList& filepaths, const QString& qs
             }
     }
 
-    if (!m_abort_import){
+    if (!isAborted()){
         reportProcessEnd(prog(Progress::BULK_COMPILE));
     }
-    if (m_abort_import){
+    if (isAborted()){
         emit aborted();
     }else{
         reportProgress(prog(Progress::BULK_IDLE));
@@ -157,22 +149,3 @@ void BulkImport::loadCompileLate(const QStringList& filepaths, const QString& qs
     }
 }
 
-void BulkImport::reportProcessBegin(Progress& p)
-{
-    m_cache->plugins()->progressBegin(p);
-    m_abort_import = p.isAborted();
-}
-
-void BulkImport::reportProgress(Progress& p)
-{
-    m_last_progress = p;
-    m_cache->plugins()->progress(p);
-    m_abort_import = p.isAborted();
-    emit progress(p);
-}
-
-void BulkImport::reportProcessEnd(Progress& p)
-{
-    m_cache->plugins()->progressEnd(p);
-    m_abort_import = p.isAborted();
-}

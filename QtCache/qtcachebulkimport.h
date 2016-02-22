@@ -15,12 +15,12 @@
 #ifndef BULKIMPORT_H
 #define BULKIMPORT_H
 
-#include "qtcache.h"
+#include "qtcachebulkaction.h"
 
 QTCACHENAMESPACEBEGIN
 
 class QTCACHESHARED_EXPORT BulkImport
-        : public QObject
+        : public BulkAction
 {
     Q_OBJECT
 
@@ -29,35 +29,12 @@ public:
 
     explicit BulkImport(QtCache* cache, QObject *parent = 0);
 
-    const Progress& currentProgress() const
-    {
-        return m_last_progress;
-    }
-
-signals:
-    void aborted();
-    void finished();
-    void error(std::exception& ex, QtC::Progress&);
-    void progress(QtC::Progress&);
-
 public slots:
     void load(const QStringList& filepaths, const QString& qspec = "");
-    void abort()
-    {
-        m_abort_import = true;
-    }
 
 private:
-    Progress m_last_progress;
-    QtCache* m_cache = NULL;
-    bool m_abort_import = false;
-
     void loadCompileEarly(const QStringList& filepaths, const QString& qspec = "");
     void loadCompileLate(const QStringList& filepaths, const QString& qspec = "");
-
-    void reportProcessBegin(Progress& p);
-    void reportProgress(Progress& p);
-    void reportProcessEnd(Progress& p);
 };
 
 QTCACHENAMESPACEEND

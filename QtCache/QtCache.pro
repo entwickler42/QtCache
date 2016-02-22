@@ -17,7 +17,9 @@ SOURCES += \
     qtcacheexception.cpp \
     qtcachexmlobject.cpp \
     qtcachexmlreader.cpp \
-    qtcachebulkimport.cpp
+    qtcachebulkaction.cpp \
+    qtcachebulkimport.cpp \
+    qtcachebulkexport.cpp
 
 HEADERS += \
     qtcache_global.h \
@@ -30,8 +32,10 @@ HEADERS += \
     qtcacheexception.h \
     qtcachexmlobject.h \
     qtcachexmlreader.h \
+    qtcacheprogress.h \
+    qtcachebulkaction.h \
     qtcachebulkimport.h \
-    qtcacheprogress.h
+    qtcachebulkexport.h
 
 TRANSLATIONS = qtcache_de_DE.ts
 

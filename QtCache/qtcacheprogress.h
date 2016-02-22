@@ -37,7 +37,8 @@ public:
         BULK_IDLE,
         BULK_READ,
         BULK_UPLOAD,
-        BULK_COMPILE
+        BULK_COMPILE,
+        BULK_SAVE
     };
 
     Progress(Type type, QVariant tag, int max = 0, int cur = 0)

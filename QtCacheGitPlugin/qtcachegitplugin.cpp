@@ -22,7 +22,7 @@ QtCacheGitPlugin::~QtCacheGitPlugin()
 
 void QtCacheGitPlugin::progressBegin(QtC::Progress& p)
 {
-    if (p.type() == QtC::Progress::XMLFILE_EXPORT){
+    if (p.type() == QtC::Progress::BULK_SAVE){
         QString filepath = p.tag().toString();
         GitRepository repo(filepath);
 
@@ -41,7 +41,7 @@ void QtCacheGitPlugin::progressBegin(QtC::Progress& p)
 
 void QtCacheGitPlugin::progress(QtC::Progress& p)
 {
-    if (p.type() == QtC::Progress::XMLFILE_EXPORT){
+    if (p.type() == QtC::Progress::BULK_SAVE){
         QString filepath = p.tag().toString();
         GitRepository repo(filepath);
 
@@ -53,7 +53,7 @@ void QtCacheGitPlugin::progress(QtC::Progress& p)
 
 void QtCacheGitPlugin::progressEnd(QtC::Progress& p)
 {
-    if (p.type() == QtC::Progress::XMLFILE_EXPORT){
+    if (p.type() == QtC::Progress::BULK_SAVE){
         QString filepath = p.tag().toString();
         GitRepository repo(filepath);
 

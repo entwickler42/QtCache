@@ -20,6 +20,7 @@
 #include <qtcacheexception.h>
 #include <cacheconnectiondialog.h>
 #include <qtcachebulkimport.h>
+#include <qtcachebulkexport.h>
 #include <qtcachepluginobserver.h>
 #include <QCommandLineParser>
 #include <QStringList>
@@ -470,42 +471,24 @@ void MainWindow::on_exportFiles_pressed()
         QMessageBox::information(this, tr("Information"), tr("Cachè connection has not been established yet!"));
         return;
     }
+
     setBuisyUI();
+    abortTask = false;
+    bulk_import_active = true;
     try{
-        ui->statusBar->showMessage(tr("Receiving list of cachè objects..."));
         QString filter = ui->includeFilterEnabled->isChecked() ? ui->includeFilter->currentText() : "";
-        QtC::QtCache::ObjectFilterType filterType =
-                ui->regularExpression->isChecked() ? QtC::QtCache::REGEXP : QtC::QtCache::PATTERN;
-        QStringList ls = cache()->listObjects(filter, filterType);
-        ui->progressBar->setMaximum(ls.count());
-        abortTask = false;
-        for(int i=0; !abortTask && i<ls.count(); i++){
-            const QString& s = ls.at(i);
-            try{
-                ui->statusBar->showMessage(tr("Exporting %1").arg(s));
-                ui->progressBar->setValue(i+1);
-                QCoreApplication::processEvents();
-                cache()->exportXmlFile(ui->outputDirectory->text(), s);
-            }catch(std::exception& ex){
-                PML::LOG << tr("Failed to export %1\n%2").arg(s, ex.what());
-                if (!ui->ignoreExportErrors){
-                    QString err = tr("%1\n%2").arg(ex.what(), cache()->errorLog());
-                    int rval = QMessageBox::warning(this, tr("Exception"),err,
-                                                    QMessageBox::Cancel|QMessageBox::Ignore,
-                                                    QMessageBox::Ignore);
-                    abortTask = rval != QMessageBox::Ignore;
-                }
-            }
-        }
-        if (abortTask){
-            ui->statusBar->showMessage(tr("Export aborted!"));
-            ui->progressBar->setValue(0);
-        }else{
-            ui->statusBar->showMessage(tr("Export finished!"));
-        }
+        QtC::QtCache::ObjectFilterType filterType = ui->regularExpression->isChecked() ? QtC::QtCache::REGEXP : QtC::QtCache::PATTERN;
+        QtC::BulkExport bulkop(cache());
+        connect(&bulkop, SIGNAL(aborted()), this, SLOT(bulkImportAborted()));
+        connect(&bulkop, SIGNAL(finished()), this, SLOT(bulkImportFinished()));
+        connect(&bulkop, SIGNAL(error(std::exception&, QtC::Progress&)), this, SLOT(bulkImportError(std::exception&, QtC::Progress&)));
+        connect(&bulkop, SIGNAL(progress(QtC::Progress&)), this, SLOT(bulkImportProgress(QtC::Progress&)));
+        bulkop.save(QDir(ui->outputDirectory->text()), filter, filterType);
     }catch(std::exception& ex){
+        ui->statusBar->showMessage(tr("Export failed!"));
         QMessageBox::critical(this, tr("Exception"), ex.what());
     }
+    bulk_import_active = false;
     setIdleUI();
 }
 
