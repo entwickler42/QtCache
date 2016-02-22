@@ -7,11 +7,13 @@ DESTDIR = ../build/plugins
 DEFINES += QTCACHEGITPLUGIN_LIBRARY
 
 SOURCES += \
-    qtcachegitplugin.cpp
+    qtcachegitplugin.cpp \
+    gitrepository.cpp
 
 HEADERS += \
     qtcachegitplugin.h \
-    qtcachegitplugin_global.h
+    qtcachegitplugin_global.h \
+    gitrepository.h
 
 include(../QtCache/QtCache.pri)
 
