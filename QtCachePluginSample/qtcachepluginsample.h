@@ -43,24 +43,6 @@ public:
         Q_UNUSED(progress);
         PML::LOG << __FUNCTION__;
     }
-
-    void progressBegin(QtC::Progress& progress)
-    {
-        Q_UNUSED(progress);
-        PML::LOG << __FUNCTION__;
-    }
-
-    void progress(QtC::Progress& progress)
-    {
-        Q_UNUSED(progress);
-        PML::LOG << __FUNCTION__;
-    }
-
-    void progressEnd(QtC::Progress& progress)
-    {
-        Q_UNUSED(progress);
-        PML::LOG << __FUNCTION__;
-    }
 };
 
 extern "C"
