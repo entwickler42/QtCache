@@ -40,7 +40,7 @@ void BulkImport::load(const QStringList& filepaths, const QString& qspec)
 
 void BulkImport::loadCompileEarly(const QStringList& filepaths, const QString& qspec)
 {
-    Progress prog(Progress::BULK_COMPILE);
+    Progress prog(Progress::BULK_COMPILE_EARLY);
     reportProcessBegin(prog);
 
     for(int i=0; i<filepaths.length() && !isAborted(); i++){
@@ -58,7 +58,7 @@ void BulkImport::loadCompileEarly(const QStringList& filepaths, const QString& q
         }
     }
 
-    reportProcessEnd(prog(Progress::BULK_COMPILE));
+    reportProcessEnd(prog(Progress::BULK_COMPILE_EARLY));
     if (isAborted()){
         emit aborted();
     }else{

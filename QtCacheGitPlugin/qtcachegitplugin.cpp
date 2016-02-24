@@ -23,8 +23,8 @@ QtCacheGitPlugin::~QtCacheGitPlugin()
 void QtCacheGitPlugin::progressBegin(QtC::Progress& p)
 {
     if (p.type() == QtC::Progress::BULK_SAVE){
-        QString filepath = p.tag().toString();
-        GitRepository repo(filepath);
+        QString dirpath = p.tag().toString();
+        GitRepository repo(dirpath);
 
         if (repo.isValid()){
             repo.resetHard();
@@ -42,7 +42,8 @@ void QtCacheGitPlugin::progressBegin(QtC::Progress& p)
 void QtCacheGitPlugin::progress(QtC::Progress& p)
 {
     if (p.type() == QtC::Progress::BULK_SAVE){
-        QString filepath = p.tag().toString();
+        QStringList tags = p.tag().toStringList();
+        QString filepath = QDir(tags.at(0)).absoluteFilePath(tags.at(1));
         GitRepository repo(filepath);
 
         if (repo.isValid()){
@@ -54,11 +55,11 @@ void QtCacheGitPlugin::progress(QtC::Progress& p)
 void QtCacheGitPlugin::progressEnd(QtC::Progress& p)
 {
     if (p.type() == QtC::Progress::BULK_SAVE){
-        QString filepath = p.tag().toString();
-        GitRepository repo(filepath);
+        QString dirpath = p.tag().toString();
+        GitRepository repo(dirpath);
 
         if (repo.isValid()){
-            repo.add(filepath);
+            repo.add(dirpath);
             repo.commit("Auto commit");
             if (!m_origin_url.isEmpty()){
                 repo.push(m_origin_url);

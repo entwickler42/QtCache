@@ -38,7 +38,7 @@ void QtCachePluginObserver::deinitialize()
 
 void QtCachePluginObserver::progressBegin(Progress& progress)
 {
-    foreachPlugin(progress, &Plugin::progress);
+    foreachPlugin(progress, &Plugin::progressBegin);
 }
 
 void QtCachePluginObserver::progress(Progress& progress)
@@ -48,7 +48,7 @@ void QtCachePluginObserver::progress(Progress& progress)
 
 void QtCachePluginObserver::progressEnd(Progress& progress)
 {
-    foreachPlugin(progress, &Plugin::progress);
+    foreachPlugin(progress, &Plugin::progressEnd);
 }
 
 void QtCachePluginObserver::parseCommandlineOptionsBegin(QCommandLineParser& commandLineParser)

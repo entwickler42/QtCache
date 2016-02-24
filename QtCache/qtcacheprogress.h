@@ -38,6 +38,7 @@ public:
         BULK_READ,
         BULK_UPLOAD,
         BULK_COMPILE,
+        BULK_COMPILE_EARLY,
         BULK_SAVE
     };
 

@@ -13,7 +13,7 @@ void BulkExport::run()
 
 void BulkExport::save(const QDir& outputDirectory, const QString& filter, QtCache::ObjectFilterType filterType)
 {
-    Progress prog(Progress::BULK_SAVE);
+    Progress prog(Progress::BULK_SAVE, outputDirectory.absolutePath());
     reportProcessBegin(prog);
 
     QStringList ls = cache()->listObjects(filter, filterType);
@@ -35,6 +35,7 @@ void BulkExport::save(const QDir& outputDirectory, const QString& filter, QtCach
         }
     }
 
+    prog.setTag(outputDirectory.absolutePath());
     reportProcessEnd(prog);
     if (isAborted()){
         emit aborted();

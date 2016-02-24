@@ -374,6 +374,13 @@ void MainWindow::bulkActionProgress(QtC::Progress& prog)
         setListViewItem(tags.at(1), ":/QtCacheTool/FILE_OK");
         ui->statusBar->showMessage(tr("Compiling %1").arg(tags.at(0)));
         break;
+    case QtC::Progress::BULK_COMPILE_EARLY:
+        tags = prog.tag().toStringList();
+        setListViewItem(tags.at(1), ":/QtCacheTool/FILE_OK");
+        ui->statusBar->showMessage(tr("Uploading and compiling %1").arg(tags.at(0)));
+        break;
+    default:
+        return;
     }
 
     if(abortTask){
