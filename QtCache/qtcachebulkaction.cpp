@@ -14,6 +14,9 @@ BulkAction::BulkAction(QtCache* cache, QObject *parent)
 void BulkAction::reportProcessBegin(Progress& p)
 {
     m_cache->plugins()->progressBegin(p);
+    if (!p.isAborted()){
+        emit progressEnd(p);
+    }
     setAbort(p.isAborted());
 }
 
@@ -21,12 +24,16 @@ void BulkAction::reportProgress(Progress& p)
 {
     m_current_progress = p;
     m_cache->plugins()->progress(p);
-    setAbort(p.isAborted());
-    emit progress(p);
+    if (!p.isAborted()){
+        emit progress(p);
+    }
 }
 
 void BulkAction::reportProcessEnd(Progress& p)
 {
     m_cache->plugins()->progressEnd(p);
+    if (!p.isAborted()){
+        emit progressEnd(p);
+    }
     setAbort(p.isAborted());
 }

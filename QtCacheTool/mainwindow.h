@@ -26,6 +26,7 @@ namespace Ui {
 namespace QtC {
     class CacheConnectionDialog;
     class BulkImportProgress;
+    class BulkAction;
 }
 
 class QSettings;
@@ -67,19 +68,18 @@ private slots:
     void on_saveCurrentFilter_pressed();
     void on_removeCurrentFilter_pressed();
 
-    void cacheProgress(QtC::Progress& progress);
+    void cacheProgressBegin(QtC::Progress& progress);
 
-    void bulkImportAborted();
-    void bulkImportFinished();
-    void bulkImportError(std::exception&, QtC::Progress&);
-    void bulkImportProgress(QtC::Progress&);
+    void bulkActionAborted();
+    void bulkActionFinished();
+    void bulkActionError(std::exception&, QtC::Progress&);
+    void bulkActionProgress(QtC::Progress&);
 
 private:
     Ui::MainWindow *ui;
     QtCacheToolSettings* conf;
     QtC::CacheConnectionDialog* dlg;
     bool abortTask = false;
-    bool bulk_import_active = false;
 
     QStringList loadFilters() const;
     void saveFilters(const QStringList&) const;
@@ -92,6 +92,7 @@ private:
     void loadSettings();
 
     void createPluginTable();
+    void runInteractive(QtC::BulkAction* bulkop);
 };
 
 #endif // MAINWINDOW_H

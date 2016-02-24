@@ -6,6 +6,11 @@ BulkExport::BulkExport(QtCache* cache, QObject *parent)
     : BulkAction(cache, parent)
 {}
 
+void BulkExport::run()
+{
+    save(this->outputDirectory, this->filter, this->filterType);
+}
+
 void BulkExport::save(const QDir& outputDirectory, const QString& filter, QtCache::ObjectFilterType filterType)
 {
     Progress prog(Progress::BULK_SAVE);

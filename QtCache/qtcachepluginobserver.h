@@ -16,7 +16,8 @@ public:
     explicit QtCachePluginObserver(QObject *parent = 0);
     ~QtCachePluginObserver();
 
-    QList<Plugin*> loaded() const { return m_loaded_plugins; }
+    const QList<Plugin*>& loaded() const { return m_loaded_plugins; }
+    QList<Plugin*>& loaded() { return m_loaded_plugins; }
 
 signals:
     void exception(std::exception& ex, Plugin* Plugin, bool& abort);

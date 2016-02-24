@@ -24,6 +24,11 @@ BulkImport::BulkImport(QtCache* cache, QObject *parent)
 {
 }
 
+void BulkImport::run()
+{
+    load(this->filepaths, this->qspec);
+}
+
 void BulkImport::load(const QStringList& filepaths, const QString& qspec)
 {
     if (compileEarly){

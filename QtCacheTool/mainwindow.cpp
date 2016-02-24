@@ -54,7 +54,7 @@ MainWindow::MainWindow(QWidget *parent) :
     loadSettings();
     parseCommandlineOptions();
 
-    connect(QtC::QtCache::instance(), SIGNAL(progress(QtC::Progress&)), this, SLOT(cacheProgress(QtC::Progress&)));
+    connect(QtC::QtCache::instance(), SIGNAL(progressBegin(QtC::Progress&)), this, SLOT(cacheProgressBegin(QtC::Progress&)));
 
     if(conf->AutoConnect()){
         try{
@@ -89,8 +89,9 @@ void MainWindow::createPluginTable()
     ui->tablePlugins->setHorizontalHeaderItem(ColumnName, new QTableWidgetItem("Name"));
     ui->tablePlugins->setHorizontalHeaderItem(ColumnDesc, new QTableWidgetItem("Beschreibung"));
 
-    for(int i=0; i<cache()->plugins()->loaded().count(); i++){
-        QtC::Plugin* plugin = cache()->plugins()->loaded().at(i);
+    const QList<QtC::Plugin*>& plugins = cache()->plugins()->loaded();
+    for(int i=0; i<plugins.count(); i++){
+        QtC::Plugin* plugin = plugins.at(i);
         ui->tablePlugins->insertRow(i);
         QTableWidgetItem* nameItem = new QTableWidgetItem(plugin->name());
         QTableWidgetItem* descItem = new QTableWidgetItem(plugin->description());
@@ -253,12 +254,54 @@ void MainWindow::on_removeFiles_pressed()
     }
 }
 
-void MainWindow::on_importFiles_pressed()
+void MainWindow::runInteractive(QtC::BulkAction* bulkop)
 {
     if (!cache()->isConnected()){
         QMessageBox::information(this, tr("Information"), tr("Cachè connection has not been established yet!"));
         return;
     }
+
+    setBuisyUI();
+    abortTask = false;
+
+    connect(bulkop, SIGNAL(aborted()), this, SLOT(bulkActionAborted()));
+    connect(bulkop, SIGNAL(finished()), this, SLOT(bulkActionFinished()));
+    connect(bulkop, SIGNAL(error(std::exception&, QtC::Progress&)), this, SLOT(bulkActionError(std::exception&, QtC::Progress&)));
+    connect(bulkop, SIGNAL(progress(QtC::Progress&)), this, SLOT(bulkActionProgress(QtC::Progress&)));
+
+    try{
+        bulkop->run();
+    }catch(std::exception& ex){
+        LOG_EXCEPTION(ex);
+        ui->statusBar->showMessage(tr("Export failed!"));
+        QMessageBox::critical(this, tr("Exception"), ex.what());
+    }catch(...){
+        LOG_UNKNOWN_EXCEPTION;
+        ui->statusBar->showMessage(tr("Export failed!"));
+        QMessageBox::critical(this, tr("Exception"),tr("Unknown Error..."));
+    }
+
+    disconnect(bulkop, SIGNAL(aborted()), this, SLOT(bulkActionAborted()));
+    disconnect(bulkop, SIGNAL(finished()), this, SLOT(bulkActionFinished()));
+    disconnect(bulkop, SIGNAL(error(std::exception&, QtC::Progress&)), this, SLOT(bulkActionError(std::exception&, QtC::Progress&)));
+    disconnect(bulkop, SIGNAL(progress(QtC::Progress&)), this, SLOT(bulkActionProgress(QtC::Progress&)));
+
+    setIdleUI();
+}
+
+void MainWindow::on_exportFiles_pressed()
+{
+    QtC::BulkExport bulkop(cache());
+    QString filter = ui->includeFilterEnabled->isChecked() ? ui->includeFilter->currentText() : "";
+    QtC::QtCache::ObjectFilterType filterType = ui->regularExpression->isChecked() ? QtC::QtCache::REGEXP : QtC::QtCache::PATTERN;
+    bulkop.filter = filter;
+    bulkop.filterType = filterType;
+    bulkop.outputDirectory = QDir(ui->outputDirectory->text());
+    runInteractive(&bulkop);
+}
+
+void MainWindow::on_importFiles_pressed()
+{
     if(ui->listWidget->count() == 0) {
         QMessageBox::information(this, tr("Information"), tr("List of files is empty!"));
         return;
@@ -267,49 +310,37 @@ void MainWindow::on_importFiles_pressed()
         i->setIcon(QIcon(":/QtCacheTool/FILE_IDLE"));
         i->setToolTip("");
     }
-    setBuisyUI();
-    abortTask = false;
-    bulk_import_active = true;
-    try{
-        preImportHook();
 
-        QString qspec = ui->compile->isChecked() ? ui->qspec->text() : QString("");
-        QStringList import_files;
-        for(int i=0; i<ui->listWidget->count(); i++){
-            QListWidgetItem* item = ui->listWidget->item(i);
-            import_files.append(item->text());
-        }
+    preImportHook();
 
-        QtC::BulkImport import(cache());
-        connect(&import, SIGNAL(aborted()), this, SLOT(bulkImportAborted()));
-        connect(&import, SIGNAL(finished()), this, SLOT(bulkImportFinished()));
-        connect(&import, SIGNAL(error(std::exception&, QtC::Progress&)), this, SLOT(bulkImportError(std::exception&, QtC::Progress&)));
-        connect(&import, SIGNAL(progress(QtC::Progress&)), this, SLOT(bulkImportProgress(QtC::Progress&)));
-        import.compileEarly = ui->compileEarly->isChecked();
-        import.load(import_files, qspec);
-
-        postImportHook();
-    }catch(std::exception& ex){
-        ui->statusBar->showMessage(tr("Import failed!"));
-        QMessageBox::critical(this, tr("Exception"), ex.what());
+    QtC::BulkImport bulkop(cache());
+    QString qspec = ui->compile->isChecked() ? ui->qspec->text() : QString("");
+    QStringList filepaths;
+    for(int i=0; i<ui->listWidget->count(); i++){
+        QListWidgetItem* item = ui->listWidget->item(i);
+        filepaths.append(item->text());
     }
-    bulk_import_active = false;
-    setIdleUI();
+    bulkop.compileEarly = ui->compileEarly->isChecked();
+    bulkop.filepaths = filepaths;
+    bulkop.qspec = qspec;
+    runInteractive(&bulkop);
+
+    postImportHook();
 }
 
-void MainWindow::bulkImportAborted()
+void MainWindow::bulkActionAborted()
 {
     ui->statusBar->showMessage(tr("Bulkimport was aborted!"));
 }
 
-void MainWindow::bulkImportFinished()
+void MainWindow::bulkActionFinished()
 {
     ui->progressBar->setMaximum(100);
     ui->progressBar->setValue(0);
     ui->statusBar->showMessage(tr("Bulkimport has finished!"));
 }
 
-void MainWindow::bulkImportError(std::exception& ex, QtC::Progress& prog)
+void MainWindow::bulkActionError(std::exception& ex, QtC::Progress& prog)
 {
     //bulkImportProgress(prog);
     setListViewItem(prog.tag().toString(), ":/QtCacheTool/FILE_ERROR", ex.what());
@@ -322,12 +353,14 @@ void MainWindow::bulkImportError(std::exception& ex, QtC::Progress& prog)
     QApplication::processEvents();
 }
 
-void MainWindow::bulkImportProgress(QtC::Progress& prog)
+void MainWindow::bulkActionProgress(QtC::Progress& prog)
 {
-    bool process_events = ui->progressBar->value() != prog.percent();
-
     QStringList tags;
     switch (prog.type()) {
+    case QtC::Progress::BULK_SAVE:
+        tags = prog.tag().toStringList();
+        ui->statusBar->showMessage(tr("Exporing %1").arg(tags.at(1)));
+        break;
     case QtC::Progress::BULK_READ:
         setListViewItem(prog.tag().toString(), ":/QtCacheTool/FILE_OK");
         ui->statusBar->showMessage(tr("Reading %1").arg(prog.tag().toString()));
@@ -342,68 +375,38 @@ void MainWindow::bulkImportProgress(QtC::Progress& prog)
         ui->statusBar->showMessage(tr("Compiling %1").arg(tags.at(0)));
         break;
     }
+
     if(abortTask){
-        QtC::BulkImport* import = static_cast<QtC::BulkImport*>(sender());
-        import->abort();
+        QtC::BulkAction* bulkop = static_cast<QtC::BulkAction*>(sender());
+        bulkop->abort();
     }
 
-    if (process_events){
-        ui->progressBar->setMaximum(100);
-        ui->progressBar->setValue(prog.percent());
-        QApplication::processEvents();
-    }
+    ui->progressBar->setMaximum(100);
+    ui->progressBar->setValue(prog.percent());
+    QApplication::processEvents();
 }
 
-void MainWindow::cacheProgress(QtC::Progress& prog)
+
+void MainWindow::cacheProgressBegin(QtC::Progress& prog)
 {
-    bool process_events = ui->progressBar->value() != prog.percent();
-
-    if (!bulk_import_active){
-        QStringList tags;
-        switch(prog.type()){
-        case QtC::Progress::CONNECT:
-            ui->statusBar->showMessage(tr("Connecting Caché"));
-            break;
-        case QtC::Progress::DISCONNECT:
-            ui->statusBar->showMessage("Disconnecting Caché");
-            break;
-        case QtC::Progress::QUERY_NS:
-            ui->statusBar->showMessage(tr("Receiving namespace list"));
-            break;
-        case QtC::Progress::QUERY_OBJECTS:
-            ui->statusBar->showMessage(tr("Receiving object list"));
-            break;
-        case QtC::Progress::OBJECT_COMPILE:
-            tags = prog.tag().toStringList();
-            setListViewItem(tags.at(0), ":/QtCacheTool/FILE_OK");
-            ui->statusBar->showMessage(tr("Compiling %1").arg(tags.at(0)));
-            break;
-        case QtC::Progress::XMLFILE_IMPORT:
-            tags = prog.tag().toStringList();
-            if (prog.percent() == 0){
-                setListViewItem(tags.at(0), ":/QtCacheTool/FILE_OK");
-            }
-            ui->statusBar->showMessage(tr("Importing %1").arg(tags.at(0)));
-            break;
-        case QtC::Progress::XMLFILE_EXPORT:
-            tags = prog.tag().toStringList();
-            if (prog.percent() == 0){
-                setListViewItem(tags.at(0), ":/QtCacheTool/FILE_OK");
-            }
-            ui->statusBar->showMessage(tr("Exporting %1").arg(tags.at(0)));
-            break;
-        default:
-            ui->statusBar->showMessage(tr("Idle"));
-            break;
-        }
-        process_events = true;
+    switch(prog.type()){
+    case QtC::Progress::CONNECT:
+        ui->statusBar->showMessage(tr("Connecting Caché"));
+        break;
+    case QtC::Progress::DISCONNECT:
+        ui->statusBar->showMessage("Disconnecting Caché...");
+        break;
+    case QtC::Progress::QUERY_NS:
+        ui->statusBar->showMessage(tr("Receiving namespace list..."));
+        break;
+    case QtC::Progress::QUERY_OBJECTS:
+        ui->statusBar->showMessage(tr("Receiving object list..."));
+        break;
+    default:
+        return;
     }
 
-    if (process_events){
-        ui->progressBar->setMaximum(100);
-        ui->progressBar->setValue(prog.percent());
-        QApplication::processEvents();
-    }
+    QApplication::processEvents();
 }
 
 void MainWindow::setListViewItem(const QString& filename, const QString& iconpath, const QString& toolTip)
@@ -463,33 +466,6 @@ void MainWindow::on_selectOutputDirectory_pressed()
         ui->outputDirectory->setText(dlg.directory().absolutePath());
         conf->setDefaultExportDirectory(dlg.directory().absolutePath());
     }
-}
-
-void MainWindow::on_exportFiles_pressed()
-{
-    if (!cache()->isConnected()){
-        QMessageBox::information(this, tr("Information"), tr("Cachè connection has not been established yet!"));
-        return;
-    }
-
-    setBuisyUI();
-    abortTask = false;
-    bulk_import_active = true;
-    try{
-        QString filter = ui->includeFilterEnabled->isChecked() ? ui->includeFilter->currentText() : "";
-        QtC::QtCache::ObjectFilterType filterType = ui->regularExpression->isChecked() ? QtC::QtCache::REGEXP : QtC::QtCache::PATTERN;
-        QtC::BulkExport bulkop(cache());
-        connect(&bulkop, SIGNAL(aborted()), this, SLOT(bulkImportAborted()));
-        connect(&bulkop, SIGNAL(finished()), this, SLOT(bulkImportFinished()));
-        connect(&bulkop, SIGNAL(error(std::exception&, QtC::Progress&)), this, SLOT(bulkImportError(std::exception&, QtC::Progress&)));
-        connect(&bulkop, SIGNAL(progress(QtC::Progress&)), this, SLOT(bulkImportProgress(QtC::Progress&)));
-        bulkop.save(QDir(ui->outputDirectory->text()), filter, filterType);
-    }catch(std::exception& ex){
-        ui->statusBar->showMessage(tr("Export failed!"));
-        QMessageBox::critical(this, tr("Exception"), ex.what());
-    }
-    bulk_import_active = false;
-    setIdleUI();
 }
 
 void MainWindow::on_saveCurrentFilter_pressed()
@@ -586,7 +562,6 @@ void MainWindow::parseCommandlineOptions()
     if(p.isSet(autoConnect)){
         conf->setAutoConnect(true);
     }
-
     if (p.isSet(compile)){
         ui->compile->setChecked(true);
     }

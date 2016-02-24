@@ -21,10 +21,14 @@ signals:
     void aborted();
     void finished();
     void error(std::exception& ex, QtC::Progress&);
+
+    void progressBegin(QtC::Progress&);
     void progress(QtC::Progress&);
+    void progressEnd(QtC::Progress&);
 
 public slots:
     void abort() { setAbort(true); }
+    virtual void run() = 0;
 
 protected:
     void setAbort(bool abort) { m_aborted = abort; }

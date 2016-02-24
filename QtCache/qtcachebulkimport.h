@@ -26,13 +26,16 @@ class QTCACHESHARED_EXPORT BulkImport
 
 public:
     bool compileEarly = false;
+    QString qspec = "";
+    QStringList filepaths;
 
     explicit BulkImport(QtCache* cache, QObject *parent = 0);
 
 public slots:
-    void load(const QStringList& filepaths, const QString& qspec = "");
+    void run();
 
 private:
+    void load(const QStringList& filepaths, const QString& qspec = "");
     void loadCompileEarly(const QStringList& filepaths, const QString& qspec = "");
     void loadCompileLate(const QStringList& filepaths, const QString& qspec = "");
 };

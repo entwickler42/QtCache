@@ -27,8 +27,8 @@
 
 QTCACHENAMESPACEBEGIN
 
-#define CACHE_TRY try
-#define CACHE_CATCH \
+#define TRY_LOG_THROW try
+#define CATCH_LOG_THROW \
     catch(std::exception& ex){ \
     LOG_EXCEPTION(ex) \
     throw QtCacheException(ex.what()); \
@@ -53,13 +53,9 @@ public:
         : i_ptr(qtcache),
           plugin_observer(NULL)
     {
-        try{
+        TRY_LOG_THROW{
             plugin_observer = new QtCachePluginObserver();
-        }catch(std::exception& ex){
-            LOG_EXCEPTION(ex)
-        }catch(...){
-            LOG_UNKNOWN_EXCEPTION
-        }
+        }CATCH_LOG_THROW;
     }
 
     virtual ~QtCachePrivate()
@@ -70,7 +66,7 @@ public:
 
     QtCacheToolType tool()
     {
-        CACHE_TRY{
+        TRY_LOG_THROW{
             if (!isConnected()){
                 throw QtCacheException(QObject::tr("Cachè connection has not been established yet!", "QtCachePrivate"));
             }
@@ -81,23 +77,23 @@ public:
                     throw QtCacheException(err);
                 }
             }
-        }CACHE_CATCH;
+        }CATCH_LOG_THROW;
         return Qt_CacheTool;
     }
 
     long jobId() const
     {
-        CACHE_TRY{
+        TRY_LOG_THROW{
             if (connected && NULL != db){
                 return db->get_job_id();
             }
-        }CACHE_CATCH;
+        }CATCH_LOG_THROW;
         return 0;
     }
 
     void connect(const QString& cn, const QString& user, const QString& passwd, bool forceNew = false)
     {
-        CACHE_TRY{
+        TRY_LOG_THROW{
             Db_err conn_err;
 
             forceNew = (
@@ -127,27 +123,27 @@ public:
                     installCacheBackend();
                 }
             }
-        }CACHE_CATCH;
+        }CATCH_LOG_THROW;
     }
 
     void disconnect()
     {
-        CACHE_TRY{
+        TRY_LOG_THROW{
             delete db; db = NULL;
             connected = false;
-        }CACHE_CATCH;
+        }CATCH_LOG_THROW;
     }
 
     bool isConnected() const
     {
-        CACHE_TRY{
+        TRY_LOG_THROW{
             return connected;
-        }CACHE_CATCH;
+        }CATCH_LOG_THROW;
     }
 
     void execute(const QString& code)
     {
-        CACHE_TRY{
+        TRY_LOG_THROW{
             QtCacheToolType qct = tool();
             d_status sc = qct->Execute(
                         d_string(uci.toStdString()),
@@ -156,13 +152,13 @@ public:
                 sc.get_msg(db);
                 throw QtCacheException(sc);
             }
-        }CACHE_CATCH;
+        }CATCH_LOG_THROW;
     }
 
     QStringList listNamespaces(bool excludePercent)
     {
         QStringList q_ls;
-        CACHE_TRY{
+        TRY_LOG_THROW{
             Progress progress(Progress::QUERY_NS, 0, 0);
             progress.setTag(QStringList() << QString::number(excludePercent));
             i_ptr->reportProcessBegin(progress);
@@ -187,14 +183,14 @@ public:
                 }
             }
             i_ptr->reportProcessEnd(progress);
-        }CACHE_CATCH;
+        }CATCH_LOG_THROW;
         return q_ls;
     }
 
     QStringList listObjects(const QString& filter, QtCache::ObjectFilterType filterType)
     {
         QStringList objects;
-        CACHE_TRY{
+        TRY_LOG_THROW{
             Progress progress(Progress::QUERY_OBJECTS, 0, 0);
             progress.setTag(QStringList() << filter << QString::number(filterType));
             i_ptr->reportProcessBegin(progress);
@@ -219,13 +215,13 @@ public:
                 i_ptr->reportProgress(progress(100,-1));
             }
             i_ptr->reportProcessEnd(progress);
-        }CACHE_CATCH;
+        }CATCH_LOG_THROW;
         return objects;
     }
 
     void importXmlFile(const QString& filepath, const QString& qspec = "")
     {
-        CACHE_TRY{
+        TRY_LOG_THROW{
             Progress progress(Progress::XMLFILE_IMPORT);
             i_ptr->reportProcessBegin(progress(0, 0, QStringList() << filepath << qspec));
             if (progress.isAborted()){ return; }
@@ -266,15 +262,15 @@ public:
                 }
             }
             i_ptr->reportProcessEnd(progress);
-        }CACHE_CATCH;
+        }CATCH_LOG_THROW;
     }
 
     void exportXmlFile(const QString& directoryPath, const QString& objectName)
     {
-        CACHE_TRY{
-            Progress progress(Progress::XMLFILE_EXPORT);
-            i_ptr->reportProcessBegin(progress(0, 0, QStringList() << directoryPath << objectName));
-            if (progress.isAborted()){ return; }
+        TRY_LOG_THROW{
+            Progress prog(Progress::XMLFILE_EXPORT);
+            i_ptr->reportProcessBegin(prog(0, 0, QStringList() << directoryPath << objectName));
+            if (prog.isAborted()){ return; }
 
             d_string _objectName = objectName.toStdString();
             d_string _uci = uci.toStdString();
@@ -299,20 +295,21 @@ public:
             d_iostream io(bstream);
             io.rewind();
 
-            i_ptr->reportProgress(progress(0, 0));
-            while (std::getline(io,buf) && !progress.isAborted()){
-                progress.setTag(QString::fromStdString(buf));
-                i_ptr->reportProgress(progress(100, -1));
-                if (progress.isAborted()) { break; }
-                ofstream << progress.tag().toString() << "\n";
+            long bytes_written = 0;
+            while (std::getline(io,buf) && !prog.isAborted()){
+                prog.setTag(QString::fromStdString(buf));
+                i_ptr->reportProgress(prog(io.size(), bytes_written));
+                if (prog.isAborted()) { continue; }
+                ofstream << prog.tag().toString() << "\n";
+                bytes_written += buf.length();
             }
-            i_ptr->reportProcessEnd(progress(100,100));
-        }CACHE_CATCH;
+            i_ptr->reportProcessEnd(prog(100,100));
+        }CATCH_LOG_THROW;
     }
 
     void compileObjects(const QString& objectNames, const QString& qspec)
     {
-        CACHE_TRY{
+        TRY_LOG_THROW{
             Progress progress(Progress::OBJECT_COMPILE);
             i_ptr->reportProcessBegin(progress(0, 0, QStringList() << objectNames << qspec));
             if (progress.isAborted()){ return; }
@@ -328,7 +325,7 @@ public:
             }
 
             i_ptr->reportProcessEnd(progress);
-        }CACHE_CATCH;
+        }CATCH_LOG_THROW;
     }
 
 private:
@@ -339,7 +336,7 @@ private:
     void installCacheBackend()
     {
 #if 1
-        CACHE_TRY{
+        TRY_LOG_THROW{
             QFile xml(":/src/QtCache.xml");
             if (!xml.open(QFile::ReadOnly)){
                 throw QtCacheException("can not open QtCache.xml from resources");
@@ -351,7 +348,7 @@ private:
             d_string qspec = "cf";
             D_type* args[2] = { &bstream, &qspec };
             Dyn_obj::run_class_method(db, L"%SYSTEM.OBJ", L"LoadStream", args, 2);
-        }CACHE_CATCH;;
+        }CATCH_LOG_THROW;;
 #endif
     }
 
