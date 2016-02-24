@@ -46,9 +46,8 @@ void BulkImport::loadCompileEarly(const QStringList& filepaths, const QString& q
     for(int i=0; i<filepaths.length() && !isAborted(); i++){
         const QString& filepath = filepaths.at(i);
         try{
-            reportProgress(prog(filepaths.count(), i+1, QStringList() << filepath << filepath));
-            if (isAborted()) { continue; }
             cache()->importXmlFile(filepath, qspec);
+            reportProgress(prog(filepaths.count(), i+1, QStringList() << filepath << filepath));
         }catch(std::exception& ex){
             prog.setTag(filepath);
             emit error(ex, prog);
@@ -82,10 +81,10 @@ void BulkImport::loadCompileLate(const QStringList& filepaths, const QString& qs
     for(int i=0; i<filepaths.length() && !isAborted(); i++){
         const QString& filepath = filepaths.at(i);
         try{
-            reportProgress(prog(filepaths.count(), i+1, filepath));
             XmlObjectReader r(filepath);
             object_list[ROUTINES] += r.routines();
             object_list[CLASSES] += r.classes();
+            reportProgress(prog(filepaths.count(), i+1, filepath));
         }catch(std::exception& ex){
             prog.setTag(filepath);
             emit error(ex, prog);
@@ -105,8 +104,8 @@ void BulkImport::loadCompileLate(const QStringList& filepaths, const QString& qs
     for(int i=0; i<filepaths.length() && !isAborted(); i++){
         const QString& filepath = filepaths.at(i);
         try{
-            reportProgress(prog(filepaths.count(), i+1, filepath));
             cache()->importXmlFile(filepath);
+            reportProgress(prog(filepaths.count(), i+1, filepath));
         }catch(std::exception& ex){
             prog.setTag(filepath);
             emit error(ex, prog);

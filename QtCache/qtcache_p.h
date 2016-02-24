@@ -168,18 +168,17 @@ public:
             if (isConnected()){
                 d_wstring s;
                 d_list c_ls = tool()->ListNamespaces();
-                while (!c_ls.at_end()){
+                while (!c_ls.at_end() && !progress.isAborted()){
                     c_ls.get_elem(s);
                     QString uci = QString::fromStdWString(s.value());
                     progress.setTag(uci);
-                    i_ptr->reportProgress(progress);
-                    if (progress.isAborted()) { break; }
                     if (uci.startsWith('%') && excludePercent){
                         c_ls.next();
                         continue;
                     }
                     q_ls << uci;
                     c_ls.next();
+                    i_ptr->reportProgress(progress);
                 }
             }
             i_ptr->reportProcessEnd(progress);
@@ -243,16 +242,14 @@ public:
             const qint64 chunk_size = 512;
             char buf[chunk_size];
             i_ptr->reportProgress(progress(file_size, file_pos));
-            while (!f.atEnd()){
+            while (!f.atEnd() && !progress.isAborted()){
                 qint64 s = f.read(buf, chunk_size);
                 io.write(buf, s);
                 file_pos += s;
                 i_ptr->reportProgress(progress(file_size, file_pos));
-                if (progress.isAborted()){ break; }
             }
             io.rewind();
             if (!progress.isAborted()){
-                i_ptr->reportProgress(progress(100, 100));
                 d_string _uci(uci.toStdString());
                 d_string _qspec(qspec.toStdString());
                 d_status sc = tool()->ImportXML(_uci, bstream, _qspec);
@@ -260,6 +257,7 @@ public:
                     sc.get_msg(db);
                     throw QtCacheException(sc);
                 }
+                i_ptr->reportProgress(progress(100, 100));
             }
             i_ptr->reportProcessEnd(progress);
         }CATCH_LOG_THROW;
@@ -298,10 +296,10 @@ public:
             long bytes_written = 0;
             while (std::getline(io,buf) && !prog.isAborted()){
                 prog.setTag(QString::fromStdString(buf));
-                i_ptr->reportProgress(prog(io.size(), bytes_written));
                 if (prog.isAborted()) { continue; }
                 ofstream << prog.tag().toString() << "\n";
                 bytes_written += buf.length();
+                i_ptr->reportProgress(prog(io.size(), bytes_written));
             }
             i_ptr->reportProcessEnd(prog(100,100));
         }CATCH_LOG_THROW;
@@ -313,17 +311,15 @@ public:
             Progress progress(Progress::OBJECT_COMPILE);
             i_ptr->reportProcessBegin(progress(0, 0, QStringList() << objectNames << qspec));
             if (progress.isAborted()){ return; }
-
             d_string _objectNames(objectNames.toStdString());
             d_string _qspec(qspec.toStdString());
             d_string _uci = uci.toStdString();
-            i_ptr->reportProgress(progress(100, 100));
             d_status sc = tool()->CompileList(_uci, _objectNames, _qspec);
             if (sc.get_code()){
                 sc.get_msg(db);
                 throw QtCacheException(tool()->getErrorLog());
             }
-
+            i_ptr->reportProgress(progress(100, 100));
             i_ptr->reportProcessEnd(progress);
         }CATCH_LOG_THROW;
     }
@@ -335,7 +331,7 @@ private:
 
     void installCacheBackend()
     {
-#if 1
+#if 0
         TRY_LOG_THROW{
             QFile xml(":/src/QtCache.xml");
             if (!xml.open(QFile::ReadOnly)){

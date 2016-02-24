@@ -5,6 +5,8 @@
 #include <QDir>
 #include <QUrl>
 
+class git_repository;
+
 class GitRepository
 {
 public:
@@ -13,18 +15,21 @@ public:
 
     bool isValid();
 
+    void open();
     void init();
-    void branch(const QString& name);
-    void resetHard();
     void clone(const QUrl& remote, const QString& branch = QString());
+
+    void branch(const QString& name);
     void add(const QString& filepath);
     void commit(const QString& commitMessage);
     void push(const QUrl& remote, const QString& branch = QString());
 
 private:
     QDir m_local_directory;
+    git_repository* m_repo;
 
-    void* m_repository = NULL;
+    void setRepository(git_repository* repo);
+    git_repository* repository();
 };
 
 #endif // GITREPOSITORY_H

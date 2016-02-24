@@ -20,12 +20,12 @@ void BulkExport::save(const QDir& outputDirectory, const QString& filter, QtCach
 
     for(int i=0; !isAborted() && i<ls.count(); i++){
         const QString& s = ls.at(i);
-        reportProgress(prog(ls.count(), i+1, QStringList() << outputDirectory.absolutePath() << s));
         if (isAborted()){
             continue;
         }
         try{
             cache()->exportXmlFile(outputDirectory.absolutePath(), s);
+            reportProgress(prog(ls.count(), i+1, QStringList() << outputDirectory.absolutePath() << s));
         }catch(std::exception& ex){
             prog.setTag(s);
             emit error(ex, prog);
