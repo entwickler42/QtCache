@@ -31,24 +31,33 @@ git_auto<git_tree>::~git_auto() { git_tree_free(this->ref); }
 git_auto<git_reference>::~git_auto() { git_reference_free(this->ref); }
 git_auto<git_commit>::~git_auto() { git_commit_free(this->ref); }
 git_auto<git_status_list>::~git_auto() { git_status_list_free(this->ref); }
-git_auto<git_remote>::~git_auto() { git_remote_free(this->ref); }
+git_auto<git_remote>::~git_auto() {
+    if (git_remote_connected(this->ref)) {
+        git_remote_disconnect(this->ref);
+    }
+    git_remote_free(this->ref);
+}
 
-GitRepository::GitRepository(const QString &directoryPath)
-    : m_local_directory(directoryPath),
-      m_repo(NULL)
+GitRepository::GitRepository(const QString &localDirPath)
+    : m_local_dir_path(localDirPath),
+      m_repo(NULL),
+      m_signature(NULL)
 {
     git_libgit2_init();
 }
 
 GitRepository::~GitRepository()
 {
-    git_libgit2_shutdown();
+    if (NULL != m_signature) {
+        git_signature_free(m_signature);
+    }
     if (NULL != m_repo) {
         git_repository_free(m_repo);
     }
+    git_libgit2_shutdown();
 }
 
-bool GitRepository::isValid()
+bool GitRepository::isOpen()
 {
     return NULL != m_repo;
 }
@@ -80,7 +89,7 @@ git_repository* GitRepository::repository()
 void GitRepository::open()
 {
     git_repository* repo = NULL;
-    git_eval(git_repository_open(&repo, m_local_directory.absolutePath().toLocal8Bit()));
+    git_eval(git_repository_open(&repo, m_local_dir_path.absolutePath().toLocal8Bit()));
     setRepository(repo);
 }
 
@@ -90,10 +99,7 @@ void GitRepository::init()
 
     git_repository_init_options initopts = GIT_REPOSITORY_INIT_OPTIONS_INIT;
     initopts.flags = GIT_REPOSITORY_INIT_MKPATH;
-    git_eval(git_repository_init_ext(&repo, m_local_directory.absolutePath().toLocal8Bit(), &initopts));
-
-    git_auto<git_signature> sig;
-    git_eval(git_signature_now(&sig, "QtCacheTool", "qtcachetool@bobmail.info"));
+    git_eval(git_repository_init_ext(&repo, m_local_dir_path.absolutePath().toLocal8Bit(), &initopts));
 
     git_auto<git_index> index;
     git_eval(git_repository_index(&index, repo));
@@ -105,7 +111,7 @@ void GitRepository::init()
     git_eval(git_tree_lookup(&tree, repo, &tree_id));
 
     git_oid commit_id;
-    git_eval(git_commit_create_v(&commit_id, repo, "HEAD", sig, sig, NULL, "Initial commit", tree, 0));
+    git_eval(git_commit_create_v(&commit_id, repo, "HEAD", signature(), signature(), NULL, "Initial commit", tree, 0));
 
     setRepository(repo);
 }
@@ -115,7 +121,7 @@ void GitRepository::branch(const QString& name)
     git_repository* repo = repository();
     git_auto<git_reference> branch;
 
-    int err = git_branch_lookup(&branch, repo, name.toLocal8Bit(), GIT_BRANCH_LOCAL);
+    int err = git_branch_lookup(&branch, repo, name.toLatin1(), GIT_BRANCH_LOCAL);
     if (err == GIT_ENOTFOUND){
         git_oid parent_id;
         git_auto<git_commit> parent;
@@ -145,7 +151,7 @@ void GitRepository::add(const QString& filepath)
     git_index_free(index);
 }
 
-void GitRepository::commit(const QString& commitMessage)
+void GitRepository::commit(const QString& message)
 {
     git_repository* repo = repository();
 
@@ -170,11 +176,9 @@ void GitRepository::commit(const QString& commitMessage)
     git_auto<git_commit> parent;
     git_eval(git_commit_lookup(&parent, repo, &parent_id));
 
-    git_auto<git_signature> sig;
-    git_eval(git_signature_now(&sig, "QtCacheTool", "qtcachetool@bobmail.info"));
-
     git_oid commit_id;
-    git_eval(git_commit_create_v(&commit_id, repo, "HEAD", sig, sig, NULL, commitMessage.toLocal8Bit(), tree, 1, parent));
+    git_signature* sig = signature();
+    git_eval(git_commit_create_v(&commit_id, repo, "HEAD", sig, sig, NULL, message.toLocal8Bit(), tree, 1, parent));
 }
 
 void GitRepository::clone(const QString& url)
@@ -182,7 +186,7 @@ void GitRepository::clone(const QString& url)
     git_repository* repo = NULL;
     git_clone_options opts = GIT_CLONE_OPTIONS_INIT;
     opts.checkout_branch = "master";
-    git_eval(git_clone(&repo, url.toLatin1(), m_local_directory.absolutePath().toLocal8Bit(), &opts));
+    git_eval(git_clone(&repo, url.toLatin1(), m_local_dir_path.absolutePath().toLocal8Bit(), &opts));
     setRepository(repo);
 }
 
@@ -197,9 +201,32 @@ void GitRepository::push()
 
     git_auto<git_reference> head;
     git_eval(git_repository_head(&head, repo));
-    QString refname = QString("%1:%1").arg(git_reference_name(head));
+    QString refname = QString("+%1:%1").arg(git_reference_name(head));
     git_eval(git_remote_add_push(repo, remote_name, refname.toLatin1()));
+    git_eval(git_remote_upload(remote, NULL, NULL));
+}
 
-    git_push_options opts = GIT_PUSH_OPTIONS_INIT;
-    git_eval(git_remote_upload(remote, NULL, &opts));
+void GitRepository::fetch()
+{
+    git_repository* repo = repository();
+
+    const char* remote_name = "origin";
+    git_auto<git_remote> remote;
+    git_eval(git_remote_lookup(&remote, repo, remote_name));
+    git_eval(git_remote_connect(remote, GIT_DIRECTION_FETCH, NULL, NULL));
+    git_eval(git_remote_fetch(remote, NULL, NULL, NULL));
+}
+
+void GitRepository::setSignature(const QString& authorName, const QString& authorEmail)
+{
+    git_signature* sig = m_signature;
+    if (sig) { git_signature_free(sig); }
+    git_eval(git_signature_now(&sig, authorName.toLocal8Bit(), authorEmail.toLocal8Bit()));
+    m_signature = sig;
+}
+
+git_signature* GitRepository::signature()
+{
+    if (!m_signature) { setSignature(); }
+    return m_signature;
 }

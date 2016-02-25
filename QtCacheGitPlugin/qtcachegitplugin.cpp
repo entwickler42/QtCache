@@ -67,6 +67,7 @@ void QtCacheGitPlugin::progressEnd(QtC::Progress& p)
             m_repo->commit("Auto commit");
             if (!m_origin_url.isEmpty()){
                 m_repo->push();
+                m_repo->fetch();
             }
         }
     }
