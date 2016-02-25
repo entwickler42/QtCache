@@ -1,10 +1,21 @@
+CONFIG += ordered qtcachetool gitplugin
 TEMPLATE = subdirs
 
 SUBDIRS = \
     QtCache \
-    QtCacheUi \
-    QtCacheTool \
-    QtCachePluginSample \
-    QtCacheGitPlugin
+    QtCacheUi
 
-CONFIG += ordered
+qtcachetool{
+    SUBDIRS *=  \
+        QtCacheTool
+}
+
+samples{
+    SUBDIRS *=  \
+        QtCachePluginSample
+}
+
+gitplugin{
+    SUBDIRS *=  \
+        QtCacheGitPlugin
+}

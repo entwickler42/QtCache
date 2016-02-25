@@ -7,6 +7,7 @@
 class QCommandLineParser;
 class QSettings;
 class QtC::Progress;
+class GitRepository;
 
 class QTCACHEGITPLUGINSHARED_EXPORT QtCacheGitPlugin
         : public QtC::Plugin
@@ -33,6 +34,7 @@ private:
     QString m_branchname_local;
     QString m_branchname_remote;
     QString m_origin_url;
+    GitRepository* m_repo;
 };
 
 extern "C"
