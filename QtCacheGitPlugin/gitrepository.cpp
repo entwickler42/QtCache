@@ -31,6 +31,7 @@ git_auto<git_tree>::~git_auto() { git_tree_free(this->ref); }
 git_auto<git_reference>::~git_auto() { git_reference_free(this->ref); }
 git_auto<git_commit>::~git_auto() { git_commit_free(this->ref); }
 git_auto<git_status_list>::~git_auto() { git_status_list_free(this->ref); }
+git_auto<git_remote>::~git_auto() { git_remote_free(this->ref); }
 
 GitRepository::GitRepository(const QString &directoryPath)
     : m_local_directory(directoryPath),
@@ -176,9 +177,15 @@ void GitRepository::commit(const QString& commitMessage)
     git_eval(git_commit_create_v(&commit_id, repo, "HEAD", sig, sig, NULL, commitMessage.toLocal8Bit(), tree, 1, parent));
 }
 
-void GitRepository::clone(const QUrl& remote, const QString& branch)
+void GitRepository::clone(const QString& url)
 {
+    git_repository* repo = NULL;
+    git_clone_options opts = GIT_CLONE_OPTIONS_INIT;
+    opts.checkout_branch = "master";
+    git_eval(git_clone(&repo, url.toLatin1(), m_local_directory.absolutePath().toLocal8Bit(), &opts));
+    setRepository(repo);
 }
 
-void GitRepository::push(const QUrl& remote, const QString& branch)
-{}
+void GitRepository::push(const QString& remote, const QString& branch)
+{
+}

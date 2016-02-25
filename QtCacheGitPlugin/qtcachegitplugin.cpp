@@ -15,7 +15,7 @@ QtCacheGitPlugin::QtCacheGitPlugin(QObject* parent)
     m_repo = NULL;
     m_branchname_local = "test";
     m_branchname_remote = "master";
-    m_origin_url = "";
+    m_origin_url = "d:\\src\\QtCache\\build\\remote\\";
 }
 
 QtCacheGitPlugin::~QtCacheGitPlugin()

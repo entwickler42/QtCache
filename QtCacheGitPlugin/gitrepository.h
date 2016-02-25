@@ -3,7 +3,6 @@
 
 #include <QString>
 #include <QDir>
-#include <QUrl>
 
 struct git_repository;
 
@@ -22,8 +21,8 @@ public:
     void add(const QString& filepath);
     void commit(const QString& commitMessage);
 
-    void clone(const QUrl& remote, const QString& branch = QString());
-    void push(const QUrl& remote, const QString& branch = QString());
+    void clone(const QString& url);
+    void push(const QString& remote, const QString& branch = QString());
 
 private:
     QDir m_local_directory;
