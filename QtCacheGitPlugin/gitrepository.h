@@ -5,7 +5,7 @@
 #include <QDir>
 #include <QUrl>
 
-class git_repository;
+struct git_repository;
 
 class GitRepository
 {
@@ -17,11 +17,12 @@ public:
 
     void open();
     void init();
-    void clone(const QUrl& remote, const QString& branch = QString());
 
     void branch(const QString& name);
     void add(const QString& filepath);
     void commit(const QString& commitMessage);
+
+    void clone(const QUrl& remote, const QString& branch = QString());
     void push(const QUrl& remote, const QString& branch = QString());
 
 private:
