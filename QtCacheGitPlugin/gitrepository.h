@@ -22,7 +22,7 @@ public:
     void commit(const QString& commitMessage);
 
     void clone(const QString& url);
-    void push(const QString& remote, const QString& branch = QString());
+    void push();
 
 private:
     QDir m_local_directory;

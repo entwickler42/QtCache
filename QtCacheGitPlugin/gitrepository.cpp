@@ -186,6 +186,20 @@ void GitRepository::clone(const QString& url)
     setRepository(repo);
 }
 
-void GitRepository::push(const QString& remote, const QString& branch)
+void GitRepository::push()
 {
+    git_repository* repo = repository();
+
+    const char* remote_name = "origin";
+    git_auto<git_remote> remote;
+    git_eval(git_remote_lookup(&remote, repo, remote_name));
+    git_eval(git_remote_connect(remote, GIT_DIRECTION_PUSH, NULL, NULL));
+
+    git_auto<git_reference> head;
+    git_eval(git_repository_head(&head, repo));
+    QString refname = QString("%1:%1").arg(git_reference_name(head));
+    git_eval(git_remote_add_push(repo, remote_name, refname.toLatin1()));
+
+    git_push_options opts = GIT_PUSH_OPTIONS_INIT;
+    git_eval(git_remote_upload(remote, NULL, &opts));
 }
