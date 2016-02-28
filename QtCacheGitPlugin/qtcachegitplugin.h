@@ -28,12 +28,14 @@ public:
     void parseCommandlineOptionsBegin(QCommandLineParser&);
     void parseCommandlineOptionsEnd(QCommandLineParser&);
 
+    void saveApplicationSettingsEnd(QSettings&);
     void loadApplicationSettingsEnd(QSettings&);
 
 private:
+    QString m_origin_url;
     QString m_branchname_local;
     QString m_branchname_remote;
-    QString m_origin_url;
+    QString m_commit_message;
     GitRepository* m_repo;
 };
 

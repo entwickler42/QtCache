@@ -10,13 +10,13 @@ QtC::Plugin* createInstance(QObject* parent)
 }
 
 QtCacheGitPlugin::QtCacheGitPlugin(QObject* parent)
-    : QtC::Plugin(parent)
-{
-    m_repo = NULL;
-    m_branchname_local = "test";
-    m_branchname_remote = "master";
-    m_origin_url = "d:\\src\\QtCache\\build\\remote\\";
-}
+    : QtC::Plugin(parent),
+      m_origin_url(""),
+      m_branchname_local(""),
+      m_branchname_remote("master"),
+      m_commit_message("QtCache export entry"),
+      m_repo(NULL)
+{}
 
 QtCacheGitPlugin::~QtCacheGitPlugin()
 {
@@ -32,7 +32,9 @@ void QtCacheGitPlugin::progressBegin(QtC::Progress& p)
 
         try{
             m_repo->open();
-            m_repo->branch(m_branchname_local);
+            if (!m_branchname_local.isEmpty()) {
+                m_repo->branch(m_branchname_local);
+            }
         }catch(...){
             try{
                 if (m_origin_url.length() > 0) {
@@ -40,7 +42,9 @@ void QtCacheGitPlugin::progressBegin(QtC::Progress& p)
                 }else{
                     m_repo->init();
                 }
-                m_repo->branch(m_branchname_local);
+                if (!m_branchname_local.isEmpty()) {
+                    m_repo->branch(m_branchname_local);
+                }
             }catch(...){
                 throw;
             }
@@ -64,7 +68,7 @@ void QtCacheGitPlugin::progressEnd(QtC::Progress& p)
 {
     if (p.type() == QtC::Progress::BULK_SAVE){
         if (m_repo){
-            m_repo->commit("Auto commit");
+            m_repo->commit(m_commit_message);
             if (!m_origin_url.isEmpty()){
                 m_repo->push();
                 m_repo->fetch();
@@ -73,11 +77,53 @@ void QtCacheGitPlugin::progressEnd(QtC::Progress& p)
     }
 }
 
-void QtCacheGitPlugin::parseCommandlineOptionsBegin(QCommandLineParser&)
-{}
+void QtCacheGitPlugin::parseCommandlineOptionsBegin(QCommandLineParser& p)
+{
+    QCommandLineOption origin_url("originurl", tr("clone, use and push remote repositry"), "url", "");
+    p.addOption(origin_url);
 
-void QtCacheGitPlugin::parseCommandlineOptionsEnd(QCommandLineParser&)
-{}
+    QCommandLineOption local_branch("localbranch", tr("target branch name"), "name", "");
+    p.addOption(local_branch);
 
-void QtCacheGitPlugin::loadApplicationSettingsEnd(QSettings&)
-{}
+    QCommandLineOption remote_branch("remotebranch", tr("remote branch name"), "name", "");
+    p.addOption(remote_branch);
+
+    QCommandLineOption commit_message("commitmessage", tr("use this message for commits"), "message", "");
+    p.addOption(commit_message);
+}
+
+void QtCacheGitPlugin::parseCommandlineOptionsEnd(QCommandLineParser& p)
+{
+    if(p.isSet("originurl")){
+        m_origin_url = p.value("originurl");
+    }
+    if(p.isSet("localbranch")){
+        m_branchname_local = p.value("localbranch");
+    }
+    if(p.isSet("remotebranch")){
+        m_branchname_remote = p.value("remotebranch");
+    }
+    if(p.isSet("commitmessage")){
+        m_commit_message = p.value("commitmessage");
+    }
+}
+
+void QtCacheGitPlugin::loadApplicationSettingsEnd(QSettings& conf)
+{
+    conf.beginGroup("GitPlugin");
+    m_origin_url = conf.value("OriginUrl", "").toString();
+    m_branchname_remote = conf.value("RemoteBranch", "").toString();
+    m_branchname_local = conf.value("LocalBranch", "").toString();
+    m_commit_message = conf.value("CommitMessage", "QtCacheTool export commit").toString();
+    conf.endGroup();
+}
+
+void QtCacheGitPlugin::saveApplicationSettingsEnd(QSettings& conf)
+{
+    conf.beginGroup("GitPlugin");
+    conf.setValue("OriginUrl", m_origin_url);
+    conf.setValue("RemoteBranch", m_branchname_remote);
+    conf.setValue("LocalBranch", m_branchname_local);
+    conf.setValue("CommitMessage", m_commit_message);
+    conf.endGroup();
+}
