@@ -15,7 +15,7 @@
 #ifndef QTCACHE_H
 #define QTCACHE_H
 
-#include "qtcacheprogress.h"
+#include "qtcacheprogressreporter.h"
 #include "poormanslogger.h"
 #include <QObject>
 
@@ -24,19 +24,14 @@ class QTranslator;
 QTCACHENAMESPACEBEGIN
 
 class QtCachePrivate;
-class QtCachePluginObserver;
+class PluginDirector;
 
 class QTCACHESHARED_EXPORT QtCache
-        : public QObject
+        : public ProgressReporter
 {
     Q_OBJECT
 
     friend class QtCachePrivate;
-
-signals:
-    void progressBegin(QtC::Progress&);
-    void progress(QtC::Progress&);
-    void progressEnd(QtC::Progress&);
 
 public:
     enum ObjectFilterType
@@ -68,17 +63,13 @@ public:
     void exportXmlFile(const QString& directoryPath, const QString& objectName);
     void compileObjects(const QString& objectNames, const QString& qspec = "cf");
 
-    QtCachePluginObserver* plugins() const;
+    PluginDirector* plugins() const;
 
 protected:
     QtCache();
 
 private:
     QtCachePrivate* d;
-
-    void reportProcessBegin(Progress& p);
-    void reportProgress(Progress& p);
-    void reportProcessEnd(Progress& p);
 };
 
 QTCACHENAMESPACEEND

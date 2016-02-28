@@ -21,7 +21,7 @@
 #include <cacheconnectiondialog.h>
 #include <qtcachebulkimport.h>
 #include <qtcachebulkexport.h>
-#include <qtcachepluginobserver.h>
+#include <qtcacheplugindirector.h>
 #include <QCommandLineParser>
 #include <QStringList>
 #include <QMessageBox>

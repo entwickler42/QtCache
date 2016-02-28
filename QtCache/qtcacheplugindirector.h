@@ -1,5 +1,5 @@
-#ifndef QTCACHEPLUGINOBSERVER_H
-#define QTCACHEPLUGINOBSERVER_H
+#ifndef QTCACHEPLUGINDIRECTOR_H
+#define QTCACHEPLUGINDIRECTOR_H
 
 #include "qtcache_global.h"
 #include "qtcacheexception.h"
@@ -7,14 +7,14 @@
 
 QTCACHENAMESPACEBEGIN
 
-class QTCACHESHARED_EXPORT QtCachePluginObserver
+class QTCACHESHARED_EXPORT PluginDirector
         : public Plugin
 {
     Q_OBJECT
 
 public:
-    explicit QtCachePluginObserver(QObject *parent = 0);
-    ~QtCachePluginObserver();
+    explicit PluginDirector(QObject *parent = 0);
+    ~PluginDirector();
 
     const QList<Plugin*>& loaded() const { return m_loaded_plugins; }
     QList<Plugin*>& loaded() { return m_loaded_plugins; }
@@ -38,7 +38,7 @@ protected:
     QString description() const { return "QtCachePluginObserver"; }
 
 private:
-    typedef bool (QtCachePluginObserver::*ExceptionHandler)(std::exception&, Plugin* plugin);
+    typedef bool (PluginDirector::*ExceptionHandler)(std::exception&, Plugin* plugin);
 
     QList<Plugin*> m_loaded_plugins;
 
@@ -47,12 +47,12 @@ private:
 
     bool emitException(std::exception& ex, Plugin* plugin);
 
-    void foreachPlugin(void (Plugin::*fn)(), ExceptionHandler exceptionHandler = &QtCachePluginObserver::emitException);
-    template<class T> void foreachPlugin(T& args, void (Plugin::*fn)(T&), ExceptionHandler exceptionHandler = &QtCachePluginObserver::emitException);
+    void foreachPlugin(void (Plugin::*fn)(), ExceptionHandler exceptionHandler = &PluginDirector::emitException);
+    template<class T> void foreachPlugin(T& args, void (Plugin::*fn)(T&), ExceptionHandler exceptionHandler = &PluginDirector::emitException);
 
-    template<class T> QList<T*> loadDirectory(const QString& path, ExceptionHandler exceptionHandler = &QtCachePluginObserver::emitException);
+    template<class T> QList<T*> loadDirectory(const QString& path, ExceptionHandler exceptionHandler = &PluginDirector::emitException);
 };
 
 QTCACHENAMESPACEEND
 
-#endif // QTCACHEPLUGINOBSERVER_H
+#endif // QTCACHEPLUGINDIRECTOR_H

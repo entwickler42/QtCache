@@ -12,21 +12,21 @@ DEFINES += QTCACHE_LIBRARY
 SOURCES += \
     poormanslogger.cpp \
     qtcacheplugin.cpp \
-    qtcachepluginobserver.cpp \
     qtcache.cpp \
     qtcacheexception.cpp \
     qtcachexmlobject.cpp \
     qtcachexmlreader.cpp \
     qtcachebulkaction.cpp \
     qtcachebulkimport.cpp \
-    qtcachebulkexport.cpp
+    qtcachebulkexport.cpp \
+    qtcacheplugindirector.cpp \
+    qtcacheprogressreporter.cpp
 
 HEADERS += \
     qtcache_global.h \
     qtcache_config.h \
     poormanslogger.h \
     qtcacheplugin.h \
-    qtcachepluginobserver.h \
     qtcache_p.h \
     qtcache.h \
     qtcacheexception.h \
@@ -35,7 +35,9 @@ HEADERS += \
     qtcacheprogress.h \
     qtcachebulkaction.h \
     qtcachebulkimport.h \
-    qtcachebulkexport.h
+    qtcachebulkexport.h \
+    qtcacheplugindirector.h \
+    qtcacheprogressreporter.h
 
 TRANSLATIONS = qtcache_de_DE.ts
 

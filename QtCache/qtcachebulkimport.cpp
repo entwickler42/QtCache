@@ -13,7 +13,7 @@
 */
 
 #include "qtcachebulkimport.h"
-#include "qtcachepluginobserver.h"
+#include "qtcacheplugindirector.h"
 #include <stdexcept>
 #include <qtcachexmlreader.h>
 

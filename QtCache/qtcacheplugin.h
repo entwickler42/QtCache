@@ -46,7 +46,7 @@ public:
     virtual int version() const { return 0x000000; }
 
 protected:
-    friend class QtCachePluginObserver;
+    friend class PluginDirector;
 
     virtual void initialize() {}
     virtual void deinitialize() {}

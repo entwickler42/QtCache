@@ -2,11 +2,12 @@
 #define QTCACHEBULKACTION_H
 
 #include "qtcache.h"
+#include "qtcacheprogressreporter.h"
 
 QTCACHENAMESPACEBEGIN
 
 class QTCACHESHARED_EXPORT BulkAction
-        : public QObject
+        : public ProgressReporter
 {
     Q_OBJECT
 
@@ -15,16 +16,10 @@ public:
 
     bool isAborted() const { return m_aborted; }
     QtCache* cache() const { return m_cache; }
-    const Progress& currentProgress() const { return m_current_progress; }
 
 signals:
     void aborted();
     void finished();
-    void error(std::exception& ex, QtC::Progress&);
-
-    void progressBegin(QtC::Progress&);
-    void progress(QtC::Progress&);
-    void progressEnd(QtC::Progress&);
 
 public slots:
     void abort() { setAbort(true); }
@@ -32,14 +27,8 @@ public slots:
 
 protected:
     void setAbort(bool abort) { m_aborted = abort; }
-    Progress& currentProgress() { return m_current_progress; }
-
-    void reportProcessBegin(Progress& p);
-    void reportProgress(Progress& p);
-    void reportProcessEnd(Progress& p);
 
 private:
-    Progress m_current_progress;
     QtCache* m_cache = NULL;
     bool m_aborted = false;
 };

@@ -17,7 +17,7 @@
 
 #include "qtcache.h"
 #include "qtcacheexception.h"
-#include "qtcachepluginobserver.h"
+#include "qtcacheplugindirector.h"
 #include <ios>
 #include <QDir>
 #include <QFile>
@@ -42,7 +42,7 @@ typedef d_ref<Qt_CacheTool> QtCacheToolType;
 class QtCachePrivate
 {
 public:
-    mutable QtCachePluginObserver* plugin_observer;
+    mutable PluginDirector* plugin_observer;
     QString cn = "";
     QString uci = "%SYS";
     QString user = "";
@@ -54,7 +54,7 @@ public:
           plugin_observer(NULL)
     {
         TRY_LOG_THROW{
-            plugin_observer = new QtCachePluginObserver();
+            plugin_observer = new PluginDirector();
         }CATCH_LOG_THROW;
     }
 

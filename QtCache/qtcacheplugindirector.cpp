@@ -1,11 +1,11 @@
-#include "qtcachepluginobserver.h"
+#include "qtcacheplugindirector.h"
 #include <QCoreApplication>
 #include <QLibrary>
 #include <QDir>
 
 QTCACHENAMESPACEUSE
 
-QtCachePluginObserver::QtCachePluginObserver(QObject *parent)
+PluginDirector::PluginDirector(QObject *parent)
     : Plugin(parent)
 {
     QString plugin_directory_path = QDir::cleanPath(
@@ -17,7 +17,7 @@ QtCachePluginObserver::QtCachePluginObserver(QObject *parent)
     foreachPlugin(&Plugin::initialize);
 }
 
-QtCachePluginObserver::~QtCachePluginObserver()
+PluginDirector::~PluginDirector()
 {
     foreachPlugin(&Plugin::deinitialize);
     foreach(Plugin* i, m_loaded_plugins){
@@ -26,69 +26,69 @@ QtCachePluginObserver::~QtCachePluginObserver()
     }
 }
 
-void QtCachePluginObserver::initialize()
+void PluginDirector::initialize()
 {
     foreachPlugin(&Plugin::initialize);
 }
 
-void QtCachePluginObserver::deinitialize()
+void PluginDirector::deinitialize()
 {
     foreachPlugin(&Plugin::deinitialize);
 }
 
-void QtCachePluginObserver::progressBegin(Progress& progress)
+void PluginDirector::progressBegin(Progress& progress)
 {
     foreachPlugin(progress, &Plugin::progressBegin);
 }
 
-void QtCachePluginObserver::progress(Progress& progress)
+void PluginDirector::progress(Progress& progress)
 {
     foreachPlugin(progress, &Plugin::progress);
 }
 
-void QtCachePluginObserver::progressEnd(Progress& progress)
+void PluginDirector::progressEnd(Progress& progress)
 {
     foreachPlugin(progress, &Plugin::progressEnd);
 }
 
-void QtCachePluginObserver::parseCommandlineOptionsBegin(QCommandLineParser& commandLineParser)
+void PluginDirector::parseCommandlineOptionsBegin(QCommandLineParser& commandLineParser)
 {
     foreachPlugin(commandLineParser, &Plugin::parseCommandlineOptionsBegin);
 }
 
-void QtCachePluginObserver::parseCommandlineOptionsEnd(QCommandLineParser& commandLineParser)
+void PluginDirector::parseCommandlineOptionsEnd(QCommandLineParser& commandLineParser)
 {
     foreachPlugin(commandLineParser, &Plugin::parseCommandlineOptionsEnd);
 }
 
-void QtCachePluginObserver::loadApplicationSettingsBegin(QSettings& settings)
+void PluginDirector::loadApplicationSettingsBegin(QSettings& settings)
 {
     foreachPlugin(settings, &Plugin::loadApplicationSettingsBegin);
 }
 
-void QtCachePluginObserver::loadApplicationSettingsEnd(QSettings& settings)
+void PluginDirector::loadApplicationSettingsEnd(QSettings& settings)
 {
     foreachPlugin(settings, &Plugin::loadApplicationSettingsEnd);
 }
 
-void QtCachePluginObserver::saveApplicationSettingsBegin(QSettings& settings)
+void PluginDirector::saveApplicationSettingsBegin(QSettings& settings)
 {
     foreachPlugin(settings, &Plugin::saveApplicationSettingsBegin);
 }
 
-void QtCachePluginObserver::saveApplicationSettingsEnd(QSettings& settings)
+void PluginDirector::saveApplicationSettingsEnd(QSettings& settings)
 {
     foreachPlugin(settings, &Plugin::saveApplicationSettingsEnd);
 }
 
-bool QtCachePluginObserver::emitException(std::exception& ex, Plugin* plugin)
+bool PluginDirector::emitException(std::exception& ex, Plugin* plugin)
 {
     bool abort = false;
     emit exception(ex, plugin, abort);
     return abort;
 }
 
-void QtCachePluginObserver::foreachPlugin(void (Plugin::*fn)(), ExceptionHandler exceptionHandler)
+void PluginDirector::foreachPlugin(void (Plugin::*fn)(), ExceptionHandler exceptionHandler)
 {
     foreach(Plugin* i, m_loaded_plugins){
         try{
@@ -104,7 +104,7 @@ void QtCachePluginObserver::foreachPlugin(void (Plugin::*fn)(), ExceptionHandler
     }
 }
 
-template<class T> void QtCachePluginObserver::foreachPlugin(T& args, void (Plugin::*fn)(T&), ExceptionHandler exceptionHandler)
+template<class T> void PluginDirector::foreachPlugin(T& args, void (Plugin::*fn)(T&), ExceptionHandler exceptionHandler)
 {
     foreach(Plugin* i, m_loaded_plugins){
         try{
@@ -120,7 +120,7 @@ template<class T> void QtCachePluginObserver::foreachPlugin(T& args, void (Plugi
     }
 }
 
-template<class T> QList<T*> QtCachePluginObserver::loadDirectory(const QString& path, ExceptionHandler exceptionHandler)
+template<class T> QList<T*> PluginDirector::loadDirectory(const QString& path, ExceptionHandler exceptionHandler)
 {
     QList<T*> ls;
     QDir plugin_dir(path);

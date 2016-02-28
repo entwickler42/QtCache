@@ -2,14 +2,6 @@
 <ui version="4.0">
  <class>MainWindow</class>
  <widget class="QMainWindow" name="MainWindow">
-  <property name="geometry">
-   <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>388</width>
-    <height>444</height>
-   </rect>
-  </property>
   <property name="windowTitle">
    <string>Qt Caché Tool</string>
   </property>
@@ -66,7 +58,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tabImport">
        <attribute name="title">
@@ -375,9 +367,6 @@
               <widget class="QCheckBox" name="includeFilterEnabled">
                <property name="text">
                 <string/>
-               </property>
-               <property name="checked">
-                <bool>true</bool>
                </property>
               </widget>
              </item>
