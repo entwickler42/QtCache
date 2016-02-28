@@ -36,6 +36,8 @@ private:
     QString m_branchname_local;
     QString m_branchname_remote;
     QString m_commit_message;
+    QString m_commit_author;
+    QString m_commit_email;
     GitRepository* m_repo;
 };
 

@@ -15,6 +15,8 @@ QtCacheGitPlugin::QtCacheGitPlugin(QObject* parent)
       m_branchname_local(""),
       m_branchname_remote("master"),
       m_commit_message("QtCache export entry"),
+      m_commit_author("LibQtCache GitPlugin"),
+      m_commit_email("entwickler42@gmail.com"),
       m_repo(NULL)
 {}
 
@@ -29,6 +31,7 @@ void QtCacheGitPlugin::progressBegin(QtC::Progress& p)
         QString dirpath = p.tag().toString();
         delete m_repo;
         m_repo = new GitRepository(dirpath);
+        m_repo->setSignature(m_commit_author, m_commit_email);
 
         try{
             m_repo->open();
@@ -90,6 +93,12 @@ void QtCacheGitPlugin::parseCommandlineOptionsBegin(QCommandLineParser& p)
 
     QCommandLineOption commit_message("commitmessage", tr("use this message for commits"), "message", "");
     p.addOption(commit_message);
+
+    QCommandLineOption commit_author("commitauthor", tr("autor name used in git signature"), "name", "");
+    p.addOption(commit_author);
+
+    QCommandLineOption commit_email("commitemail", tr("autor email address used in git signature"), "adress", "");
+    p.addOption(commit_email);
 }
 
 void QtCacheGitPlugin::parseCommandlineOptionsEnd(QCommandLineParser& p)
@@ -106,6 +115,12 @@ void QtCacheGitPlugin::parseCommandlineOptionsEnd(QCommandLineParser& p)
     if(p.isSet("commitmessage")){
         m_commit_message = p.value("commitmessage");
     }
+    if(p.isSet("remotebranch")){
+        m_commit_author = p.value("commitauthor");
+    }
+    if(p.isSet("commitmessage")){
+        m_commit_email = p.value("commitemail");
+    }
 }
 
 void QtCacheGitPlugin::loadApplicationSettingsEnd(QSettings& conf)
@@ -115,6 +130,8 @@ void QtCacheGitPlugin::loadApplicationSettingsEnd(QSettings& conf)
     m_branchname_remote = conf.value("RemoteBranch", "").toString();
     m_branchname_local = conf.value("LocalBranch", "").toString();
     m_commit_message = conf.value("CommitMessage", "QtCacheTool export commit").toString();
+    m_commit_author = conf.value("AuthorName", "").toString();
+    m_commit_email = conf.value("AuthorEmail", "").toString();
     conf.endGroup();
 }
 
@@ -125,5 +142,7 @@ void QtCacheGitPlugin::saveApplicationSettingsEnd(QSettings& conf)
     conf.setValue("RemoteBranch", m_branchname_remote);
     conf.setValue("LocalBranch", m_branchname_local);
     conf.setValue("CommitMessage", m_commit_message);
+    conf.setValue("AuthorName", m_commit_author);
+    conf.setValue("AuthorEmail", m_commit_email);
     conf.endGroup();
 }
