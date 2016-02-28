@@ -39,7 +39,9 @@ public:
         BULK_UPLOAD,
         BULK_COMPILE,
         BULK_COMPILE_EARLY,
-        BULK_SAVE
+        BULK_SAVE,
+        PLUGIN_LOAD,
+        USER_DEFINED
     };
 
     Progress(Type type, QVariant tag, int max = 0, int cur = 0)

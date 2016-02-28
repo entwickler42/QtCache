@@ -25,8 +25,10 @@ QtCacheGitPlugin::~QtCacheGitPlugin()
     delete m_repo;
 }
 
-void QtCacheGitPlugin::progressBegin(QtC::Progress& p)
+void QtCacheGitPlugin::onProgressBegin(QtC::Progress& p)
 {
+    throw std::runtime_error("Foo");
+
     if (p.type() == QtC::Progress::BULK_SAVE){
         QString dirpath = p.tag().toString();
         delete m_repo;
@@ -55,7 +57,7 @@ void QtCacheGitPlugin::progressBegin(QtC::Progress& p)
     }
 }
 
-void QtCacheGitPlugin::progress(QtC::Progress& p)
+void QtCacheGitPlugin::onProgress(QtC::Progress& p)
 {
     if (p.type() == QtC::Progress::BULK_SAVE){
         QStringList tags = p.tag().toStringList();
@@ -67,7 +69,7 @@ void QtCacheGitPlugin::progress(QtC::Progress& p)
     }
 }
 
-void QtCacheGitPlugin::progressEnd(QtC::Progress& p)
+void QtCacheGitPlugin::onProgressEnd(QtC::Progress& p)
 {
     if (p.type() == QtC::Progress::BULK_SAVE){
         if (m_repo){
@@ -80,7 +82,7 @@ void QtCacheGitPlugin::progressEnd(QtC::Progress& p)
     }
 }
 
-void QtCacheGitPlugin::parseCommandlineOptionsBegin(QCommandLineParser& p)
+void QtCacheGitPlugin::onParseCommandlineOptionsBegin(QCommandLineParser& p)
 {
     QCommandLineOption origin_url("originurl", tr("clone, use and push remote repositry"), "url", "");
     p.addOption(origin_url);
@@ -101,7 +103,7 @@ void QtCacheGitPlugin::parseCommandlineOptionsBegin(QCommandLineParser& p)
     p.addOption(commit_email);
 }
 
-void QtCacheGitPlugin::parseCommandlineOptionsEnd(QCommandLineParser& p)
+void QtCacheGitPlugin::onParseCommandlineOptionsEnd(QCommandLineParser& p)
 {
     if(p.isSet("originurl")){
         m_origin_url = p.value("originurl");
@@ -123,7 +125,7 @@ void QtCacheGitPlugin::parseCommandlineOptionsEnd(QCommandLineParser& p)
     }
 }
 
-void QtCacheGitPlugin::loadApplicationSettingsEnd(QSettings& conf)
+void QtCacheGitPlugin::onLoadApplicationSettingsEnd(QSettings& conf)
 {
     conf.beginGroup("GitPlugin");
     m_origin_url = conf.value("OriginUrl", "").toString();
@@ -135,7 +137,7 @@ void QtCacheGitPlugin::loadApplicationSettingsEnd(QSettings& conf)
     conf.endGroup();
 }
 
-void QtCacheGitPlugin::saveApplicationSettingsEnd(QSettings& conf)
+void QtCacheGitPlugin::onSaveApplicationSettingsEnd(QSettings& conf)
 {
     conf.beginGroup("GitPlugin");
     conf.setValue("OriginUrl", m_origin_url);

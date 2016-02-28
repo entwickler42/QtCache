@@ -68,12 +68,13 @@ private slots:
     void on_saveCurrentFilter_pressed();
     void on_removeCurrentFilter_pressed();
 
-    void cacheProgressBegin(QtC::Progress& progress);
+    void onProgressError(std::exception&, QtC::Progress&);
+    void onProgressBegin(QtC::Progress&);
+    void onProgress(QtC::Progress&);
+    void onProgressEnd(QtC::Progress&);
 
-    void bulkActionAborted();
-    void bulkActionFinished();
-    void bulkActionError(std::exception&, QtC::Progress&);
-    void bulkActionProgress(QtC::Progress&);
+    void onBulkActionAborted();
+    void onBulkActionFinished();
 
 private:
     Ui::MainWindow *ui;
@@ -83,6 +84,22 @@ private:
 
     QStringList loadFilters() const;
     void saveFilters(const QStringList&) const;
+
+    void subscripe(QtC::ProgressReporter* reporter)
+    {
+        connect(reporter, SIGNAL(error(std::exception&,QtC::Progress&)), this, SLOT(onProgressError(std::exception&,QtC::Progress&)));
+        connect(reporter, SIGNAL(progressBegin(QtC::Progress&)), this, SLOT(onProgressBegin(QtC::Progress&)));
+        connect(reporter, SIGNAL(progress(QtC::Progress&)), this, SLOT(onProgress(QtC::Progress&)));
+        connect(reporter, SIGNAL(progressEnd(QtC::Progress&)), this, SLOT(onProgressEnd(QtC::Progress&)));
+    }
+
+    void unsubscripe(QtC::ProgressReporter* reporter)
+    {
+        disconnect(reporter, SIGNAL(error(std::exception&,QtC::Progress&)), this, SLOT(onProgressError(std::exception&,QtC::Progress&)));
+        disconnect(reporter, SIGNAL(progressBegin(QtC::Progress&)), this, SLOT(onProgressBegin(QtC::Progress&)));
+        disconnect(reporter, SIGNAL(progress(QtC::Progress&)), this, SLOT(onProgress(QtC::Progress&)));
+        disconnect(reporter, SIGNAL(progressEnd(QtC::Progress&)), this, SLOT(onProgressEnd(QtC::Progress&)));
+    }
 
     void onServerConnected();
     void preImportHook();

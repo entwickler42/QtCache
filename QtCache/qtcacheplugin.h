@@ -24,9 +24,11 @@ class QCommandLineParser;
 
 QTCACHENAMESPACEBEGIN
 
-class QTCACHESHARED_EXPORT Plugin
-    : public QObject
+class QTCACHESHARED_EXPORT Plugin :
+        public ProgressReporter
 {
+    friend class PluginDirector;
+
     Q_OBJECT
 
 public:
@@ -36,31 +38,25 @@ public:
     explicit Plugin(QObject *parent = 0);
     virtual ~Plugin();
 
-    QtCache* cache() const
-    {
-        return QtCache::instance();
-    }
-
     virtual QString name() const = 0;
     virtual QString description() const { return ""; }
     virtual int version() const { return 0x000000; }
 
-protected:
-    friend class PluginDirector;
+protected slots:
+    virtual void onInitialize() {}
+    virtual void onDeinitialize() {}
 
-    virtual void initialize() {}
-    virtual void deinitialize() {}
+    virtual void onError(std::exception&, Progress&) {}
+    virtual void onProgressBegin(Progress&) {}
+    virtual void onProgress(Progress&) {}
+    virtual void onProgressEnd(Progress&) {}
 
-    virtual void progressBegin(Progress&) {}
-    virtual void progress(Progress&) {}
-    virtual void progressEnd(Progress&) {}
-
-    virtual void parseCommandlineOptionsBegin(QCommandLineParser&) {}
-    virtual void parseCommandlineOptionsEnd(QCommandLineParser&) {}
-    virtual void loadApplicationSettingsBegin(QSettings&) {}
-    virtual void loadApplicationSettingsEnd(QSettings&) {}
-    virtual void saveApplicationSettingsBegin(QSettings&) {}
-    virtual void saveApplicationSettingsEnd(QSettings&) {}
+    virtual void onParseCommandlineOptionsBegin(QCommandLineParser&) {}
+    virtual void onParseCommandlineOptionsEnd(QCommandLineParser&) {}
+    virtual void onLoadApplicationSettingsBegin(QSettings&) {}
+    virtual void onLoadApplicationSettingsEnd(QSettings&) {}
+    virtual void onSaveApplicationSettingsBegin(QSettings&) {}
+    virtual void onSaveApplicationSettingsEnd(QSettings&) {}
 };
 
 template<class T>

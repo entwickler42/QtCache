@@ -21,15 +21,15 @@ public:
     QString name() const { return "QtCacheGitPlugin"; }
     QString description() const { return "Revision control for exported Caché objects using Git"; }
 
-    void progressBegin(QtC::Progress&);
-    void progress(QtC::Progress&);
-    void progressEnd(QtC::Progress&);
+    void onProgressBegin(QtC::Progress&);
+    void onProgress(QtC::Progress&);
+    void onProgressEnd(QtC::Progress&);
 
-    void parseCommandlineOptionsBegin(QCommandLineParser&);
-    void parseCommandlineOptionsEnd(QCommandLineParser&);
+    void onParseCommandlineOptionsBegin(QCommandLineParser&);
+    void onParseCommandlineOptionsEnd(QCommandLineParser&);
 
-    void saveApplicationSettingsEnd(QSettings&);
-    void loadApplicationSettingsEnd(QSettings&);
+    void onSaveApplicationSettingsEnd(QSettings&);
+    void onLoadApplicationSettingsEnd(QSettings&);
 
 private:
     QString m_origin_url;

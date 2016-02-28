@@ -26,8 +26,8 @@ QTCACHENAMESPACEBEGIN
 class QtCachePrivate;
 class PluginDirector;
 
-class QTCACHESHARED_EXPORT QtCache
-        : public ProgressReporter
+class QTCACHESHARED_EXPORT QtCache :
+        public ProgressReporter
 {
     Q_OBJECT
 

@@ -13,114 +13,137 @@ PluginDirector::PluginDirector(QObject *parent)
                 + QDir::separator()
                 + "plugins");
 
-    m_loaded_plugins = loadDirectory<Plugin>(plugin_directory_path);
-    foreachPlugin(&Plugin::initialize);
+    QList<Plugin*> ls = loadDirectory<Plugin>(plugin_directory_path);
+    foreach(Plugin* i, ls){ this->registerPlugin(i); }
+    foreachPlugin(&Plugin::onInitialize);
 }
 
 PluginDirector::~PluginDirector()
 {
-    foreachPlugin(&Plugin::deinitialize);
+    foreachPlugin(&Plugin::onDeinitialize);
     foreach(Plugin* i, m_loaded_plugins){
         m_loaded_plugins.removeAll(i);
         delete i;
     }
 }
 
-void PluginDirector::initialize()
+void PluginDirector::onInitialize()
 {
-    foreachPlugin(&Plugin::initialize);
+    foreachPlugin(&Plugin::onInitialize);
 }
 
-void PluginDirector::deinitialize()
+void PluginDirector::onDeinitialize()
 {
-    foreachPlugin(&Plugin::deinitialize);
+    foreachPlugin(&Plugin::onDeinitialize);
 }
 
-void PluginDirector::progressBegin(Progress& progress)
+void PluginDirector::onError(std::exception& ex, Progress& progress)
 {
-    foreachPlugin(progress, &Plugin::progressBegin);
+    foreach(Plugin* i, m_loaded_plugins){
+        try{
+            i->onError(ex, progress);
+        }catch(std::exception& ex){
+            LOG_EXCEPTION(ex);
+            this->reportError(ex, currentProgress());
+            if (currentProgress().isAborted()) { break; }
+        }catch(...){
+            LOG_UNKNOWN_EXCEPTION;
+            QtCacheException ex("Unknown error");
+            this->reportError(ex, currentProgress());
+            if (currentProgress().isAborted()) { break; }
+        }
+    }
 }
 
-void PluginDirector::progress(Progress& progress)
+void PluginDirector::onProgressBegin(Progress& progress)
 {
-    foreachPlugin(progress, &Plugin::progress);
+    foreachPlugin(progress, &Plugin::onProgressBegin);
 }
 
-void PluginDirector::progressEnd(Progress& progress)
+void PluginDirector::onProgress(Progress& progress)
 {
-    foreachPlugin(progress, &Plugin::progressEnd);
+    foreachPlugin(progress, &Plugin::onProgress);
 }
 
-void PluginDirector::parseCommandlineOptionsBegin(QCommandLineParser& commandLineParser)
+void PluginDirector::onProgressEnd(Progress& progress)
 {
-    foreachPlugin(commandLineParser, &Plugin::parseCommandlineOptionsBegin);
+    foreachPlugin(progress, &Plugin::onProgressEnd);
 }
 
-void PluginDirector::parseCommandlineOptionsEnd(QCommandLineParser& commandLineParser)
+void PluginDirector::onParseCommandlineOptionsBegin(QCommandLineParser& commandLineParser)
 {
-    foreachPlugin(commandLineParser, &Plugin::parseCommandlineOptionsEnd);
+    foreachPlugin(commandLineParser, &Plugin::onParseCommandlineOptionsBegin);
 }
 
-void PluginDirector::loadApplicationSettingsBegin(QSettings& settings)
+void PluginDirector::onParseCommandlineOptionsEnd(QCommandLineParser& commandLineParser)
 {
-    foreachPlugin(settings, &Plugin::loadApplicationSettingsBegin);
+    foreachPlugin(commandLineParser, &Plugin::onParseCommandlineOptionsEnd);
 }
 
-void PluginDirector::loadApplicationSettingsEnd(QSettings& settings)
+void PluginDirector::onLoadApplicationSettingsBegin(QSettings& settings)
 {
-    foreachPlugin(settings, &Plugin::loadApplicationSettingsEnd);
+    foreachPlugin(settings, &Plugin::onLoadApplicationSettingsBegin);
 }
 
-void PluginDirector::saveApplicationSettingsBegin(QSettings& settings)
+void PluginDirector::onLoadApplicationSettingsEnd(QSettings& settings)
 {
-    foreachPlugin(settings, &Plugin::saveApplicationSettingsBegin);
+    foreachPlugin(settings, &Plugin::onLoadApplicationSettingsEnd);
 }
 
-void PluginDirector::saveApplicationSettingsEnd(QSettings& settings)
+void PluginDirector::onSaveApplicationSettingsBegin(QSettings& settings)
 {
-    foreachPlugin(settings, &Plugin::saveApplicationSettingsEnd);
+    foreachPlugin(settings, &Plugin::onSaveApplicationSettingsBegin);
 }
 
-bool PluginDirector::emitException(std::exception& ex, Plugin* plugin)
+void PluginDirector::onSaveApplicationSettingsEnd(QSettings& settings)
 {
-    bool abort = false;
-    emit exception(ex, plugin, abort);
-    return abort;
+    foreachPlugin(settings, &Plugin::onSaveApplicationSettingsEnd);
 }
 
-void PluginDirector::foreachPlugin(void (Plugin::*fn)(), ExceptionHandler exceptionHandler)
+void PluginDirector::foreachPlugin(void (Plugin::*fn)())
 {
     foreach(Plugin* i, m_loaded_plugins){
         try{
             (i->*fn)();
         }catch(std::exception& ex){
             LOG_EXCEPTION(ex);
-            if ((this->*exceptionHandler)(ex, i)){ break; }
+            this->reportError(ex, currentProgress());
+            if (currentProgress().isAborted()) { break; }
         }catch(...){
             LOG_UNKNOWN_EXCEPTION;
             QtCacheException ex("Unknown error");
-            if ((this->*exceptionHandler)(ex, i)){ break; }
+            this->reportError(ex, currentProgress());
+            if (currentProgress().isAborted()) { break; }
         }
     }
 }
 
-template<class T> void PluginDirector::foreachPlugin(T& args, void (Plugin::*fn)(T&), ExceptionHandler exceptionHandler)
+template<class T> void PluginDirector::foreachPlugin(T& args, void (Plugin::*fn)(T&))
 {
     foreach(Plugin* i, m_loaded_plugins){
         try{
             (i->*fn)(args);
         }catch(std::exception& ex){
             LOG_EXCEPTION(ex);
-            if ((this->*exceptionHandler)(ex, i)){ break; }
+            this->reportError(ex, currentProgress());
+            if (currentProgress().isAborted()) { break; }
         }catch(...){
             LOG_UNKNOWN_EXCEPTION;
             QtCacheException ex("Unknown error");
-            if ((this->*exceptionHandler)(ex, i)){ break; }
+            this->reportError(ex, currentProgress());
+            if (currentProgress().isAborted()) { break; }
         }
     }
 }
 
-template<class T> QList<T*> PluginDirector::loadDirectory(const QString& path, ExceptionHandler exceptionHandler)
+void PluginDirector::registerPlugin(Plugin* plugin)
+{
+    link(plugin);
+    plugin->setParent(this);
+    m_loaded_plugins.append(plugin);
+}
+
+template<class T> QList<T*> PluginDirector::loadDirectory(const QString& path)
 {
     QList<T*> ls;
     QDir plugin_dir(path);
@@ -132,17 +155,19 @@ template<class T> QList<T*> PluginDirector::loadDirectory(const QString& path, E
                             plugin_dir.absoluteFilePath(plugin_file),
                             Plugin::FactoryFunctionSymbol);
                 if(NULL != fn){
-                    plugin = (fn)(this->parent());
+                    plugin = (fn)(this);
                     if (NULL != plugin){ ls.push_back(plugin); }
                 }
             }catch(std::exception& ex){
                 LOG_EXCEPTION(ex);
-                if ((this->*exceptionHandler)(ex, plugin)){ break; }
+                this->reportError(ex, currentProgress());
+                if (currentProgress().isAborted()) { break; }
                 delete plugin;
             }catch(...){
                 LOG_UNKNOWN_EXCEPTION;
                 QtCacheException ex("Unknown error");
-                if ((this->*exceptionHandler)(ex, plugin)){ break; }
+                this->reportError(ex, currentProgress());
+                if (currentProgress().isAborted()) { break; }
                 delete plugin;
             }
         }

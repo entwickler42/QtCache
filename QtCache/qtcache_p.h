@@ -55,6 +55,7 @@ public:
     {
         TRY_LOG_THROW{
             plugin_observer = new PluginDirector();
+            i_ptr->link(plugin_observer);
         }CATCH_LOG_THROW;
     }
 

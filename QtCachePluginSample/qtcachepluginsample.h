@@ -16,17 +16,17 @@ public:
     QString name() const { return "QtCachePluginSample"; }
     QString description() const { return "Just the basic QtCache plugin example"; }
 
-    void initialize()
+    void onInitialize()
     {
         PML::LOG << __FUNCTION__;
     }
 
-    void deinitialize()
+    void onDeinitialize()
     {
         PML::LOG << __FUNCTION__;
     }
 
-    void progressBegin(QtC::Progress& progress)
+    void onProgressBegin(QtC::Progress& progress)
     {
         Q_UNUSED(progress);
         PML::LOG << __FUNCTION__;
@@ -38,7 +38,7 @@ public:
         PML::LOG << __FUNCTION__;
     }
 
-    void progressEnd(QtC::Progress& progress)
+    void onProgressEnd(QtC::Progress& progress)
     {
         Q_UNUSED(progress);
         PML::LOG << __FUNCTION__;

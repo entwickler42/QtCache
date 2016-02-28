@@ -51,10 +51,10 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->outputDirectory->setText(conf->DefaultExportDirectory());
     ui->includeFilter->addItems(loadFilters());
 
+    subscripe(QtC::QtCache::instance());
+
     loadSettings();
     parseCommandlineOptions();
-
-    connect(QtC::QtCache::instance(), SIGNAL(progressBegin(QtC::Progress&)), this, SLOT(cacheProgressBegin(QtC::Progress&)));
 
     if(conf->AutoConnect()){
         try{
@@ -108,7 +108,7 @@ void MainWindow::createPluginTable()
 
 void MainWindow::loadSettings()
 {
-    cache()->plugins()->loadApplicationSettingsBegin(*conf->config());
+    cache()->plugins()->onLoadApplicationSettingsBegin(*conf->config());
     ui->compileEarly->setChecked(conf->CompileEarly());
     ui->compile->setChecked(conf->Compile());
     ui->qspec->setText(conf->QSPEC());
@@ -121,12 +121,12 @@ void MainWindow::loadSettings()
     ui->postImportHook->setText(conf->PostImportHook());
     ui->enablePostImportHook->setChecked(!conf->PostImportHook().isEmpty());
     dlg->load(conf);
-    cache()->plugins()->loadApplicationSettingsEnd(*conf->config());
+    cache()->plugins()->onLoadApplicationSettingsEnd(*conf->config());
 }
 
 void MainWindow::saveSettings()
 {
-    cache()->plugins()->saveApplicationSettingsBegin(*conf->config());
+    cache()->plugins()->onSaveApplicationSettingsBegin(*conf->config());
     conf->setCompileEarly(ui->compileEarly->isChecked());
     conf->setCompile(ui->compile->isChecked());
     conf->setQSPEC(ui->qspec->text());
@@ -137,7 +137,7 @@ void MainWindow::saveSettings()
     }
     conf->setPostImportHook(ui->postImportHook->text());
     conf->setPreImportHook(ui->preImportHook->text());
-    cache()->plugins()->saveApplicationSettingsEnd(*conf->config());
+    cache()->plugins()->onSaveApplicationSettingsEnd(*conf->config());
 }
 
 void MainWindow::showEvent(QShowEvent*)
@@ -264,10 +264,9 @@ void MainWindow::runInteractive(QtC::BulkAction* bulkop)
     setBuisyUI();
     abortTask = false;
 
-    connect(bulkop, SIGNAL(aborted()), this, SLOT(bulkActionAborted()));
-    connect(bulkop, SIGNAL(finished()), this, SLOT(bulkActionFinished()));
-    connect(bulkop, SIGNAL(error(std::exception&, QtC::Progress&)), this, SLOT(bulkActionError(std::exception&, QtC::Progress&)));
-    connect(bulkop, SIGNAL(progress(QtC::Progress&)), this, SLOT(bulkActionProgress(QtC::Progress&)));
+    subscripe(bulkop);
+    connect(bulkop, SIGNAL(aborted()), this, SLOT(onBulkActionAborted()));
+    connect(bulkop, SIGNAL(finished()), this, SLOT(onBulkActionFinished()));
 
     try{
         bulkop->run();
@@ -281,10 +280,9 @@ void MainWindow::runInteractive(QtC::BulkAction* bulkop)
         QMessageBox::critical(this, tr("Exception"),tr("Unknown Error..."));
     }
 
-    disconnect(bulkop, SIGNAL(aborted()), this, SLOT(bulkActionAborted()));
-    disconnect(bulkop, SIGNAL(finished()), this, SLOT(bulkActionFinished()));
-    disconnect(bulkop, SIGNAL(error(std::exception&, QtC::Progress&)), this, SLOT(bulkActionError(std::exception&, QtC::Progress&)));
-    disconnect(bulkop, SIGNAL(progress(QtC::Progress&)), this, SLOT(bulkActionProgress(QtC::Progress&)));
+    subscripe(bulkop);
+    disconnect(bulkop, SIGNAL(aborted()), this, SLOT(onBulkActionAborted()));
+    disconnect(bulkop, SIGNAL(finished()), this, SLOT(onBulkActionFinished()));
 
     setIdleUI();
 }
@@ -328,19 +326,19 @@ void MainWindow::on_importFiles_pressed()
     postImportHook();
 }
 
-void MainWindow::bulkActionAborted()
+void MainWindow::onBulkActionAborted()
 {
     ui->statusBar->showMessage(tr("Bulkimport was aborted!"));
 }
 
-void MainWindow::bulkActionFinished()
+void MainWindow::onBulkActionFinished()
 {
     ui->progressBar->setMaximum(100);
     ui->progressBar->setValue(0);
     ui->statusBar->showMessage(tr("Bulkimport has finished!"));
 }
 
-void MainWindow::bulkActionError(std::exception& ex, QtC::Progress& prog)
+void MainWindow::onProgressError(std::exception& ex, QtC::Progress& prog)
 {
     //bulkImportProgress(prog);
     setListViewItem(prog.tag().toString(), ":/QtCacheTool/FILE_ERROR", ex.what());
@@ -353,7 +351,29 @@ void MainWindow::bulkActionError(std::exception& ex, QtC::Progress& prog)
     QApplication::processEvents();
 }
 
-void MainWindow::bulkActionProgress(QtC::Progress& prog)
+void MainWindow::onProgressBegin(QtC::Progress& prog)
+{
+    switch(prog.type()){
+    case QtC::Progress::CONNECT:
+        ui->statusBar->showMessage(tr("Connecting Caché"));
+        break;
+    case QtC::Progress::DISCONNECT:
+        ui->statusBar->showMessage("Disconnecting Caché...");
+        break;
+    case QtC::Progress::QUERY_NS:
+        ui->statusBar->showMessage(tr("Receiving namespace list..."));
+        break;
+    case QtC::Progress::QUERY_OBJECTS:
+        ui->statusBar->showMessage(tr("Receiving object list..."));
+        break;
+    default:
+        return;
+    }
+
+    QApplication::processEvents();
+}
+
+void MainWindow::onProgress(QtC::Progress& prog)
 {
     QStringList tags;
     switch (prog.type()) {
@@ -393,28 +413,8 @@ void MainWindow::bulkActionProgress(QtC::Progress& prog)
     QApplication::processEvents();
 }
 
-
-void MainWindow::cacheProgressBegin(QtC::Progress& prog)
-{
-    switch(prog.type()){
-    case QtC::Progress::CONNECT:
-        ui->statusBar->showMessage(tr("Connecting Caché"));
-        break;
-    case QtC::Progress::DISCONNECT:
-        ui->statusBar->showMessage("Disconnecting Caché...");
-        break;
-    case QtC::Progress::QUERY_NS:
-        ui->statusBar->showMessage(tr("Receiving namespace list..."));
-        break;
-    case QtC::Progress::QUERY_OBJECTS:
-        ui->statusBar->showMessage(tr("Receiving object list..."));
-        break;
-    default:
-        return;
-    }
-
-    QApplication::processEvents();
-}
+void MainWindow::onProgressEnd(QtC::Progress&)
+{}
 
 void MainWindow::setListViewItem(const QString& filename, const QString& iconpath, const QString& toolTip)
 {
@@ -559,7 +559,7 @@ void MainWindow::parseCommandlineOptions()
     QCommandLineOption postImportHook("post-import-hook", tr("Cachè Object script to be executed after an import"), "COS");
     p.addOption(postImportHook);
 
-    cache()->plugins()->parseCommandlineOptionsBegin(p);
+    cache()->plugins()->onParseCommandlineOptionsBegin(p);
 
     p.process(QApplication::instance()->arguments());
 
@@ -592,7 +592,7 @@ void MainWindow::parseCommandlineOptions()
         ui->enablePostImportHook->setChecked(true);
     }
 
-    cache()->plugins()->parseCommandlineOptionsEnd(p);
+    cache()->plugins()->onParseCommandlineOptionsEnd(p);
 }
 
 void MainWindow::setBuisyUI()

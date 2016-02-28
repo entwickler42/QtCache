@@ -5,7 +5,7 @@ QTCACHENAMESPACEUSE
 
 ProgressReporter::ProgressReporter(QObject* parent)
     : QObject(parent),
-    m_current_progress(Progress::UNKNOWN, 0, 0)
+      m_current_progress(Progress::UNKNOWN, 0, 0)
 {}
 
 ProgressReporter::~ProgressReporter()
@@ -21,7 +21,6 @@ void ProgressReporter::reportProcessBegin(Progress& p)
 {
     m_current_progress = p;
     emitProgressBegin(p);
-
 }
 
 void ProgressReporter::reportProgress(Progress& p)
@@ -36,31 +35,33 @@ void ProgressReporter::reportProcessEnd(Progress& p)
     emitProgressEnd(p);
 }
 
-void ProgressReporter::emitError(std::exception& ex, Progress& p)
+ template <class T> void ProgressReporter::forwardCallToPluginDirector(void (T::*method)(Progress&), Progress& p)
 {
-    emit error(ex, p);
+    T* plugins = QtCache::instance()->plugins();
+    if (plugins){ (plugins->*method)(p); }
 }
 
-static void delegateToPluginDirector(void (PluginDirector::*method)(Progress&), Progress& p)
+void ProgressReporter::emitError(std::exception& ex, Progress& p)
 {
     PluginDirector* plugins = QtCache::instance()->plugins();
-    if (plugins){ (plugins->*method)(p); }
+    if (plugins){ plugins->onError(ex, p); }
+    emit error(ex, p);
 }
 
 void ProgressReporter::emitProgressBegin(Progress& p)
 {
-    delegateToPluginDirector(&PluginDirector::progressBegin, p);
+    forwardCallToPluginDirector(&PluginDirector::onProgressBegin, p);
     emit progressBegin(p);
 }
 
 void ProgressReporter::emitProgress(Progress& p)
 {
-    delegateToPluginDirector(&PluginDirector::progress, p);
+    forwardCallToPluginDirector(&PluginDirector::onProgress, p);
     emit progress(p);
 }
 
 void ProgressReporter::emitProgressEnd(Progress& p)
 {
-    delegateToPluginDirector(&PluginDirector::progressEnd, p);
+    forwardCallToPluginDirector(&PluginDirector::onProgressEnd, p);
     emit progressEnd(p);
 }
