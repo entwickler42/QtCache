@@ -27,8 +27,6 @@ QtCacheGitPlugin::~QtCacheGitPlugin()
 
 void QtCacheGitPlugin::onProgressBegin(QtC::Progress& p)
 {
-    throw std::runtime_error("Foo");
-
     if (p.type() == QtC::Progress::BULK_SAVE){
         QString dirpath = p.tag().toString();
         delete m_repo;

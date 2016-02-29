@@ -32,7 +32,7 @@ git_auto<git_reference>::~git_auto() { git_reference_free(this->ref); }
 git_auto<git_commit>::~git_auto() { git_commit_free(this->ref); }
 git_auto<git_status_list>::~git_auto() { git_status_list_free(this->ref); }
 git_auto<git_remote>::~git_auto() {
-    if (git_remote_connected(this->ref)) {
+    if (this->ref && git_remote_connected(this->ref)) {
         git_remote_disconnect(this->ref);
     }
     git_remote_free(this->ref);

@@ -348,6 +348,12 @@ void MainWindow::onProgressError(std::exception& ex, QtC::Progress& prog)
                                         QMessageBox::Ignore);
         abortTask = rval == QMessageBox::Cancel;
     }
+
+    int rval = QMessageBox::warning(this, tr("Exception"), ex.what(),
+                                    QMessageBox::Cancel|QMessageBox::Ignore,
+                                    QMessageBox::Ignore);
+    abortTask = rval == QMessageBox::Cancel;
+
     QApplication::processEvents();
 }
 

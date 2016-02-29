@@ -35,7 +35,7 @@ void ProgressReporter::reportProcessEnd(Progress& p)
     emitProgressEnd(p);
 }
 
- template <class T> void ProgressReporter::forwardCallToPluginDirector(void (T::*method)(Progress&), Progress& p)
+template <class T> void ProgressReporter::forwardCallToPluginDirector(void (T::*method)(Progress&), Progress& p)
 {
     T* plugins = QtCache::instance()->plugins();
     if (plugins){ (plugins->*method)(p); }
