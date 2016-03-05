@@ -25,6 +25,9 @@ CacheConnectionDialog::CacheConnectionDialog(QWidget *parent) :
     constrformat(PROTOCOL_FLAG|CREDENTIALS_FLAG|NAMESPACE_FLAG)
 {
     ui->setupUi(this);
+#ifdef QTCACHEUIDISABLESHOWPASSWORD
+    setShowPasswordVisible(false);
+#endif
 }
 
 CacheConnectionDialog::~CacheConnectionDialog()
@@ -93,9 +96,15 @@ void CacheConnectionDialog::setPassword(const QString& text)
     ui->password->setText(text);
 }
 
-void CacheConnectionDialog::setUciEnabled(bool enabled)
+void CacheConnectionDialog::setUciVisible(bool enabled)
 {
-    ui->uci->setEnabled(enabled);
+    ui->uci->setVisible(enabled);
+    ui->labelUCI->setVisible(enabled);
+}
+
+void CacheConnectionDialog::setShowPasswordVisible(bool visible)
+{
+    ui->showPassword->setVisible(visible);
 }
 
 QString CacheConnectionDialog::connectionString() const
@@ -114,7 +123,7 @@ QString CacheConnectionDialog::connectionString() const
     }
 
     if ((constrformat & CREDENTIALS_FLAG) == CREDENTIALS_FLAG &&
-         ui->username->text() != "") {
+            ui->username->text() != "") {
         cn.append(QString(":%1").arg(ui->username->text()));
         cn.append(QString(":@%1").arg(ui->password->text()));
     }

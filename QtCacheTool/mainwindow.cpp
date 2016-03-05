@@ -45,7 +45,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     dlg->setUci(QStringList() << "%SYS");
-    dlg->setUciEnabled(false);
+    dlg->setUciVisible(false);
     dlg->setFormat(QtC::CacheConnectionDialog::NAMESPACE_FLAG);
 
     ui->outputDirectory->setText(conf->DefaultExportDirectory());

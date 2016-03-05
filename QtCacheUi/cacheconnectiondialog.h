@@ -26,8 +26,8 @@ class QSettings;
 
 QTCACHENAMESPACEBEGIN
 
-class QTCACHEUISHARED_EXPORT CacheConnectionDialog
-        : public QDialog
+class QTCACHEUISHARED_EXPORT CacheConnectionDialog :
+        public QDialog
 {
     Q_OBJECT
 
@@ -48,17 +48,16 @@ public:
     QString uci() const;
     QString username() const;
     QString password() const;
+    int format() const;
 
     void setServer(const QString&);
     void setPort(const QString&);
     void setUci(const QStringList&);
     void setUsername(const QString&);
     void setPassword(const QString&);
-
-    void setUciEnabled(bool);
-
+    void setUciVisible(bool);
     void setFormat(int format);
-    int format() const;
+    void setShowPasswordVisible(bool allow);
 
     template <class T> void save(T* conf)
     {
