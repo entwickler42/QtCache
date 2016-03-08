@@ -264,7 +264,7 @@ public:
         }CATCH_LOG_THROW;
     }
 
-    void exportXmlFile(const QString& directoryPath, const QString& objectName)
+    void exportXmlFile(const QString& directoryPath, const QString& objectName, const QString& fileName)
     {
         TRY_LOG_THROW{
             Progress prog(Progress::XMLFILE_EXPORT);
@@ -283,7 +283,7 @@ public:
             if(!out_dir.mkpath(".")){
                 throw QtCacheException(QObject::tr("Output directory does not exists!"));
             }
-            QFile f(out_dir.absoluteFilePath(objectName));
+            QFile f(out_dir.absoluteFilePath(fileName));
             if (!f.open(QFile::WriteOnly|QFile::Truncate)){
                 throw QtCacheException(QObject::tr("Can't open output file:\n%1", "QtCachePrivate").arg(objectName));
             }

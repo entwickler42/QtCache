@@ -17,20 +17,29 @@ void BulkExport::save(const QDir& outputDirectory, const QString& filter, QtCach
     reportProcessBegin(prog);
 
     QStringList ls = cache()->listObjects(filter, filterType);
+    QStringList ls_exported;
 
     for(int i=0; !isAborted() && i<ls.count(); i++){
-        const QString& s = ls.at(i);
+        const QString& objectname = ls.at(i);
+        QString final_filename = objectname;
+
+        int filename_count = 0;
+        while(ls_exported.contains(final_filename.toUpper())){
+            final_filename = QString("%1.%2").arg(objectname).arg(++filename_count);
+        }
+
         if (isAborted()){
             continue;
         }
         try{
-            cache()->exportXmlFile(outputDirectory.absolutePath(), s);
-            reportProgress(prog(ls.count(), i+1, QStringList() << outputDirectory.absolutePath() << s));
+            cache()->exportXmlFile(outputDirectory.absolutePath(), objectname, final_filename);
+            ls_exported.append(final_filename.toUpper());
+            reportProgress(prog(ls.count(), i+1, QStringList() << outputDirectory.absolutePath() << final_filename));
         }catch(std::exception& ex){
-            prog.setTag(s);
+            prog.setTag(objectname);
             emit error(ex, prog);
         }catch(...){
-            prog.setTag(s);
+            prog.setTag(objectname);
             emit error(std::runtime_error("Unknown error!"), prog);
         }
     }
