@@ -2,6 +2,14 @@
 <ui version="4.0">
  <class>MainWindow</class>
  <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>435</width>
+    <height>506</height>
+   </rect>
+  </property>
   <property name="windowTitle">
    <string>Qt Caché Tool</string>
   </property>
@@ -58,7 +66,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tabImport">
        <attribute name="title">
@@ -71,7 +79,7 @@
            <enum>QTabWidget::South</enum>
           </property>
           <property name="currentIndex">
-           <number>0</number>
+           <number>1</number>
           </property>
           <widget class="QWidget" name="tab">
            <attribute name="title">
@@ -577,12 +585,12 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>606</x>
-     <y>197</y>
+     <x>395</x>
+     <y>231</y>
     </hint>
     <hint type="destinationlabel">
-     <x>395</x>
-     <y>201</y>
+     <x>372</x>
+     <y>234</y>
     </hint>
    </hints>
   </connection>
@@ -593,12 +601,12 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>606</x>
-     <y>197</y>
+     <x>395</x>
+     <y>231</y>
     </hint>
     <hint type="destinationlabel">
-     <x>606</x>
-     <y>234</y>
+     <x>395</x>
+     <y>269</y>
     </hint>
    </hints>
   </connection>
@@ -609,12 +617,12 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>606</x>
-     <y>197</y>
+     <x>395</x>
+     <y>231</y>
     </hint>
     <hint type="destinationlabel">
-     <x>575</x>
-     <y>234</y>
+     <x>361</x>
+     <y>269</y>
     </hint>
    </hints>
   </connection>
@@ -625,12 +633,12 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>71</x>
-     <y>158</y>
+     <x>98</x>
+     <y>197</y>
     </hint>
     <hint type="destinationlabel">
-     <x>156</x>
-     <y>186</y>
+     <x>184</x>
+     <y>227</y>
     </hint>
    </hints>
   </connection>
@@ -641,12 +649,12 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>588</x>
-     <y>248</y>
+     <x>380</x>
+     <y>302</y>
     </hint>
     <hint type="destinationlabel">
-     <x>362</x>
-     <y>249</y>
+     <x>357</x>
+     <y>305</y>
     </hint>
    </hints>
   </connection>
@@ -657,14 +665,49 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>587</x>
-     <y>294</y>
+     <x>380</x>
+     <y>356</y>
     </hint>
     <hint type="destinationlabel">
-     <x>531</x>
-     <y>297</y>
+     <x>357</x>
+     <y>359</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>ignoreImportErrors</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>setIgnoreErrors(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>116</x>
+     <y>162</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>498</x>
+     <y>103</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>ignoreExportErrors</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>setIgnoreErrors(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>98</x>
+     <y>257</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>495</x>
+     <y>366</y>
     </hint>
    </hints>
   </connection>
  </connections>
+ <slots>
+  <slot>setIgnoreErrors(bool)</slot>
+ </slots>
 </ui>

@@ -262,7 +262,7 @@ void MainWindow::runInteractive(QtC::BulkAction* bulkop)
     }
 
     setBuisyUI();
-    abortTask = false;
+    m_abort_task = false;
 
     subscripe(bulkop);
     connect(bulkop, SIGNAL(aborted()), this, SLOT(onBulkActionAborted()));
@@ -340,19 +340,13 @@ void MainWindow::onBulkActionFinished()
 
 void MainWindow::onProgressError(std::exception& ex, QtC::Progress& prog)
 {
-    //bulkImportProgress(prog);
     setListViewItem(prog.tag().toString(), ":/QtCacheTool/FILE_ERROR", ex.what());
-    if (!ui->ignoreImportErrors->isChecked()){
+    if (!m_ignore_errors){
         int rval = QMessageBox::warning(this, tr("Exception"), ex.what(),
                                         QMessageBox::Cancel|QMessageBox::Ignore,
                                         QMessageBox::Ignore);
-        abortTask = rval == QMessageBox::Cancel;
+        m_abort_task = rval == QMessageBox::Cancel;
     }
-
-    int rval = QMessageBox::warning(this, tr("Exception"), ex.what(),
-                                    QMessageBox::Cancel|QMessageBox::Ignore,
-                                    QMessageBox::Ignore);
-    abortTask = rval == QMessageBox::Cancel;
 
     QApplication::processEvents();
 }
@@ -374,6 +368,12 @@ void MainWindow::onProgressBegin(QtC::Progress& prog)
         break;
     default:
         return;
+    }
+
+    if(m_abort_task){
+        QtC::BulkAction* bulkop = qobject_cast<QtC::BulkAction*>(sender());
+        if(bulkop) { bulkop->abort(); }
+        prog.abort();
     }
 
     QApplication::processEvents();
@@ -406,12 +406,13 @@ void MainWindow::onProgress(QtC::Progress& prog)
         ui->statusBar->showMessage(tr("Uploading and compiling %1").arg(tags.at(0)));
         break;
     default:
-        return;
+        break;
     }
 
-    if(abortTask){
-        QtC::BulkAction* bulkop = static_cast<QtC::BulkAction*>(sender());
-        bulkop->abort();
+    if(m_abort_task){
+        QtC::BulkAction* bulkop = qobject_cast<QtC::BulkAction*>(sender());
+        if(bulkop) { bulkop->abort(); }
+        prog.abort();
     }
 
     ui->progressBar->setMaximum(100);
@@ -466,7 +467,7 @@ void MainWindow::postImportHook()
 
 void MainWindow::on_abortTask_pressed()
 {
-    abortTask = true;
+    m_abort_task = true;
 }
 
 void MainWindow::on_selectOutputDirectory_pressed()

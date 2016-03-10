@@ -76,11 +76,14 @@ private slots:
     void onBulkActionAborted();
     void onBulkActionFinished();
 
+    void setIgnoreErrors(bool ignore) { m_ignore_errors = ignore; }
+
 private:
     Ui::MainWindow *ui;
     QtCacheToolSettings* conf;
     QtC::CacheConnectionDialog* dlg;
-    bool abortTask = false;
+    bool m_abort_task = false;
+    bool m_ignore_errors = false;
 
     QStringList loadFilters() const;
     void saveFilters(const QStringList&) const;

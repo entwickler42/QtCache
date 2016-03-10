@@ -12,7 +12,7 @@ QtC::Plugin* createInstance(QObject* parent)
 QtCacheGitPlugin::QtCacheGitPlugin(QObject* parent)
     : QtC::Plugin(parent),
       m_origin_url(""),
-      m_branchname_local(""),
+      m_branchname_local("master"),
       m_branchname_remote("master"),
       m_commit_message("QtCache export entry"),
       m_commit_author("LibQtCache GitPlugin"),
@@ -60,7 +60,7 @@ void QtCacheGitPlugin::onProgress(QtC::Progress& p)
     if (p.type() == QtC::Progress::BULK_SAVE){
         QStringList tags = p.tag().toStringList();
         QString dirpath = tags.at(0);
-        QString filepath = QDir(dirpath).relativeFilePath(tags.at(1));
+        QString filepath = QDir(dirpath).absoluteFilePath(tags.at(1));
         if (m_repo){
             m_repo->add(filepath);
         }
@@ -126,12 +126,12 @@ void QtCacheGitPlugin::onParseCommandlineOptionsEnd(QCommandLineParser& p)
 void QtCacheGitPlugin::onLoadApplicationSettingsEnd(QSettings& conf)
 {
     conf.beginGroup("GitPlugin");
-    m_origin_url = conf.value("OriginUrl", "").toString();
-    m_branchname_remote = conf.value("RemoteBranch", "").toString();
-    m_branchname_local = conf.value("LocalBranch", "").toString();
-    m_commit_message = conf.value("CommitMessage", "QtCacheTool export commit").toString();
-    m_commit_author = conf.value("AuthorName", "").toString();
-    m_commit_email = conf.value("AuthorEmail", "").toString();
+    m_origin_url = conf.value("OriginUrl", m_origin_url).toString();
+    m_branchname_remote = conf.value("RemoteBranch", m_branchname_remote).toString();
+    m_branchname_local = conf.value("LocalBranch", m_branchname_local).toString();
+    m_commit_message = conf.value("CommitMessage", m_commit_message).toString();
+    m_commit_author = conf.value("AuthorName", m_commit_author).toString();
+    m_commit_email = conf.value("AuthorEmail", m_commit_email).toString();
     conf.endGroup();
 }
 
