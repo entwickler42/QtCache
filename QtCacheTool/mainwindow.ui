@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>435</width>
-    <height>506</height>
+    <width>393</width>
+    <height>548</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -66,7 +66,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tabImport">
        <attribute name="title">
@@ -79,7 +79,7 @@
            <enum>QTabWidget::South</enum>
           </property>
           <property name="currentIndex">
-           <number>1</number>
+           <number>0</number>
           </property>
           <widget class="QWidget" name="tab">
            <attribute name="title">
@@ -311,7 +311,7 @@
        <attribute name="title">
         <string>Export Files</string>
        </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_6">
+       <layout class="QVBoxLayout" name="verticalLayout_12">
         <item>
          <layout class="QVBoxLayout" name="verticalLayout_7">
           <item>
@@ -474,6 +474,18 @@
               </widget>
              </item>
             </layout>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QGroupBox" name="groupBox_5">
+          <property name="title">
+           <string>Content Filter</string>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_6">
+           <item>
+            <widget class="QListWidget" name="listWidgetContentFilter"/>
            </item>
           </layout>
          </widget>

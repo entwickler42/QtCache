@@ -8,10 +8,10 @@ BulkExport::BulkExport(QtCache* cache, QObject *parent)
 
 void BulkExport::run()
 {
-    save(this->outputDirectory, this->filter, this->filterType);
+    save(this->outputDirectory, this->filter, this->filterType, contentFilter);
 }
 
-void BulkExport::save(const QDir& outputDirectory, const QString& filter, QtCache::ObjectFilterType filterType)
+void BulkExport::save(const QDir& outputDirectory, const QString& filter, QtCache::ObjectFilterType filterType, const QStringList& contentFilter)
 {
     Progress prog(Progress::BULK_SAVE, outputDirectory.absolutePath());
     reportProcessBegin(prog);
@@ -32,7 +32,7 @@ void BulkExport::save(const QDir& outputDirectory, const QString& filter, QtCach
             continue;
         }
         try{
-            cache()->exportXmlFile(outputDirectory.absolutePath(), objectname, final_filename);
+            cache()->exportXmlFile(outputDirectory.absolutePath(), objectname, final_filename, contentFilter);
             ls_exported.append(final_filename.toUpper());
             reportProgress(prog(ls.count(), i+1, QStringList() << outputDirectory.absolutePath() << final_filename));
         }catch(std::exception& ex){

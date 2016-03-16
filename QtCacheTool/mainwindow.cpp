@@ -49,7 +49,8 @@ MainWindow::MainWindow(QWidget *parent) :
     dlg->setFormat(QtC::CacheConnectionDialog::NAMESPACE_FLAG);
 
     ui->outputDirectory->setText(conf->DefaultExportDirectory());
-    ui->includeFilter->addItems(loadFilters());
+    ui->includeFilter->addItems(loadObjectFilters());
+    ui->listWidgetContentFilter->addItems(loadContentFilters());
 
     subscripe(QtC::QtCache::instance());
 
@@ -294,6 +295,7 @@ void MainWindow::on_exportFiles_pressed()
     QtC::QtCache::ObjectFilterType filterType = ui->regularExpression->isChecked() ? QtC::QtCache::REGEXP : QtC::QtCache::PATTERN;
     bulkop.filter = filter;
     bulkop.filterType = filterType;
+    bulkop.contentFilter = loadContentFilters();
     bulkop.outputDirectory = QDir(ui->outputDirectory->text());
     runInteractive(&bulkop);
 }
@@ -488,7 +490,7 @@ void MainWindow::on_saveCurrentFilter_pressed()
     if (ui->includeFilter->currentText() != ui->includeFilter->itemText(index)){
         ui->includeFilter->addItem(ui->includeFilter->currentText());
     }
-    saveFilters(QStringList() << *ui->includeFilter);
+    saveObjectFilters(QStringList() << *ui->includeFilter);
 }
 
 void MainWindow::on_removeCurrentFilter_pressed()
@@ -506,11 +508,11 @@ void MainWindow::on_removeCurrentFilter_pressed()
         ui->includeFilter->setCurrentIndex(index);
     }else{
         ui->includeFilter->removeItem(index);
-        saveFilters(QStringList() << *ui->includeFilter);
+        saveObjectFilters(QStringList() << *ui->includeFilter);
     }
 }
 
-QStringList MainWindow::loadFilters() const
+QStringList MainWindow::loadObjectFilters() const
 {
     QStringList ls;
     int count = conf->config()->beginReadArray("ExportFilter");
@@ -522,7 +524,7 @@ QStringList MainWindow::loadFilters() const
     return ls;
 }
 
-void MainWindow::saveFilters(const QStringList& ls) const
+void MainWindow::saveObjectFilters(const QStringList& ls) const
 {
     conf->config()->remove("ExportFilter");
     conf->config()->beginWriteArray("ExportFilter");
@@ -531,6 +533,19 @@ void MainWindow::saveFilters(const QStringList& ls) const
         conf->config()->setValue("RegExp", ls.at(i));
     }
     conf->config()->endArray();
+}
+
+
+QStringList MainWindow::loadContentFilters() const
+{
+    QStringList ls;
+    int count = conf->config()->beginReadArray("ContentFilter");
+    for(int i=0; i<count; i++){
+        conf->config()->setArrayIndex(i);
+        ls << conf->config()->value("RegExp").toString();
+    }
+    conf->config()->endArray();
+    return ls;
 }
 
 void MainWindow::parseCommandlineOptions()

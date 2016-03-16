@@ -60,7 +60,7 @@ public:
     void execute(const QString&);
 
     void importXmlFile(const QString& filepath, const QString& qspec = "");
-    void exportXmlFile(const QString& directoryPath, const QString& objectName, const QString& fileName);
+    void exportXmlFile(const QString& directoryPath, const QString& objectName, const QString& fileName, const QStringList& contentFilter);
     void compileObjects(const QString& objectNames, const QString& qspec = "cf");
 
     PluginDirector* plugins() const;

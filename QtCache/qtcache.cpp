@@ -100,9 +100,9 @@ void QtCache::importXmlFile(const QString& filepath, const QString& qspec)
     d->importXmlFile(filepath, qspec);
 }
 
-void QtCache::exportXmlFile(const QString& directoryPath, const QString& objectName, const QString& fileName)
+void QtCache::exportXmlFile(const QString& directoryPath, const QString& objectName, const QString& fileName, const QStringList& contentFilter)
 {
-    d->exportXmlFile(directoryPath, objectName, fileName);
+    d->exportXmlFile(directoryPath, objectName, fileName, contentFilter);
 }
 
 void QtCache::compileObjects(const QString& objectNames, const QString& qspec)

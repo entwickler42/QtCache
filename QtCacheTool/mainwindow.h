@@ -85,8 +85,10 @@ private:
     bool m_abort_task = false;
     bool m_ignore_errors = false;
 
-    QStringList loadFilters() const;
-    void saveFilters(const QStringList&) const;
+    QStringList loadObjectFilters() const;
+    void saveObjectFilters(const QStringList&) const;
+
+    QStringList loadContentFilters() const;
 
     void subscripe(QtC::ProgressReporter* reporter)
     {

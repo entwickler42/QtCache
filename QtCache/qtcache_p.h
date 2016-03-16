@@ -264,7 +264,7 @@ public:
         }CATCH_LOG_THROW;
     }
 
-    void exportXmlFile(const QString& directoryPath, const QString& objectName, const QString& fileName)
+    void exportXmlFile(const QString& directoryPath, const QString& objectName, const QString& fileName, const QStringList& contentFilter)
     {
         TRY_LOG_THROW{
             Progress prog(Progress::XMLFILE_EXPORT);
@@ -296,6 +296,7 @@ public:
 
             long bytes_written = 0;
             while (std::getline(io,buf) && !prog.isAborted()){
+                buf = applyContentFilter(buf, contentFilter);
                 prog.setTag(QString::fromStdString(buf));
                 if (prog.isAborted()) { continue; }
                 ofstream << prog.tag().toString() << "\n";
@@ -304,6 +305,20 @@ public:
             }
             i_ptr->reportProcessEnd(prog(100,100));
         }CATCH_LOG_THROW;
+    }
+
+    std::string applyContentFilter(const std::string& line, const QStringList& filter)
+    {
+        QString _line = QString::fromStdString(line);
+
+        foreach(const QString& i, filter){
+            QStringList kv = i.split('|', QString::KeepEmptyParts);
+            if (kv.length() != 2) { continue; }
+            QRegExp re(kv[0]);
+            _line.replace(re, kv[1]);
+        }
+
+        return _line.toStdString();
     }
 
     void compileObjects(const QString& objectNames, const QString& qspec)

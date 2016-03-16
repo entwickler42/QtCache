@@ -15,6 +15,7 @@ public:
     QDir outputDirectory;
     QString filter;
     QtCache::ObjectFilterType filterType;
+    QStringList contentFilter;
 
     explicit BulkExport(QtCache* cache, QObject *parent = 0);
 
@@ -22,7 +23,7 @@ public slots:
     void run();
 
 private:
-    void save(const QDir& outputDirectory, const QString& filter, QtCache::ObjectFilterType filterType);
+    void save(const QDir& outputDirectory, const QString& filter, QtCache::ObjectFilterType filterType, const QStringList& contentFilter);
 };
 
 QTCACHENAMESPACEEND
