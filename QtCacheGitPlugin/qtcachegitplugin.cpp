@@ -60,7 +60,7 @@ void QtCacheGitPlugin::onProgress(QtC::Progress& p)
     if (p.type() == QtC::Progress::BULK_SAVE){
         QStringList tags = p.tag().toStringList();
         QString dirpath = tags.at(0);
-        QString filepath = QDir(dirpath).absoluteFilePath(tags.at(1));
+        QString filepath = QDir(dirpath).relativeFilePath(tags.at(1));
         if (m_repo){
             m_repo->add(filepath);
         }
