@@ -347,7 +347,7 @@ private:
 
     void installCacheBackend()
     {
-#if 0
+#if 1
         TRY_LOG_THROW{
             QFile xml(":/src/QtCache.xml");
             if (!xml.open(QFile::ReadOnly)){

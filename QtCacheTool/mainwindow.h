@@ -68,6 +68,8 @@ private slots:
     void on_saveCurrentFilter_pressed();
     void on_removeCurrentFilter_pressed();
 
+    void on_selectExportFileList_pressed();
+
     void onProgressError(std::exception&, QtC::Progress&);
     void onProgressBegin(QtC::Progress&);
     void onProgress(QtC::Progress&);
@@ -109,6 +111,8 @@ private:
     void onServerConnected();
     void preImportHook();
     void postImportHook();
+    void preExportHook();
+    void postExportHook();
     void setListViewItem(const QString& filename, const QString& iconpath, const QString& toolTip = "");
     void saveSettings();
     void loadSettings();

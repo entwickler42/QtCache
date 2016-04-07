@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>393</width>
-    <height>548</height>
+    <height>717</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -66,7 +66,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tabImport">
        <attribute name="title">
@@ -311,7 +311,7 @@
        <attribute name="title">
         <string>Export Files</string>
        </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_12">
+       <layout class="QVBoxLayout" name="verticalLayout_13">
         <item>
          <layout class="QVBoxLayout" name="verticalLayout_7">
           <item>
@@ -375,6 +375,20 @@
               <widget class="QCheckBox" name="includeFilterEnabled">
                <property name="text">
                 <string/>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_13">
+             <item>
+              <widget class="QLineEdit" name="exportFileList"/>
+             </item>
+             <item>
+              <widget class="QPushButton" name="selectExportFileList">
+               <property name="text">
+                <string>Liste wählen</string>
                </property>
               </widget>
              </item>
@@ -470,6 +484,65 @@
                <property name="icon">
                 <iconset resource="QtCacheTool.qrc">
                  <normaloff>:/QtCacheTool/img/14_layer_deletelayer.png</normaloff>:/QtCacheTool/img/14_layer_deletelayer.png</iconset>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QGroupBox" name="groupBox_6">
+          <property name="title">
+           <string/>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_12">
+           <item>
+            <widget class="QLabel" name="label_4">
+             <property name="text">
+              <string>Pre Export Hook</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_11">
+             <item>
+              <widget class="QLineEdit" name="preExportHook">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QCheckBox" name="enablePreExportHook">
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <widget class="QLabel" name="label_5">
+             <property name="text">
+              <string>Post Export Hook</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_12">
+             <item>
+              <widget class="QLineEdit" name="postExportHook">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QCheckBox" name="enablePostExportHook">
+               <property name="text">
+                <string/>
                </property>
               </widget>
              </item>
@@ -597,12 +670,12 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>395</x>
-     <y>231</y>
+     <x>353</x>
+     <y>230</y>
     </hint>
     <hint type="destinationlabel">
-     <x>372</x>
-     <y>234</y>
+     <x>330</x>
+     <y>233</y>
     </hint>
    </hints>
   </connection>
@@ -613,12 +686,12 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>395</x>
-     <y>231</y>
+     <x>353</x>
+     <y>230</y>
     </hint>
     <hint type="destinationlabel">
-     <x>395</x>
-     <y>269</y>
+     <x>353</x>
+     <y>304</y>
     </hint>
    </hints>
   </connection>
@@ -629,12 +702,12 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>395</x>
-     <y>231</y>
+     <x>353</x>
+     <y>230</y>
     </hint>
     <hint type="destinationlabel">
-     <x>361</x>
-     <y>269</y>
+     <x>321</x>
+     <y>304</y>
     </hint>
    </hints>
   </connection>
@@ -661,11 +734,11 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>380</x>
+     <x>338</x>
      <y>302</y>
     </hint>
     <hint type="destinationlabel">
-     <x>357</x>
+     <x>315</x>
      <y>305</y>
     </hint>
    </hints>
@@ -677,11 +750,11 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>380</x>
+     <x>338</x>
      <y>356</y>
     </hint>
     <hint type="destinationlabel">
-     <x>357</x>
+     <x>315</x>
      <y>359</y>
     </hint>
    </hints>
@@ -697,7 +770,7 @@
      <y>162</y>
     </hint>
     <hint type="destinationlabel">
-     <x>498</x>
+     <x>392</x>
      <y>103</y>
     </hint>
    </hints>
@@ -709,12 +782,44 @@
    <slot>setIgnoreErrors(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>98</x>
-     <y>257</y>
+     <x>124</x>
+     <y>301</y>
     </hint>
     <hint type="destinationlabel">
-     <x>495</x>
+     <x>392</x>
      <y>366</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>enablePreExportHook</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>preExportHook</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>345</x>
+     <y>371</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>192</x>
+     <y>376</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>enablePostExportHook</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>postExportHook</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>346</x>
+     <y>421</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>217</x>
+     <y>429</y>
     </hint>
    </hints>
   </connection>

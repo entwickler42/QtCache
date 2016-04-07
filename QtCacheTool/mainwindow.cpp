@@ -121,6 +121,15 @@ void MainWindow::loadSettings()
     ui->enablePreImportHook->setChecked(!conf->PreImportHook().isEmpty());
     ui->postImportHook->setText(conf->PostImportHook());
     ui->enablePostImportHook->setChecked(!conf->PostImportHook().isEmpty());
+    ui->preExportHook->setText(conf->PreExportHook());
+    ui->enablePreExportHook->setChecked(!conf->PreExportHook().isEmpty());
+    ui->postExportHook->setText(conf->PostExportHook());
+    ui->enablePostExportHook->setChecked(!conf->PostExportHook().isEmpty());
+    ui->exportFileList->setText(conf->ExportFilterFile());
+    if (conf->ExportFilterType() == 1){
+        ui->regularExpression->setChecked(true);
+    }
+
     dlg->load(conf);
     cache()->plugins()->onLoadApplicationSettingsEnd(*conf->config());
 }
@@ -138,6 +147,17 @@ void MainWindow::saveSettings()
     }
     conf->setPostImportHook(ui->postImportHook->text());
     conf->setPreImportHook(ui->preImportHook->text());
+    conf->setPostExportHook(ui->postExportHook->text());
+    conf->setPreExportHook(ui->preExportHook->text());
+    if (ui->exportFileList->text().length() > 0){
+        conf->setExportFilterFile(ui->exportFileList->text());
+    }
+    if (ui->regularExpression->isChecked()){
+        conf->setExportFilterType(1);
+    }else{
+        conf->setExportFilterType(0);
+    }
+
     cache()->plugins()->onSaveApplicationSettingsEnd(*conf->config());
 }
 
@@ -293,11 +313,32 @@ void MainWindow::on_exportFiles_pressed()
     QtC::BulkExport bulkop(cache());
     QString filter = ui->includeFilterEnabled->isChecked() ? ui->includeFilter->currentText() : "";
     QtC::QtCache::ObjectFilterType filterType = ui->regularExpression->isChecked() ? QtC::QtCache::REGEXP : QtC::QtCache::PATTERN;
+
     bulkop.filter = filter;
     bulkop.filterType = filterType;
     bulkop.contentFilter = loadContentFilters();
     bulkop.outputDirectory = QDir(ui->outputDirectory->text());
+
+    preExportHook();
+
+    if (ui->exportFileList->text().length() > 0){
+        if (QFile::exists(ui->exportFileList->text())){
+            QFile f(ui->exportFileList->text());
+            if (f.open(QFile::ReadOnly)){
+                while(!f.atEnd()){
+                    QByteArray _line = f.readLine();
+                    QString line = QString(_line);
+                    line.replace("\r\n","");
+                    line += ".+";
+                    bulkop.filter += QString(line) + ";";
+                }
+                bulkop.filter.remove(bulkop.filter.length()-1,1);
+            }
+        }
+    }
+
     runInteractive(&bulkop);
+    postExportHook();
 }
 
 void MainWindow::on_importFiles_pressed()
@@ -467,6 +508,38 @@ void MainWindow::postImportHook()
     }
 }
 
+void MainWindow::preExportHook()
+{
+    if (ui->enablePreExportHook->isChecked() && !ui->preExportHook->text().isEmpty()){
+        try{
+            cache()->execute(ui->preExportHook->text());
+        }catch(std::exception& ex){
+            int rval = QMessageBox::warning(this,
+                                            tr("Exception"),
+                                            tr("Failed to execute pre export hook:\n\n%1").arg(ex.what()),
+                                            QMessageBox::Cancel|QMessageBox::Ignore,
+                                            QMessageBox::Ignore);
+            if (rval == QMessageBox::Cancel) throw;
+        }
+    }
+}
+
+void MainWindow::postExportHook()
+{
+    if (ui->enablePostExportHook->isChecked() && !ui->postExportHook->text().isEmpty()){
+        try{
+            cache()->execute(ui->postExportHook->text());
+        }catch(std::exception& ex){
+            int rval = QMessageBox::warning(this,
+                                            tr("Exception"),
+                                            tr("Failed to execute post export hook:\n\n%1").arg(ex.what()),
+                                            QMessageBox::Cancel|QMessageBox::Ignore,
+                                            QMessageBox::Ignore);
+            if (rval == QMessageBox::Cancel) throw;
+        }
+    }
+}
+
 void MainWindow::on_abortTask_pressed()
 {
     m_abort_task = true;
@@ -509,6 +582,14 @@ void MainWindow::on_removeCurrentFilter_pressed()
     }else{
         ui->includeFilter->removeItem(index);
         saveObjectFilters(QStringList() << *ui->includeFilter);
+    }
+}
+
+void MainWindow::on_selectExportFileList_pressed()
+{
+    QFileDialog dlg;
+    if (QFileDialog::Accepted == dlg.exec()){
+        ui->exportFileList->setText(dlg.selectedFiles().first());
     }
 }
 
@@ -580,6 +661,12 @@ void MainWindow::parseCommandlineOptions()
     p.addOption(preImportHook);
     QCommandLineOption postImportHook("post-import-hook", tr("Cachè Object script to be executed after an import"), "COS");
     p.addOption(postImportHook);
+    QCommandLineOption preExportHook("pre-export-hook", tr("Cachè Object script to be executed before an export"), "COS");
+    p.addOption(preExportHook);
+    QCommandLineOption postExportHook("post-export-hook", tr("Cachè Object script to be executed after an export"), "COS");
+    p.addOption(postExportHook);
+    QCommandLineOption exportFilterFile("export-filter-file", tr("Path to a file containing export filters"), "COS");
+    p.addOption(exportFilterFile);
 
     cache()->plugins()->onParseCommandlineOptionsBegin(p);
 
@@ -613,6 +700,17 @@ void MainWindow::parseCommandlineOptions()
         ui->postImportHook->setText(p.value(postImportHook));
         ui->enablePostImportHook->setChecked(true);
     }
+    if(p.isSet(preExportHook)){
+        ui->preExportHook->setText(p.value(preExportHook));
+        ui->enablePreExportHook->setChecked(true);
+    }
+    if(p.isSet(postExportHook)){
+        ui->postExportHook->setText(p.value(postExportHook));
+        ui->enablePostExportHook->setChecked(true);
+    }
+    if(p.isSet(exportFilterFile)){
+        ui->exportFileList->setText(p.value(exportFilterFile));
+    }
 
     cache()->plugins()->onParseCommandlineOptionsEnd(p);
 }
@@ -628,7 +726,8 @@ void MainWindow::setBuisyUI()
     ui->abortTask->setEnabled(true);
 }
 
-void MainWindow::setIdleUI() {
+void MainWindow::setIdleUI()
+{
     ui->targetUCI->setEnabled(true);
     ui->addFiles->setEnabled(true);
     ui->removeFiles->setEnabled(true);
@@ -636,6 +735,5 @@ void MainWindow::setIdleUI() {
     ui->selectServer->setEnabled(true);
     ui->tabExport->setEnabled(true);
     ui->abortTask->setEnabled(false);
-
 }
 

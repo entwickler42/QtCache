@@ -51,11 +51,14 @@ public:
     DECL_PROPERTY(QString, QSPEC, QString("cfkb"));
     DECL_PROPERTY(QString, PostImportHook, QString(""));
     DECL_PROPERTY(QString, PreImportHook, QString(""));
+    DECL_PROPERTY(QString, PostExportHook, QString(""));
+    DECL_PROPERTY(QString, PreExportHook, QString(""));
+    DECL_PROPERTY(int, ExportFilterType, 0);
+    DECL_PROPERTY(QString, ExportFilterFile, QString(""));
     DECL_PROPERTY(QString, Server, QString("127.0.0.1"));
     DECL_PROPERTY(QString, Port, QString("1972"));
     DECL_PROPERTY(QString, User, QString("_system"));
     DECL_PROPERTY(QString, DefaultExportDirectory, QDir::currentPath());
-
     DECL_PROPERTY(bool, AutoConnect, false);
     DECL_PROPERTY(bool, Compile, true);
     DECL_PROPERTY(bool, CompileEarly, true);

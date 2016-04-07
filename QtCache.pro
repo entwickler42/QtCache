@@ -1,4 +1,4 @@
-CONFIG += ordered qtcachetool gitplugin
+CONFIG += ordered qtcachetool
 TEMPLATE = subdirs
 
 SUBDIRS = \
