@@ -62,6 +62,7 @@ public:
     DECL_PROPERTY(bool, AutoConnect, false);
     DECL_PROPERTY(bool, Compile, true);
     DECL_PROPERTY(bool, CompileEarly, true);
+    DECL_PROPERTY(bool, IgnoreErrors, false);
 
     QString Passwd()
     {

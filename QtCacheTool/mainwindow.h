@@ -78,7 +78,9 @@ private slots:
     void onBulkActionAborted();
     void onBulkActionFinished();
 
-    void setIgnoreErrors(bool ignore) { m_ignore_errors = ignore; }
+    void setIgnoreErrors(bool ignore) {
+        m_ignore_errors = ignore;
+    }
 
 private:
     Ui::MainWindow *ui;

@@ -126,6 +126,9 @@ void MainWindow::loadSettings()
     ui->postExportHook->setText(conf->PostExportHook());
     ui->enablePostExportHook->setChecked(!conf->PostExportHook().isEmpty());
     ui->exportFileList->setText(conf->ExportFilterFile());
+    ui->ignoreExportErrors->setChecked(conf->IgnoreErrors());
+    ui->ignoreImportErrors->setChecked(conf->IgnoreErrors());
+    setIgnoreErrors(conf->IgnoreErrors());
     if (conf->ExportFilterType() == 1){
         ui->regularExpression->setChecked(true);
     }
@@ -149,6 +152,7 @@ void MainWindow::saveSettings()
     conf->setPreImportHook(ui->preImportHook->text());
     conf->setPostExportHook(ui->postExportHook->text());
     conf->setPreExportHook(ui->preExportHook->text());
+    conf->setIgnoreErrors(m_ignore_errors);
     if (ui->exportFileList->text().length() > 0){
         conf->setExportFilterFile(ui->exportFileList->text());
     }
@@ -329,7 +333,6 @@ void MainWindow::on_exportFiles_pressed()
                     QByteArray _line = f.readLine();
                     QString line = QString(_line);
                     line.replace("\r\n","");
-                    line += ".+";
                     bulkop.filter += QString(line) + ";";
                 }
                 bulkop.filter.remove(bulkop.filter.length()-1,1);
@@ -468,6 +471,8 @@ void MainWindow::onProgressEnd(QtC::Progress&)
 
 void MainWindow::setListViewItem(const QString& filename, const QString& iconpath, const QString& toolTip)
 {
+    return;
+
     QList<QListWidgetItem*> items = ui->listWidget->findItems(filename, Qt::MatchExactly);
     foreach(QListWidgetItem* i, items) {
         i->setToolTip(toolTip);
