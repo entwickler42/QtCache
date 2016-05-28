@@ -6,8 +6,8 @@ TARGET = QtCacheUi
 DESTDIR = ../build
 DEFINES += QTCACHEUI_LIBRARY
 
-win32:VERSION = 1.0.6.0
-#else:VERSION = 1.0.6
+win32:VERSION = 1.0.7.0
+#else:VERSION = 1.0.7
 
 SOURCES += \
     cacheconnectiondialog.cpp \
