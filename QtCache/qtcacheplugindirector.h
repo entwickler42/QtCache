@@ -20,7 +20,7 @@ public:
     QList<Plugin*>& loaded() { return m_loaded_plugins; }
 
 public slots:
-    void onError(std::exception&, Progress&);
+    void onError(const std::exception&, Progress&);
     void onProgressBegin(Progress&);
     void onProgress(Progress&);
     void onProgressEnd(Progress&);

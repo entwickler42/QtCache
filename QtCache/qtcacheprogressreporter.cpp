@@ -11,7 +11,7 @@ ProgressReporter::ProgressReporter(QObject* parent)
 ProgressReporter::~ProgressReporter()
 {}
 
-void ProgressReporter::reportError(std::exception& ex, Progress& p)
+void ProgressReporter::reportError(const std::exception& ex, Progress& p)
 {
     m_current_progress = p;
     emitError(ex, p);
@@ -41,7 +41,7 @@ template <class T> void ProgressReporter::forwardCallToPluginDirector(void (T::*
     if (plugins){ (plugins->*method)(p); }
 }
 
-void ProgressReporter::emitError(std::exception& ex, Progress& p)
+void ProgressReporter::emitError(const std::exception& ex, Progress& p)
 {
     PluginDirector* plugins = QtCache::instance()->plugins();
     if (plugins){ plugins->onError(ex, p); }

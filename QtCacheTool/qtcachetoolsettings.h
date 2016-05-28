@@ -91,7 +91,7 @@ private:
         if(!conf->allKeys().contains(key)){
             set(key, defaultValue);
         }
-        return conf->value(key, defaultValue).value<T>();
+        return qvariant_cast<T>(conf->value(key, defaultValue));
     }
 
     template<class T> void set(const QString& key, const T& value)

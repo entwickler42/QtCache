@@ -384,7 +384,7 @@ void MainWindow::onBulkActionFinished()
     ui->statusBar->showMessage(tr("Bulkimport has finished!"));
 }
 
-void MainWindow::onProgressError(std::exception& ex, QtC::Progress& prog)
+void MainWindow::onProgressError(const std::exception& ex, QtC::Progress& prog)
 {
     setListViewItem(prog.tag().toString(), ":/QtCacheTool/FILE_ERROR", ex.what());
     if (!m_ignore_errors){

@@ -46,7 +46,7 @@ protected slots:
     virtual void onInitialize() {}
     virtual void onDeinitialize() {}
 
-    virtual void onError(std::exception&, Progress&) {}
+    virtual void onError(const std::exception&, Progress&) {}
     virtual void onProgressBegin(Progress&) {}
     virtual void onProgress(Progress&) {}
     virtual void onProgressEnd(Progress&) {}

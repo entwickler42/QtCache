@@ -37,7 +37,7 @@ void PluginDirector::onDeinitialize()
     foreachPlugin(&Plugin::onDeinitialize);
 }
 
-void PluginDirector::onError(std::exception& ex, Progress& progress)
+void PluginDirector::onError(const std::exception& ex, Progress& progress)
 {
     foreach(Plugin* i, m_loaded_plugins){
         try{
