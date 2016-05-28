@@ -27,7 +27,6 @@ obj/
 [Rr]elease*/
 _ReSharper*/
 [Tt]est[Rr]esult*
-
 build/
 Makefile*
 ui_*.h
@@ -35,3 +34,10 @@ ui_*.h
 *.qm
 build_/*
 build_08/*
+moc_*.cpp
+moc_*.o
+qrc_*.cpp
+qrc_*.o
+QtCache/*.o
+QtCacheUi/*.o
+QtCacheTool/*.o
