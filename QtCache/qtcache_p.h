@@ -61,6 +61,10 @@ public:
 
     virtual ~QtCachePrivate()
     {
+        if (NULL != m_CacheTool){
+            m_CacheTool->make_null();
+        }
+        delete m_CacheTool;
         delete plugin_observer;
         disconnect();
     }
@@ -71,15 +75,15 @@ public:
             if (!isConnected()){
                 throw QtCacheException(QObject::tr("Cachè connection has not been established yet!", "QtCachePrivate"));
             }
-            if (Qt_CacheTool.is_null()) {
+            if (NULL == m_CacheTool) {
                 Db_err err;
-                Qt_CacheTool = Qt_CacheTool::create_new(db,0,&err);
+                m_CacheTool = new QtCacheToolType(Qt_CacheTool::create_new(db,0,&err));
                 if (err.get_code()){
                     throw QtCacheException(err);
                 }
             }
         }CATCH_LOG_THROW;
-        return Qt_CacheTool;
+        return *m_CacheTool;
     }
 
     long jobId() const
@@ -343,7 +347,7 @@ public:
 private:
     bool connected = false;
     Database* db = NULL;
-    QtCacheToolType Qt_CacheTool;
+    QtCacheToolType* m_CacheTool = NULL;
 
     void installCacheBackend()
     {
