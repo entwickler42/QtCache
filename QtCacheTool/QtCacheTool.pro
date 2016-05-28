@@ -5,8 +5,8 @@ TARGET = QtCache
 
 DESTDIR = ../build
 
-win32:VERSION = 1.0.3.0
-else:VERSION = 1.0.3
+win32:VERSION = 1.0.6.0
+else:VERSION = 1.0.6
 
 SOURCES += main.cpp\
         mainwindow.cpp \
