@@ -4,7 +4,7 @@ TARGET = QtCache
 
 DESTDIR = ../build
 
-win32:VERSION = 1.0.7.0
+#win32:VERSION = 1.0.7.0
 #else:VERSION = 1.0.7
 
 DEFINES += QTCACHE_LIBRARY

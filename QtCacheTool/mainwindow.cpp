@@ -49,13 +49,15 @@ MainWindow::MainWindow(QWidget *parent) :
     dlg->setFormat(QtC::CacheConnectionDialog::NAMESPACE_FLAG);
 
     ui->outputDirectory->setText(conf->DefaultExportDirectory());
-    ui->includeFilter->addItems(loadObjectFilters());
+    if (ui->includeFilter->count() == 0){
+        ui->includeFilter->addItems(loadIncludeFilters());
+    }
     ui->listWidgetContentFilter->addItems(loadContentFilters());
 
     subscripe(QtC::QtCache::instance());
 
-    loadSettings();
     parseCommandlineOptions();
+    loadSettings();
 
     if(conf->AutoConnect()){
         try{
@@ -598,7 +600,7 @@ void MainWindow::on_selectExportFileList_pressed()
     }
 }
 
-QStringList MainWindow::loadObjectFilters() const
+QStringList MainWindow::loadIncludeFilters() const
 {
     QStringList ls;
     int count = conf->config()->beginReadArray("ExportFilter");
@@ -648,7 +650,7 @@ void MainWindow::parseCommandlineOptions()
     p.addOption(uci);
     QCommandLineOption username("u", tr("Username used for authentication"), "Username");
     p.addOption(username);
-    QCommandLineOption password("p", tr("Password used for authentication"), "Password");
+    QCommandLineOption password("pw", tr("Password used for authentication"), "Password");
     p.addOption(password);
     QCommandLineOption autoConnect("a", tr("Automatically connect during startup"));
     p.addOption(autoConnect);
@@ -656,12 +658,14 @@ void MainWindow::parseCommandlineOptions()
     p.addOption(compile);
     QCommandLineOption compileFlags("cf", tr("Compile flags"), "flags");
     p.addOption(compileFlags);
+    QCommandLineOption tab("tab", tr("Select Tab index after start"), "tab");
+    p.addOption(tab);
     QCommandLineOption importDirectory("i", tr("Directory of Cachè Object to be imported"), "ImportDirectory");
     p.addOption(importDirectory);
     QCommandLineOption outputDirectory("e", tr("Directory used for the Cachè Object export"), "OutputDirectory");
     p.addOption(outputDirectory);
-    QCommandLineOption objectFilter("f", tr("Object filter used when exporting"), "Filter", "(?i).+int$;(?i).+mac$;(?i).+cls$");
-    p.addOption(objectFilter);
+    QCommandLineOption includeFilter("f", tr("Object filter used when exporting"), "Filter", "(?i).+int$;(?i).+mac$;(?i).+cls$");
+    p.addOption(includeFilter);
     QCommandLineOption preImportHook("pre-import-hook", tr("Cachè Object script to be executed before an import"), "COS");
     p.addOption(preImportHook);
     QCommandLineOption postImportHook("post-import-hook", tr("Cachè Object script to be executed after an import"), "COS");
@@ -677,8 +681,20 @@ void MainWindow::parseCommandlineOptions()
 
     p.process(QApplication::instance()->arguments());
 
+    if (p.isSet(server)) {
+        conf->setServer(p.value(server));
+    }
+    if (p.isSet(port)) {
+        conf->setPort(p.value(port));
+    }
     if (p.isSet(uci)){
         conf->setPreferedUCI(p.value(uci));
+    }
+    if (p.isSet(username)) {
+        conf->setUser(p.value(username));
+    }
+    if (p.isSet(password)) {
+        conf->setPasswd(p.value(password));
     }
     if(p.isSet(autoConnect)){
         conf->setAutoConnect(true);
@@ -689,6 +705,10 @@ void MainWindow::parseCommandlineOptions()
     if (p.isSet(compileFlags)){
         ui->qspec->setText(p.value(compileFlags));
     }
+    if (p.isSet(tab)){
+        int idx = p.value(tab).toInt();
+        ui->tabWidget->setCurrentIndex(idx);
+    }
     if (p.isSet(importDirectory)){
         foreach(const QString& i, p.values(importDirectory)){
             loadImportDirectory(i);
@@ -696,6 +716,11 @@ void MainWindow::parseCommandlineOptions()
     }
     if(p.isSet(outputDirectory)){
         ui->outputDirectory->setText(p.value(outputDirectory));
+    }
+    if (p.isSet(includeFilter)) {
+        ui->regularExpression->setChecked(true);
+        ui->includeFilterEnabled->setChecked(true);
+        ui->includeFilter->setCurrentText(p.value(includeFilter));
     }
     if(p.isSet(preImportHook)){
         ui->preImportHook->setText(p.value(preImportHook));

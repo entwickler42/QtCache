@@ -89,7 +89,7 @@ private:
     bool m_abort_task = false;
     bool m_ignore_errors = false;
 
-    QStringList loadObjectFilters() const;
+    QStringList loadIncludeFilters() const;
     void saveObjectFilters(const QStringList&) const;
 
     QStringList loadContentFilters() const;
