@@ -24,14 +24,15 @@ private:
     T* ref;
 };
 
-git_auto<git_repository>::~git_auto() { git_repository_free(this->ref); }
-git_auto<git_signature>::~git_auto() { git_signature_free(this->ref); }
-git_auto<git_index>::~git_auto() { git_index_free(this->ref); }
-git_auto<git_tree>::~git_auto() { git_tree_free(this->ref); }
-git_auto<git_reference>::~git_auto() { git_reference_free(this->ref); }
-git_auto<git_commit>::~git_auto() { git_commit_free(this->ref); }
-git_auto<git_status_list>::~git_auto() { git_status_list_free(this->ref); }
-git_auto<git_remote>::~git_auto() {
+
+template<> git_auto<git_repository>::~git_auto() { git_repository_free(this->ref); }
+template<> git_auto<git_signature>::~git_auto() { git_signature_free(this->ref); }
+template<> git_auto<git_index>::~git_auto() { git_index_free(this->ref); }
+template<> git_auto<git_tree>::~git_auto() { git_tree_free(this->ref); }
+template<> git_auto<git_reference>::~git_auto() { git_reference_free(this->ref); }
+template<> git_auto<git_commit>::~git_auto() { git_commit_free(this->ref); }
+template<> git_auto<git_status_list>::~git_auto() { git_status_list_free(this->ref); }
+template<> git_auto<git_remote>::~git_auto() {
     if (this->ref && git_remote_connected(this->ref)) {
         git_remote_disconnect(this->ref);
     }
